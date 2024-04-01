@@ -44,12 +44,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $userid = $request->userId;
-        $loginBlank = MasterMessage::where('msg_id', 29)->first();
-        $ownSalesValidate = MasterMessage::where('msg_id', 53)->first();
-        $alreadyOrder = MasterMessage::where('msg_id', 54)->first();
-        $successMsg = MasterMessage::where('msg_id', 55)->first();
-        $failMsg = MasterMessage::where('msg_id', 56)->first();
-        $deliveryBlnk = MasterMessage::where('msg_id', 47)->first();
+       
         $warrantyDetails = SalesWarranty::where('user_id', $userid)->first();
 
         if (!empty($warrantyDetails)) {
@@ -85,7 +80,7 @@ class OrderController extends Controller
         $newOrder->adv_id = $request->adv_id[1];
         $newOrder->qty = $request->addedQuantity[1];
         $newOrder->totprice = $request->addedQuantity[1] * $product->price;
-        $newOrder->delivery_method = $request->deliveryMethod;
+        $newOrder->delivery_method = $request->deliveryMethod[1];
         $newOrder->fname = $request->first_name;
         $newOrder->lname = $request->last_name;
         $newOrder->phone = $request->telephone1;
@@ -120,6 +115,7 @@ class OrderController extends Controller
                     $objSalesOrderDetail->seller_notes = "";
                     $objSalesOrderDetail->delivery = "";
                     $objSalesOrderDetail->status = 0;
+                    $objSalesOrderDetail->delivery_method  =  $request->deliveryMethod[$key];
                     $objSalesOrderDetail->created = date('y-m-d h:m:s');
                     $objSalesOrderDetail->modified = date('y-m-d h:m:s');
                     $objSalesOrderDetail->save();
@@ -148,7 +144,7 @@ class OrderController extends Controller
 
             $emailTemplate = EmailTemplate::where('email_of', 3)->first()->mail_body;
             $emailTemplate = str_replace("{Name}", $request->first_name . ' ' . $request->last_name, $emailTemplate);
-           $emailTemplate = str_replace("{sellerMsgDetail}", '', $emailTemplate);
+            $emailTemplate = str_replace("{sellerMsgDetail}", '', $emailTemplate);
             $emailTemplate = str_replace("{MyPurchaseLink}", $MyPurchaseLink, $emailTemplate);
             $emailTemplate = str_replace("{OrderId}", $OrderrId, $emailTemplate);
             $emailTemplate = str_replace("{OrderDetail}", $OrderDetaill, $emailTemplate);
