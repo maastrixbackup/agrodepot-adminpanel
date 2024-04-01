@@ -490,4 +490,106 @@ class RequestPartsController extends Controller
 
         return response()->json($data);
     }
+
+    public function requestQuestion(Request $req, $userid)
+    {
+        $data = [];
+
+        $requestQuestions = RequestQuestion::leftJoin('request_parts', 'request_parts.request_id', '=', 'request_question.request_id')
+            ->where('request_parts.user_id', $userid)
+            ->where('request_question.parent', 0)
+            ->orderByDesc('request_question.question_id')
+            ->get();
+
+        if ($requestQuestions->isNotEmpty()) {
+            foreach ($requestQuestions as $key => $val) {
+                $data[$key]['question_id'] = $val->question_id;
+
+                $partsdetail = RequestAccessory::where('part_id', $val->request_id)->first();
+
+                if ($partsdetail) { // Check if $partsdetail is set
+                    $data[$key]['spare_parts'] = $partsdetail->name_piece;
+                } else {
+                    $data[$key]['spare_parts'] = 'N/A';
+                }
+
+                if (!empty($val->description)) {
+                    $data[$key]['question'] = $val->description;
+                } else {
+                    $data[$key]['question'] = 'N/A';
+                }
+            }
+        }
+
+        return response()->json($data);
+    }
+
+    public function deleteRequestQuestion(Request $request)
+    {
+        $userId = $request->user_id;
+        $questionId = $request->question_id;
+
+        $requestQuestion = RequestQuestion::where('user_id', $userId)
+            ->where('question_id', $questionId)
+            ->first();
+
+        if ($requestQuestion) {
+            $requestQuestion->delete();
+            return response()->json(['message' => 'Request Question deleted successfully'], 200);
+        } else {
+            return response()->json(['message' => 'Request Question not found'], 404);
+        }
+    }
+
+    public function offerMyRequest(Request $req, $userid)
+    {
+        $data = [];
+
+        $bidOffers = BidOffer::leftJoin('request_parts', 'request_parts.request_id', '=', 'bid_offers.request_id')
+            ->where('request_parts.user_id', $userid)
+            ->orderByDesc('bid_offers.bid_id')
+            ->get();
+
+        if ($bidOffers->isNotEmpty()) {
+            foreach ($bidOffers as $key => $val) {
+                $data[$key]['bid_id'] = $val->bid_id;
+
+                $partsdetail = RequestAccessory::where('part_id', $val->request_id)->first();
+
+                if ($partsdetail) { // Check if $partsdetail is set
+                    $data[$key]['spare_parts_request'] = $partsdetail->name_piece;
+                } else {
+                    $data[$key]['spare_parts_request'] = 'N/A';
+                }
+
+                $data[$key]['name_of_piece'] = $val->piece;
+
+                $conditionsOffer = [
+                    'new' => 'Noua',
+                    'New' => 'Noua',
+                    'used' => 'din dezmembran',
+                    'Used' => 'din dezmembran'
+                ];
+
+                $data[$key]['you_want_the_song'] = isset($conditionsOffer[$val->offers]) ? $conditionsOffer[$val->offers] : 'N/A';
+
+                $data[$key]['price'] = $val->price;
+
+                $data[$key]['currency'] = $val->currency;
+
+                if ($val->warranty == 'We do not offer warranty') {
+                    $data[$key]['guarantee'] = 'Noi nu oferim garanție';
+                } else if ($val->warranty == 'Ofer warranty') {
+                    $data[$key]['guarantee'] = 'oferta de garanție';
+                }
+
+                $data[$key]['validity'] = $val->validity;
+
+                $statuses = [0 => 'aprobata', 1 => 'castigatoare', 2 => 'anula'];
+                $data[$key]['status'] = isset($statuses[$val->status]) ? $statuses[$val->status] : 'Unknown';
+            }
+        }
+
+        return response()->json($data);
+    }
 }
