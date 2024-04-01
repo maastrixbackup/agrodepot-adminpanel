@@ -44,7 +44,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $userid = $request->userId;
-       
+
         $warrantyDetails = SalesWarranty::where('user_id', $userid)->first();
 
         if (!empty($warrantyDetails)) {
@@ -161,7 +161,7 @@ class OrderController extends Controller
             $emailTemplate1 = EmailTemplate::where('email_of', 5)->first()->mail_body;
 
 
-           
+
             $emailTemplate1 = str_replace("{Name}", $request->first_name . ' ' . $request->last_name, $emailTemplate1);
             $emailTemplate1 = str_replace('{OrderId}', $OrderrId, $emailTemplate1);
             $emailTemplate1 = str_replace('{orderDetail}', $OrderDetaill, $emailTemplate1);
