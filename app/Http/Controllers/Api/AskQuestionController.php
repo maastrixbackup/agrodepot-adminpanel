@@ -95,7 +95,7 @@ class AskQuestionController extends Controller
         return response()->json(['data' => $allques_data]);
     }
 
-    public function sentQuestion(Request $request, $questionId)
+    public function sentQuestions(Request $request, $questionId)
     {
         \DB::enableQueryLog();
         $sentquestions = SalesQuestion::where('parent', $questionId)
@@ -109,10 +109,12 @@ class AskQuestionController extends Controller
                 $sale_adv = SalesAdvertisement::where('adv_id', $row->adv_id)->first();
                 $allques_data[$key]['slug'] = $sale_adv->slug;
                 $allques_data[$key]['opinion'] = $sale_adv->adv_name;
-                $allques_data[$key]['no_of_items'] = 1;
+                $questionCount = SalesQuestion::where('parent', $questionId)->count();
+                $allques_data[$key]['no_of_items'] = $questionCount;
+                // $allques_data[$key]['no_of_items'] = 1;
                 $allques_data[$key]['questions'] = $row->question;
                 $allques_data[$key]['user_id'] = $row->user_id;
-                $allques_data[$key]['posted_by'] = !empty($user) ? $user->first_name . ' ' . $user->last_name : "";
+                $allques_data[$key]['sent_by'] = !empty($user) ? $user->first_name . ' ' . $user->last_name : "";
                 $allques_data[$key]['question_id'] = $row->question_id;
                 $allques_data[$key]['created'] = $row->created;
             }
@@ -135,10 +137,12 @@ class AskQuestionController extends Controller
                 $sale_adv = SalesAdvertisement::where('adv_id', $row->adv_id)->first();
                 $view_ask_as_reply_data[$key]['slug'] = $sale_adv->slug;
                 $view_ask_as_reply_data[$key]['opinion'] = $sale_adv->adv_name;
-                $view_ask_as_reply_data[$key]['no_of_items'] = 1;
-                $view_ask_as_reply_data[$key]['questions'] = $row->question;
+                // $view_ask_as_reply_data[$key]['no_of_items'] = 1;
+                $questionCount = SalesQuestion::where('parent', $questionId)->count();
+                $view_ask_as_reply_data[$key]['no_of_items'] = $questionCount;
+                $view_ask_as_reply_data[$key]['reply'] = $row->question;
                 $view_ask_as_reply_data[$key]['user_id'] = $row->user_id;
-                $view_ask_as_reply_data[$key]['posted_by'] = !empty($user) ? $user->first_name . ' ' . $user->last_name : "";
+                $view_ask_as_reply_data[$key]['replied_by'] = !empty($user) ? $user->first_name . ' ' . $user->last_name : "";
                 $view_ask_as_reply_data[$key]['question_id'] = $row->question_id;
                 $view_ask_as_reply_data[$key]['created'] = $row->created;
             }

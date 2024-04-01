@@ -135,8 +135,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/promoted-ad', [PostAdsController::class, 'promotedAd']);
     Route::post('/question-asked', [AskQuestionController::class, 'askQuestion']);
 
-    Route::post('/sent-question/{id}', [AskQuestionController::class, 'sentQuestion']);
-    Route::post('/view-ask-reply/{id}', [AskQuestionController::class, 'viewAskReply']);
+    Route::get('/sent-questions/{id}', [AskQuestionController::class, 'sentQuestions']);
+    Route::get('/view-ask-reply/{id}', [AskQuestionController::class, 'viewAskReply']);
 
     Route::post('/answer-the-question', [AskQuestionController::class, 'answerTheQuestion']);
 
@@ -173,7 +173,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/ask-seller/{userid}', [RequestPartsController::class, 'askSeller']);
     Route::get('/ask-seller-sent/{userid}', [RequestPartsController::class, 'askSellerSent']);
 
-    Route::get('/my-question-reply/{question_id}', [RequestPartsController::class, 'myQuestionReply']);
+    Route::get('/request-question/{userid}', [RequestPartsController::class, 'requestQuestion']);
+    Route::post('/delete-request-question', [RequestPartsController::class, 'deleteRequestQuestion']);
+
+    Route::get('/offer-my-request/{userid}', [RequestPartsController::class, 'offerMyRequest']);
 
     Route::post('/sales-warranty-store', [SalesWarrantyController::class, 'store']);
 

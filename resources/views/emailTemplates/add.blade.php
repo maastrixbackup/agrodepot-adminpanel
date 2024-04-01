@@ -15,6 +15,7 @@
                 <div>
                     <label for="email_of">Select For</label>
                     <select name="email_of" class="form-control" value="{{ old('email_of') }}">
+                        <option value="">Select</option>
                         <option value="1">Register for User</option>
                         <option value="2">Forgot password</option>
                         <option value="3">User Past Ad Order</option>
