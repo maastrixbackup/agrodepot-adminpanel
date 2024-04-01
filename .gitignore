@@ -18,3 +18,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+# Ignore ZIP files
+*.zip
+
+# Ignore the public/uploads folder
+/public/uploads
