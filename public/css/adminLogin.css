@@ -1,0 +1,8 @@
+/* --------------------Priyabrata -------------------  */
+
+.min-h-screen {position: relative; background-image: url(../images/bg-img.jpg);background-size: cover; background-position: top;}
+.min-h-screen .env , .min-h-screen .view {position: absolute;height: 20px;  width: 20px; color: black; top: 10px; right: 10px;}
+.add-icon{position: relative;}
+.add-icon i{ color: #515151;}
+.min-h-screen .hide {position: absolute; height: 20px; width: 20px;color: black; top: 10px; right: 10px; opacity: 0;}
+.forgot-pass a:hover{color: red;}
