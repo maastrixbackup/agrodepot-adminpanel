@@ -43,6 +43,7 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
+        
         $userid = $request->userId;
 
         $warrantyDetails = SalesWarranty::where('user_id', $userid)->first();
@@ -71,16 +72,16 @@ class OrderController extends Controller
         if ($alreadyOrdered) {
             return response()->json(['message' => 'You have already ordered this item once!'], 300);
         }
-        $product = SalesAdvertisement::find($request->adv_id[1]);
+        $product = SalesAdvertisement::find($request->products[0]['adv_id']);
 
         $user = MasterUser::where('user_id', $userid)->first();
         $newOrder = new SalesOrder();
         $newOrder->user_id = $userid;
         $newOrder->orderid = $orderID;
-        $newOrder->adv_id = $request->adv_id[1];
-        $newOrder->qty = $request->addedQuantity[1];
-        $newOrder->totprice = $request->addedQuantity[1] * $product->price;
-        $newOrder->delivery_method = $request->deliveryMethod[1];
+        $newOrder->adv_id = $request->products[0]['adv_id'];
+        $newOrder->qty = $request->products[0]['addedQuantity'];
+        $newOrder->totprice = $request->products[0]['addedQuantity']  * $product->price;
+        $newOrder->delivery_method = $request->products[0]['deliveryMethod'];
         $newOrder->fname = $request->first_name;
         $newOrder->lname = $request->last_name;
         $newOrder->phone = $request->telephone1;
@@ -96,14 +97,15 @@ class OrderController extends Controller
         $newOrder->modified = date('y-m-d h:m:s');
         if ($newOrder->save()) {
             $tr = "";
-            if (!empty($request->adv_id)) {
-                foreach ($request->adv_id as $key => $val) {
-                    $product = SalesAdvertisement::find($request->adv_id[$key]);
+            if (!empty($request->products)) {
+                foreach ($request->products as $key => $val) {
+
+                    $product = SalesAdvertisement::find($val['adv_id']);
                     $objSalesOrderDetail = new SalesOrderDetail();
                     $objSalesOrderDetail->order_id =  $orderID;
-                    $objSalesOrderDetail->adv_id = $val;
-                    $objSalesOrderDetail->product_quantity = $request->addedQuantity[$key];
-                    $objSalesOrderDetail->amount = $request->addedQuantity[$key] * $product->price;
+                    $objSalesOrderDetail->adv_id = $val['adv_id'];
+                    $objSalesOrderDetail->product_quantity = $val['addedQuantity'];
+                    $objSalesOrderDetail->amount = $val['addedQuantity']  * $product->price;
                     $objSalesOrderDetail->email = $user->email;
                     $objSalesOrderDetail->name = $request->first_name . ' ' . $request->last_name;
                     $objSalesOrderDetail->phone_mobile = $request->telephone1;
@@ -115,16 +117,16 @@ class OrderController extends Controller
                     $objSalesOrderDetail->seller_notes = "";
                     $objSalesOrderDetail->delivery = "";
                     $objSalesOrderDetail->status = 0;
-                    $objSalesOrderDetail->delivery_method  =  $request->deliveryMethod[$key];
+                    $objSalesOrderDetail->delivery_method  =  $val['deliveryMethod'];
                     $objSalesOrderDetail->created = date('y-m-d h:m:s');
                     $objSalesOrderDetail->modified = date('y-m-d h:m:s');
                     $objSalesOrderDetail->save();
 
-                    $tr .= '<tr><td>' . stripslashes($product->adv_name) . '</td><td>' . stripslashes($request->addedQuantity[$key]) . '</td><td>' . stripslashes($request->addedQuantity[$key] * $product->price) . ' RON</td></tr>';
+                    $tr .= '<tr><td>' . stripslashes($product->adv_name) . '</td><td>' . stripslashes($val['addedQuantity']) . '</td><td>' . stripslashes($val['addedQuantity'] * $product->price) . ' RON</td></tr>';
 
                     $notice = new Notice();
                     $notice->notice_type = "sales-order";
-                    $notice->postid = $request->adv_id[$key];
+                    $notice->postid = $val['adv_id'];
                     $notice->notice_name = "Sales Order";
                     $notice->user_id = $userid;
                     $notice->save();
