@@ -15,9 +15,12 @@ use App\Models\ManageMessage;
 use App\Models\MasterUser;
 use App\Models\MasterCountry;
 use App\Models\MasterLocation;
+use App\Models\Notice;
 use App\Models\UserRating;
 use App\Models\SuccessStory;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class UserDashBoardController extends Controller
@@ -83,16 +86,15 @@ class UserDashBoardController extends Controller
         $data = array();
         $user_list = MasterUser::where('is_active', "1")->get();
 
-        if($user_list) {
+        if ($user_list) {
             foreach ($user_list as $key => $list) {
-                $data[$key]['user_name'] =  $list->first_name. ' ' .$list->last_name;
+                $data[$key]['user_name'] =  $list->first_name . ' ' . $list->last_name;
                 $data[$key]['user_id'] =  $list->user_id;
             }
         } else {
             $data = array();
         }
         return response()->json($data);
-
     }
 
     public function accountCredits(Request $request, $userid)
@@ -206,7 +208,7 @@ class UserDashBoardController extends Controller
 
     public function membershipPlan(Request $request)
     {
-        $randomId = str_pad(rand(0, pow(10, 8)-1), 8, '0', STR_PAD_LEFT);
+        $randomId = str_pad(rand(0, pow(10, 8) - 1), 8, '0', STR_PAD_LEFT);
         $billing_details = new TempMembershipDetail();
         $billing_details->randomid = $randomId;
         $billing_details->pmt_from = $request->input('payment_from');
@@ -227,6 +229,7 @@ class UserDashBoardController extends Controller
         $billing_details->shipping_city = $request->input('shipping_city');
         $billing_details->shipping_state = $request->input('shipping_state');
         $billing_details->shipping_zip = $request->input('shipping_zip');
+
 
         // $billing_details->created = $request->input('created');
         // $billing_details->modified = $request->input('modified');
@@ -285,7 +288,7 @@ class UserDashBoardController extends Controller
         foreach ($sales_adv_list as $key => $order_list) {
             $sales_order = SalesOrder::where('adv_id', $order_list->adv_id)->first();
 
-            if($sales_order) {
+            if ($sales_order) {
                 $user = MasterUser::where('user_id', $sales_order->user_id)->first();
                 $country = MasterCountry::where('country_id', $sales_order->country)->first();
                 $location = MasterLocation::where('location_id', $sales_order->location)->first();
@@ -302,14 +305,14 @@ class UserDashBoardController extends Controller
                     $data[$key]['quantity'] =  null;
                 }
                 $data[$key]['price'] =  $sales_order->totprice;
-                $data[$key]['ordered_prin'] =  $user->first_name. ' ' .$user->last_name;
-                $data[$key]['delivery_name'] =  $sales_order->fname. ' ' .$sales_order->lname;
-                if($country != null) {
+                $data[$key]['ordered_prin'] =  $user->first_name . ' ' . $user->last_name;
+                $data[$key]['delivery_name'] =  $sales_order->fname . ' ' . $sales_order->lname;
+                if ($country != null) {
                     $data[$key]['country'] =  $country->country_name;
                 } else {
                     $data[$key]['country'] =  null;
                 }
-                if($location != null) {
+                if ($location != null) {
                     $data[$key]['location'] =  $location->location_name;
                 } else {
                     $data[$key]['location'] =  null;
@@ -334,7 +337,6 @@ class UserDashBoardController extends Controller
         }
 
         return response()->json($data);
-
     }
 
     // public function ratingGivenSeller(Request $request, $userid)
@@ -358,7 +360,7 @@ class UserDashBoardController extends Controller
         foreach ($sales_adv_list as $key => $order_list) {
             $sales_order = SalesOrder::where('adv_id', $order_list->adv_id)->first();
 
-            if($sales_order) {
+            if ($sales_order) {
                 $user = MasterUser::where('user_id', $sales_order->user_id)->first();
                 $country = MasterCountry::where('country_id', $sales_order->country)->first();
                 $location = MasterLocation::where('location_id', $sales_order->location)->first();
@@ -375,14 +377,14 @@ class UserDashBoardController extends Controller
                     $data[$key]['quantity'] =  null;
                 }
                 $data[$key]['price'] =  $sales_order->totprice;
-                $data[$key]['ordered_prin'] =  $user->first_name. ' ' .$user->last_name;
-                $data[$key]['delivery_name'] =  $sales_order->fname. ' ' .$sales_order->lname;
-                if($country != null) {
+                $data[$key]['ordered_prin'] =  $user->first_name . ' ' . $user->last_name;
+                $data[$key]['delivery_name'] =  $sales_order->fname . ' ' . $sales_order->lname;
+                if ($country != null) {
                     $data[$key]['country'] =  $country->country_name;
                 } else {
                     $data[$key]['country'] =  null;
                 }
-                if($location != null) {
+                if ($location != null) {
                     $data[$key]['location'] =  $location->location_name;
                 } else {
                     $data[$key]['location'] =  null;
@@ -407,7 +409,6 @@ class UserDashBoardController extends Controller
         }
 
         return response()->json($data);
-
     }
 
     public function messageInbox(Request $request, $userid)
@@ -415,7 +416,7 @@ class UserDashBoardController extends Controller
         $data = array();
         $message_inbox = ManageMessage::where('to_user', $userid)->where('status', "1")->get();
 
-        if($message_inbox) {
+        if ($message_inbox) {
             foreach ($message_inbox as $key => $inbox_list) {
                 $from_user = MasterUser::where('user_id', $inbox_list->from_user)->first();
                 $to_user = MasterUser::where('user_id', $inbox_list->to_user)->first();
@@ -425,7 +426,7 @@ class UserDashBoardController extends Controller
                 $carbonTimestamp = Carbon::parse($isoTimestamp);
                 $formatted_Date = $carbonTimestamp->format('d-m-Y');
 
-                $data[$key]['submitted_by'] =  $from_user->first_name. ' ' .$from_user->last_name;
+                $data[$key]['submitted_by'] =  $from_user->first_name . ' ' . $from_user->last_name;
                 $data[$key]['message'] =  $inbox_list->message;
                 $data[$key]['reply'] = $message_reply;
                 $data[$key]['order_date'] =  $formatted_Date;
@@ -456,14 +457,16 @@ class UserDashBoardController extends Controller
     {
         $data = array();
         $from_user = ManageMessage::where('from_user', $userid)->where('status', "1")->first();
-        if($from_user) {
+        if ($from_user) {
             $sent_messages = ManageMessage::where('parent', $from_user->msg_id)->where('status', "1")->get();
 
             foreach ($sent_messages as $key => $message_list) {
 
+
                 $isoTimestamp = $message_list->created;
                 $carbonTimestamp = Carbon::parse($isoTimestamp);
                 $formatted_Date = $carbonTimestamp->format('d-m-Y');
+
 
                 $data[$key]['sent_to'] =  $from_user->to_user;
                 $data[$key]['message'] =  $from_user->message;
@@ -481,7 +484,6 @@ class UserDashBoardController extends Controller
             $data = array();
         }
         return response()->json($data);
-
     }
 
     public function archiveMessage($userid)
@@ -489,7 +491,7 @@ class UserDashBoardController extends Controller
         $data = array();
         $archive_message = ManageMessage::where('to_user', $userid)->where('status', '!=', '0')->get();
 
-        if($archive_message) {
+        if ($archive_message) {
             foreach ($archive_message as $key => $message_list) {
                 $from_user = MasterUser::where('user_id', $message_list->from_user)->first();
                 $to_user = MasterUser::where('user_id', $message_list->to_user)->first();
@@ -498,9 +500,9 @@ class UserDashBoardController extends Controller
                 $carbonTimestamp = Carbon::parse($isoTimestamp);
                 $formatted_Date = $carbonTimestamp->format('d-m-Y');
 
-                $data[$key]['submitted_by'] =  $from_user->first_name. ' ' .$from_user->last_name;
+                $data[$key]['submitted_by'] =  $from_user->first_name . ' ' . $from_user->last_name;
                 $data[$key]['message'] =  $message_list->message;
-                $data[$key]['replied_to'] = $to_user->first_name. ' ' .$to_user->last_name;
+                $data[$key]['replied_to'] = $to_user->first_name . ' ' . $to_user->last_name;
                 if ($message_list->status == "1") {
                     $data[$key]['message_type'] =  "Inbox";
                 } else {
@@ -513,7 +515,6 @@ class UserDashBoardController extends Controller
             $data = array();
         }
         return response()->json($data);
-
     }
 
     public function emailHistory($userid)
@@ -521,15 +522,16 @@ class UserDashBoardController extends Controller
         $data = array();
         $email_history = ManageMessage::where('to_user', $userid)->where('status', "2")->get();
 
-        if($email_history) {
+        if ($email_history) {
             foreach ($email_history as $key => $message_list) {
                 $from_user = MasterUser::where('user_id', $message_list->from_user)->first();
+
 
                 $isoTimestamp = $message_list->created;
                 $carbonTimestamp = Carbon::parse($isoTimestamp);
                 $formatted_Date = $carbonTimestamp->format('d-m-Y');
 
-                $data[$key]['submitted_by'] =  $from_user->first_name. ' ' .$from_user->last_name;
+                $data[$key]['submitted_by'] =  $from_user->first_name . ' ' . $from_user->last_name;
                 $data[$key]['message'] =  $message_list->message;
                 $data[$key]['order_date'] =  $formatted_Date;
             }
@@ -538,7 +540,6 @@ class UserDashBoardController extends Controller
             $data = array();
         }
         return response()->json($data);
-
     }
 
     public function composeMessage(Request $request)
@@ -578,22 +579,22 @@ class UserDashBoardController extends Controller
         $data = array();
         $user_rating = UserRating::where('user_id', $userid)->get();
 
-        if($user_rating) {
+        if ($user_rating) {
             foreach ($user_rating as $key => $rating_list) {
                 $sale_ad = SalesAdvertisement::where('adv_id', $rating_list->adv_id)->first();
                 $from_user = MasterUser::where('user_id', $rating_list->from_user_id)->first();
 
                 $data[$key]['rating_type'] =  $rating_list->grade;
-                if($sale_ad) {
+                if ($sale_ad) {
                     $data[$key]['opinion'] =  $sale_ad->adv_name;
                     $user = MasterUser::where('user_id', $sale_ad->user_id)->first();
-                    $data[$key]['sales_clerk'] = $user->first_name. ' ' .$user->last_name;
+                    $data[$key]['sales_clerk'] = $user->first_name . ' ' . $user->last_name;
                 } else {
                     $data[$key]['opinion'] =  null;
                     $data[$key]['sales_clerk'] =  null;
                 }
-                if($from_user) {
-                    $data[$key]['receive_from'] = $from_user->first_name. ' ' .$from_user->last_name;
+                if ($from_user) {
+                    $data[$key]['receive_from'] = $from_user->first_name . ' ' . $from_user->last_name;
                 } else {
                     $data[$key]['receive_from'] = null;
                 }
@@ -614,7 +615,7 @@ class UserDashBoardController extends Controller
         // $user_rating = SuccessStory::where('user_id', $userid)->get();
         $success_stories = SuccessStory::where('user_id', $userid)->where('submit_from', '1')->get();
 
-        if($success_stories) {
+        if ($success_stories) {
             foreach ($success_stories as $key => $story) {
 
                 $isoTimestamp = $story->created;
@@ -652,7 +653,7 @@ class UserDashBoardController extends Controller
     {
         $success_story = SuccessStory::where('success_id', $storyId)->first();
 
-        if($success_story) {
+        if ($success_story) {
             $data['content'] =  $success_story->content;
         } else {
             $data = null;
@@ -672,5 +673,158 @@ class UserDashBoardController extends Controller
             "message" => "Success story updated successfully",
             "data" => $update_story
         ], 200);
+    }
+
+
+    public function fetchBuyerRating(Request $request, $orderId)
+    {
+        $orderDetail = SalesOrder::find($orderId);
+
+        if (!$orderDetail) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        $ratingDetail = UserRating::where('orderid', $orderId)
+            ->where('user_id', $orderDetail->user_id)
+            ->first();
+
+
+        return response()->json(['ratingDetail' => $ratingDetail]);
+    }
+
+    public function saveBuyerRating(Request $request)
+    {
+        $salesOrderId = $request->orderid;
+
+        $existingRating = UserRating::where('orderid', $salesOrderId)->exists();
+
+        if ($existingRating) {
+            return response()->json(['error' => 'Rating already given for this sales_order'], 400);
+        }
+
+        // Retrieve the authenticated user
+        $user = Auth::user();
+
+        $validator = Validator::make($request->all(), [
+            'grade' => 'required|in:-1,0,1',
+            'how_to_know' => 'nullable|string|max:255',
+            'productdescribedval' => 'required|numeric|between:0,5',
+            'communicationval' => 'required|numeric|between:0,5',
+            'deliverytimeval' => 'required|numeric|between:0,5',
+            'cost_of_transportval' => 'required|numeric|between:0,5',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Retrieve order detail
+        $orderDetail = SalesOrder::find($salesOrderId);
+
+        $rating = new UserRating();
+        $rating->user_id = Auth::id();
+        $rating->from_user_id = $user->user_id;
+        $rating->orderid = $salesOrderId;
+        $rating->adv_id = $orderDetail->adv_id;
+        $rating->rating_type = 1;
+        $rating->grade = $request->input('grade');
+        $rating->how_to_know = $request->input('how_to_know');
+        $rating->productdescribedval = $request->input('productdescribedval');
+        $rating->communicationval = $request->input('communicationval');
+        $rating->deliverytimeval = $request->input('deliverytimeval');
+        $rating->cost_of_transportval = $request->input('cost_of_transportval');
+        $rating->created = Carbon::now();
+        $rating->modified = Carbon::now();
+
+        $rating->save();
+
+        return response()->json(['message' => 'Rating created successfully', 'rating' => $rating], 201);
+    }
+
+    public function fetchSellerRating(Request $request, $orderId)
+    {
+        $orderDetail = SalesOrder::find($orderId);
+
+        if ($orderDetail === null) {
+            return response()->json(['error' => 'Sales order not found'], 404);
+        }
+
+        $postdetails = SalesAdvertisement::where('adv_id', $orderDetail->adv_id)->first();
+
+        if ($postdetails === null) {
+            return response()->json(['error' => 'Sales advertisement not found'], 404);
+        }
+
+        $ratingDetail = UserRating::where('orderid', $orderId)
+            ->where('user_id', $postdetails->user_id)
+            ->first();
+
+        return response()->json(['ratingDetail' => $ratingDetail]);
+    }
+
+    public function saveSellerRating(Request $request)
+    {
+        $orderid = $request->orderid;
+
+        $validator = Validator::make($request->all(), [
+            'grade' => 'required|in:-1,0,1',
+            'how_to_know' => 'nullable|string|max:255',
+            'productdescribedval' => 'required|numeric|between:0,5',
+            'communicationval' => 'required|numeric|between:0,5',
+            'deliverytimeval' => 'required|numeric|between:0,5',
+            'cost_of_transportval' => 'required|numeric|between:0,5',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $user = Auth::user();
+
+        $orderdetail = SalesOrder::find($orderid);
+        if (!$orderdetail) {
+            return response()->json(['error' => 'Order detail not found'], 404);
+        }
+
+        $userRating = UserRating::where('user_id', Auth::id())
+            ->where('orderid', $orderid)
+            ->first();
+
+        if ($userRating) {
+            return response()->json(['error' => 'You have already rated.'], 400);
+        } else {
+            $rating = new UserRating();
+            $rating->user_id = Auth::id();
+            $rating->from_user_id = $user->user_id;
+            $rating->orderid = $orderid;
+            $rating->adv_id = $orderdetail->adv_id;
+            $rating->rating_type = 1;
+            $rating->grade = $request->input('grade');
+            $rating->how_to_know = $request->input('how_to_know');
+            $rating->productdescribedval = $request->input('productdescribedval');
+            $rating->communicationval = $request->input('communicationval');
+            $rating->deliverytimeval = $request->input('deliverytimeval');
+            $rating->cost_of_transportval = $request->input('cost_of_transportval');
+            $rating->created = Carbon::now();
+            $rating->modified = Carbon::now();
+
+            $rating->save();
+
+            $notice = new Notice();
+            $notice->notice_type = 'buyer-rate';
+            $notice->postid = $orderdetail->adv_id;
+            $notice->notice_name = 'Rating To Buyer';
+            $notice->user_id = $user->user_id;
+            $notice->save();
+
+            $notice = new Notice();
+            $notice->notice_type = 'buyer-rate';
+            $notice->postid = $orderdetail->adv_id;
+            $notice->notice_name = 'Rating To Buyer';
+            $notice->user_id = $orderdetail->user_id;
+            $notice->save();
+
+            return response()->json(['success' => 'Rating successfully given to Seller.']);
+        }
     }
 }

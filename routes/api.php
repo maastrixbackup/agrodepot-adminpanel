@@ -184,5 +184,16 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/dlt-inbox-msg/{msgId}', [UserDashBoardController::class, 'deleteInboxMsg']);
     Route::post('/add_reply', [RequestPartsController::class, 'add_reply']);
     Route::get('/view_reply/{qid}', [RequestPartsController::class, 'view_reply']);
+
+    Route::get('/fetch-buyer-rating/{orderId}', [UserDashBoardController::class, 'fetchBuyerRating'])->name('fetchBuyerRating');
+
+    Route::post('/save-buyer-rating', [UserDashBoardController::class, 'saveBuyerRating'])->name('saveBuyerRating');
+
+    Route::get('/fetch-seller-rating/{orderId}', [UserDashBoardController::class, 'fetchSellerRating'])->name('fetchSellerRating');
+
+    Route::post('/save-seller-rating', [UserDashBoardController::class, 'saveSellerRating'])->name('saveSellerRating');
+    Route::post('/delete-advertisement', [SalesController::class, 'deleteAdvertisement']);
+
+    Route::post('/supply-demand', [RequestPartsController::class, 'supplyDemand']);
 });
 // Protected Routes End

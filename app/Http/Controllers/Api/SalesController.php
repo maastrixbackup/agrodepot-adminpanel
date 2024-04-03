@@ -520,4 +520,27 @@ class SalesController extends Controller
             'data' => $advID
         ]);
     }
+    public function deleteAdvertisement(Request $request)
+    {
+        $advId = $request->advId;
+        $sale = SalesAdvertisement::find($advId);
+        if ($sale->delete()) {
+
+            $prv_img = PostadImg::where('post_ad_id', $sale->adv_id)->get();
+
+            foreach ($prv_img as $prvimgDelete) {
+                $imagePath = public_path('uploads/postad/') . $prvimgDelete->img_path;
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+                $prvimgDelete->delete();
+            }
+            return response()->json([
+                'status' => 'Advertisement deleted successfully',
+            ]);
+        }
+        return response()->json([
+            'status' => 'There was an error deleting the advertisement',
+        ]);
+    }
 }

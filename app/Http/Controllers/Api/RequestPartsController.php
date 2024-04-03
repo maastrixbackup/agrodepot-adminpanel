@@ -517,6 +517,8 @@ class RequestPartsController extends Controller
             ->orderByDesc('request_question.question_id')
             ->get();
 
+        // dd($requestQuestions);
+
         if ($requestQuestions->isNotEmpty()) {
             foreach ($requestQuestions as $key => $val) {
                 $data[$key]['question_id'] = $val->question_id;
@@ -545,12 +547,16 @@ class RequestPartsController extends Controller
         $userId = $request->user_id;
         $questionId = $request->question_id;
 
-        $requestQuestion = RequestQuestion::where('user_id', $userId)
-            ->where('question_id', $questionId)
-            ->first();
+        $requestQuestion = RequestQuestion::where('question_id', $questionId)->first();
 
         if ($requestQuestion) {
             $requestQuestion->delete();
+
+            $childQuestions = RequestQuestion::where('parent', $questionId)->get();
+            foreach ($childQuestions as $childQuestion) {
+                $childQuestion->delete();
+            }
+
             return response()->json(['message' => 'Request Question deleted successfully'], 200);
         } else {
             return response()->json(['message' => 'Request Question not found'], 404);
@@ -603,6 +609,79 @@ class RequestPartsController extends Controller
 
                 $statuses = [0 => 'aprobata', 1 => 'castigatoare', 2 => 'anula'];
                 $data[$key]['status'] = isset($statuses[$val->status]) ? $statuses[$val->status] : 'Unknown';
+            }
+        }
+
+        return response()->json($data);
+    }
+
+    public function supplyDemand(Request $request)
+    {
+        $data = [];
+
+        $request->validate([
+            'user_id' => 'required'
+        ]);
+
+        $userid = $request->user_id;
+        $status = $request->status;
+
+        if (!empty($status) && ($status == 0 || $status == 2)) {
+            $andwhr = [
+                ['request_parts.user_id', '=', $request->user_id],
+                ['bid_offers.status', '=', $status],
+                ['request_accessories.status', 2],
+                ['request_parts.status', 1]
+            ];
+        } elseif (!empty($status) && ($status == 1 || $status == 2)) {
+            $andwhr = [
+                ['request_parts.user_id', '=', $request->user_id],
+                ['bid_offers.status', '=', $status],
+                ['request_parts.status', 1]
+            ];
+        } else {
+            $andwhr = [
+                ['request_parts.user_id', '=', $request->user_id]
+            ];
+        }
+
+        $requestParts = RequestPart::select('request_parts.*', 'request_accessories.*', 'bid_offers.*')
+            ->join('request_accessories', 'request_accessories.request_id', '=', 'request_parts.request_id')
+            ->join('bid_offers', 'bid_offers.parts_id', '=', 'request_accessories.part_id')
+            ->where($andwhr)
+            ->orderByDesc('request_parts.created')
+            ->get();
+            
+
+        if ($requestParts->isNotEmpty()) {
+            foreach ($requestParts as $key => $val) {
+                $data[$key]['request_id'] = $val->request_id;
+
+                $user_details = MasterUser::where('user_id', $val->user_id)->first();
+
+                if (!empty($user_details)) {
+                    $data[$key]['offer_via'] = $user_details->first_name . ' ' . $user_details->last_name;
+                } else {
+                    $data[$key]['offer_via'] = 'N/A';
+                }
+
+                $data[$key]['demand_slug'] = $val->slug;
+
+                $brand = SalesBrand::where('brand_id', $val->brand_id)->first(['brand_name']);
+
+                $data[$key]['brand_name'] = $brand ? $brand->brand_name : 'N/A';
+
+                $sub_brands = SalesBrand::where('flag', $val->model_id)->pluck('brand_name', 'brand_id')->toArray();
+
+                $data[$key]['model_name'] = array_key_exists($val->model_id, $sub_brands) ? $sub_brands[$val->model_id] : 'N/A';
+
+                $data[$key]['offer_name'] = $val->piece;
+                $data[$key]['price_offer'] = $val->price;
+                $data[$key]['want_the_song'] = $val->offers;
+                $data[$key]['guarantee'] = $val->warranty;
+
+                $date = $val->created_at ? $val->created_at->format("F d, Y") : 'N/A';
+                $data[$key]['date'] = $date;
             }
         }
 
