@@ -227,7 +227,7 @@ class UserDashBoardController extends Controller
         $billing_details->shipping_city = $request->input('shipping_city');
         $billing_details->shipping_state = $request->input('shipping_state');
         $billing_details->shipping_zip = $request->input('shipping_zip');
-        
+
         // $billing_details->created = $request->input('created');
         // $billing_details->modified = $request->input('modified');
         $billing_details->save();
@@ -432,12 +432,24 @@ class UserDashBoardController extends Controller
                 $data[$key]['message_id'] = $inbox_list->msg_id;
                 $data[$key]['from_user_id'] = $from_user->user_id;
             }
-        
+
         } else {
             $data = array();
         }
         return response()->json($data);
 
+    }
+    public function deleteInboxMsg(Request $request, $msgId)
+    {
+        $message_inbox = ManageMessage::find($msgId);
+        try {
+            $message_inbox->delete();
+        return response()->json(["msg"=>"Deleted Succesfully"]);
+
+        } catch (\Throwable $th) {
+        return response()->json(["msg"=>"There was some error"]);
+
+        }
     }
 
     public function sentMessage($userid)
@@ -448,17 +460,17 @@ class UserDashBoardController extends Controller
             $sent_messages = ManageMessage::where('parent', $from_user->msg_id)->where('status', "1")->get();
 
             foreach ($sent_messages as $key => $message_list) {
-    
+
                 $isoTimestamp = $message_list->created;
                 $carbonTimestamp = Carbon::parse($isoTimestamp);
                 $formatted_Date = $carbonTimestamp->format('d-m-Y');
-    
+
                 $data[$key]['sent_to'] =  $from_user->to_user;
                 $data[$key]['message'] =  $from_user->message;
                 $data[$key]['reply'] = $message_list->message;
                 $data[$key]['order_date'] =  $formatted_Date;
             }
-    
+
         } else {
             // $message = "Data Not Found";
             // return response()->json(array('data' => $data, 'message' => $message));
@@ -496,7 +508,7 @@ class UserDashBoardController extends Controller
                 }
                 $data[$key]['order_date'] =  $formatted_Date;
             }
-        
+
         } else {
             $data = array();
         }
@@ -512,7 +524,7 @@ class UserDashBoardController extends Controller
         if($email_history) {
             foreach ($email_history as $key => $message_list) {
                 $from_user = MasterUser::where('user_id', $message_list->from_user)->first();
-                
+
                 $isoTimestamp = $message_list->created;
                 $carbonTimestamp = Carbon::parse($isoTimestamp);
                 $formatted_Date = $carbonTimestamp->format('d-m-Y');
@@ -521,7 +533,7 @@ class UserDashBoardController extends Controller
                 $data[$key]['message'] =  $message_list->message;
                 $data[$key]['order_date'] =  $formatted_Date;
             }
-            
+
         } else {
             $data = array();
         }
@@ -589,7 +601,7 @@ class UserDashBoardController extends Controller
                 $data[$key]['assessment'] = $rating / 4;
                 $data[$key]['quality'] =  $rating_list->grade;
             }
-        
+
         } else {
             $data = array();
         }
@@ -614,7 +626,7 @@ class UserDashBoardController extends Controller
                 $data[$key]['status'] = $story->status;
                 $data[$key]['posted_date'] =  $formatted_Date;
             }
-        
+
         } else {
             $data = array();
         }

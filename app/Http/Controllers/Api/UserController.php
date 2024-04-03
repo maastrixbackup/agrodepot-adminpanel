@@ -49,7 +49,7 @@ class UserController extends Controller
 
         $user_type_id = ($request->user_type_id == 1) ? (($request->buyer_type == 1) ? 3 : 1) : $request->user_type_id;
         $is_active = 1;
-      
+
 
         if ($request->buyer_type == 1) {
             $is_active = 0;
@@ -67,13 +67,24 @@ class UserController extends Controller
             'country_id' => $request->country_id,
             'locality_id' => $request->locality_id,
             'is_active' => $is_active,
+            // newfields,
+            'company_name' => $request->$company_name,
+            'cui' => $request->$cui,
+            'reg_no' => $request->$reg_no,
+            'regd_off_add' => $request->$regd_off_add,
+            'country_regd_off' => $request->$country_regd_off,
+            'regd_off_city' => $request->$regd_off_city,
+            'regd_off_country' => $request->$regd_off_country,
+            'bank' => $request->$bank,
+            'account' => $request->$account,
+
         ]);
 
-        
+
         $route =  url('admin/users/' . $user->user_id . '/edit') ;
         $AccountLink = '<a href="'.$route.'">here</a>';
         if ($request->buyer_type == 1) {
-           
+
 
             $emailTemplate = EmailTemplate::where('email_of', 16)->first()->mail_body;
             $emailTemplate = str_replace("{AccountLink}", $AccountLink, $emailTemplate);

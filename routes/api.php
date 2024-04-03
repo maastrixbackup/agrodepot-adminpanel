@@ -181,5 +181,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/sales-warranty-store', [SalesWarrantyController::class, 'store']);
 
     Route::post('save-order', [OrderController::class, 'store']);
+    Route::get('/dlt-inbox-msg/{msgId}', [UserDashBoardController::class, 'deleteInboxMsg']);
+    Route::post('/add_reply', [RequestPartsController::class, 'add_reply']);
+    Route::get('/view_reply/{qid}', [RequestPartsController::class, 'view_reply']);
 });
 // Protected Routes End

@@ -66,6 +66,22 @@ class RequestPartsController extends Controller
         }
         return response()->json(["data" => $data, "count" => $count], 200);
     }
+    public function add_reply(Request $request)
+    {
+       $reply=new RequestQuestion();
+       $reply->parent = $request->parent;
+       $reply->user_id = $request->user_id;
+       $reply->parts_id = $request->parts_id;
+       $reply->description = $request->description;
+       $reply->request_id = $request->request_id;
+       $reply->save();
+       return response()->json(["data" => $data], 200);
+    }
+    public function view_reply(Request $request,$qid)
+    {
+       $data=RequestQuestion::where("parent",$qid)->get();
+       return response()->json(["data" => $data], 200);
+    }
     public function requestPartsDetails($slug)
     {
         $reqAcc = RequestAccessory::where('slug', $slug)->leftJoin('request_parts', 'request_accessories.request_id', '=', 'request_parts.request_id')
