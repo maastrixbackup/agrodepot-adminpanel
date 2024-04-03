@@ -478,6 +478,7 @@ class SalesController extends Controller
     public function destroy(string $id)
     {
         $sale = SalesAdvertisement::find($id);
+        $this->deleteImage($id);
         $sale->delete();
         return redirect()->route('sales.index')->with('success', 'Sale deleted successfully');
     }

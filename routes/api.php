@@ -181,5 +181,16 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/sales-warranty-store', [SalesWarrantyController::class, 'store']);
 
     Route::post('save-order', [OrderController::class, 'store']);
+
+    Route::get('/fetch-buyer-rating/{orderId}', [UserDashBoardController::class, 'fetchBuyerRating'])->name('fetchBuyerRating');
+
+    Route::post('/save-buyer-rating', [UserDashBoardController::class, 'saveBuyerRating'])->name('saveBuyerRating');
+
+    Route::get('/fetch-seller-rating/{orderId}', [UserDashBoardController::class, 'fetchSellerRating'])->name('fetchSellerRating');
+
+    Route::post('/save-seller-rating', [UserDashBoardController::class, 'saveSellerRating'])->name('saveSellerRating');
+    Route::post('/delete-advertisement', [SalesController::class, 'deleteAdvertisement']);
+
+    Route::post('/supply-demand', [RequestPartsController::class, 'supplyDemand']);
 });
 // Protected Routes End
