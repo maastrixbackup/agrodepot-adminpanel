@@ -196,7 +196,7 @@ class SalesController extends Controller
         $product['country'] = $country ? $country->country_name : "";
         $product['location'] = $location ? $location->location_name : "";
         $warranty = SalesWarranty::find($product->user->user_id);
-        $product['warranty'] = $warranty;
+        $product['warranty'] = $warranty ? 1:0;
 
         $product['noOfUsersRated'] = 0;
 
@@ -378,7 +378,7 @@ class SalesController extends Controller
         $sale->price = $request->input('price');
         $sale->b2bprice = $request->input('b2bprice') ? $request->input('b2bprice') : $request->input('price');
         $sale->time_required = $request->input('time_required');
-        $sale->adv_status = 0;
+        $sale->adv_status = $slug ? 1 :0;
         $sale->availability = $request->input('availability');
         $sale->warranty = $request->input('warranty');
         $sale->invoice = $request->input('invoice');

@@ -43,7 +43,7 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         $userid = $request->userId;
 
         $warrantyDetails = SalesWarranty::where('user_id', $userid)->first();
