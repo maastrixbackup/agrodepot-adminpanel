@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\MasterCountry;
 use App\Models\MasterLocation;
 use App\Models\MasterUser;
+use App\Models\Notice;
 use App\Models\PostadImg;
+use App\Models\RecentView;
 use App\Models\SalesAdvertisement;
 use App\Models\SalesBrand;
 use App\Models\SalesCategory;
@@ -22,8 +24,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
-
-
+use Illuminate\Support\Facades\DB;
 
 class SalesController extends Controller
 {
@@ -37,16 +38,19 @@ class SalesController extends Controller
         $pageno = $req->pageNo ?? 1;
         $country = $req->country;
         $seller = $req->seller;
-        $startingRange = $req->startingRange;
-        $endingRange = $req->endingRange;
+        $startingRange = $req->startingPrice;
+        $endingRange = $req->endingPrice;
         $sortBy = $req->sortBy ? $req->sortBy : "adv_id";
         $postsPerPage  = $req->postsPerPage ? $req->postsPerPage : 10;
         $searchTxt  = $req->searchTxt;
         $search = $req->search;
         $toSkip = $postsPerPage * $pageno - $postsPerPage;
-        // dd($req->all());
-        $salesProducts = SalesAdvertisement::orderBy("adv_id", "desc")->where("adv_status", 1);
 
+        // Initialize the query
+        $salesProducts = SalesAdvertisement::where("adv_status", 1);
+
+
+        // Apply filters
         if ($country) {
             $user = MasterUser::where('country_id', $country)->select('user_id')->get();
             $salesProducts->whereIn("user_id", $user);
@@ -55,10 +59,10 @@ class SalesController extends Controller
             $salesProducts->where('category_id', $cat);
         }
         if ($subcat) {
-            $salesProducts->where('sub_cat_id', $subcat);
+            $salesProducts->whereIn('sub_cat_id', $subcat);
         }
         if ($model) {
-            $salesProducts->where('adv_model_id', $model);
+            $salesProducts->whereIn('adv_model_id', $model);
         }
         if ($brand) {
             $salesProducts->where('adv_brand_id', $brand);
@@ -69,42 +73,68 @@ class SalesController extends Controller
         if ($uid) {
             $salesProducts->where('user_id', $uid);
         }
+        if ($endingRange) {
+            $salesProducts->where('price', "<=", $endingRange);
+        }
+        if ($startingRange) {
+            $salesProducts->where('price', ">=", $startingRange);
+        }
         if ($searchTxt) {
-
             $userIds = MasterUser::where('first_name', 'like', '%' . $searchTxt . '%')
                 ->orWhere('last_name', 'like', '%' . $searchTxt . '%')
                 ->pluck('user_id')
                 ->toArray();
-
             $salesProducts->whereIn('user_id', $userIds);
         }
-
         if ($search) {
-            $salesProducts->where('adv_name', 'like', '%' . $search . '%')->orWhere('adv_details', 'like', '%' . $search . '%');
-
+            // DB::enableQueryLog();
+            $salesProducts->where('adv_name', 'like', '%' . $search . '%')->orWhere('adv_details', 'like', '%' . $search . '%')->orWhere('sku', 'like', '%' . $search . '%');
+            // $queryLog = DB::getQueryLog();
+            // return response()->json($queryLog);
             $categoryIds = SalesCategory::where('category_name', 'like', '%' . $search . '%')
                 ->pluck('category_id')
                 ->toArray();
             $subcategoryIds = SalesCategory::where('category_name', 'like', '%' . $search . '%')
                 ->pluck('category_id')
                 ->toArray();
-
             $brandIds = SalesBrand::where('brand_name', 'like', '%' . $search . '%')
                 ->pluck('brand_id')
                 ->toArray();
-
             $modelIds = SalesBrand::where('brand_name', 'like', '%' . $search . '%')
                 ->pluck('brand_id')
                 ->toArray();
-
             $salesProducts->whereIn('category_id', $categoryIds)
                 ->orWhereIn('sub_cat_id', $subcategoryIds)
                 ->orWhereIn('adv_brand_id', $brandIds)
                 ->orWhereIn('adv_model_id', $modelIds);
         }
 
+        // Apply sorting
+        switch ($sortBy) {
+            case 'date_asc':
+                $salesProducts->orderBy('created', 'asc');
+                break;
+            case 'date_desc':
+                $salesProducts->orderBy('modified', 'desc');
+                break;
+            case 'price_low_to_high':
+                $salesProducts->orderBy('price', 'asc');
+                break;
+            case 'price_high_to_low':
+                $salesProducts->orderBy('price', 'desc');
+                break;
+            default:
+                $salesProducts->orderBy('adv_id', 'desc');
+                break;
+        }
+
+        // Get the count of the filtered results
         $count = $salesProducts->count();
+
+        // Fetch the paginated results
         $data = $salesProducts->skip($toSkip)->take($postsPerPage)->get();
+
+        // Add additional data to the results
         foreach ($data as $key => $value) {
             $productImages = PostadImg::where('post_ad_id', $value->adv_id)->first();
             $user = MasterUser::where('user_id', $value->user_id)->first();
@@ -120,7 +150,6 @@ class SalesController extends Controller
                     $membPlan = UserMembership::find($membs->member_type);
                     $value['user']['membertype'] = "Award winning seller";
                     $filePath = public_path('uploads/memberplanimg/' . $membPlan->plan_img);
-
                     if (file_exists($filePath) && $membPlan->plan_img != "") {
                         $value['user']['memberShipImage'] = asset('uploads/memberplanimg/' . $membPlan->plan_img);
                     } else {
@@ -129,10 +158,8 @@ class SalesController extends Controller
                 }
             }
             $value["user"] = $user;
-
             if ($productImages) {
                 $filePath = public_path('uploads/postad/' . $productImages->img_path);
-
                 if (file_exists($filePath) && $productImages->img_path != "") {
                     $value['image'] = asset('uploads/postad/' . $productImages->img_path);
                 } else {
@@ -140,8 +167,10 @@ class SalesController extends Controller
                 }
             }
         }
+
         return response()->json(['data' => $data, "count" => $count], 200);
     }
+
     public function getProductDetails(Request $req, $slug)
     {
         $product = SalesAdvertisement::where('slug', $slug)->first();
@@ -159,7 +188,7 @@ class SalesController extends Controller
             $value['imgid'] = $value->imgid;
         }
         $modelIds = explode(",", $product->adv_model_id);
-        $models = SalesBrand::whereIn('brand_id', $modelIds)->select('brand_name', 'flag')->orderBy('brand_id', 'desc')->get();
+        $models = SalesBrand::whereIn('brand_id', $modelIds)->select('brand_name', 'flag', "brand_id")->orderBy('brand_id', 'desc')->get();
         foreach ($models as $key => $model) {
             $model['parent'] = $model->parent;
         }
@@ -196,7 +225,7 @@ class SalesController extends Controller
         $product['country'] = $country ? $country->country_name : "";
         $product['location'] = $location ? $location->location_name : "";
         $warranty = SalesWarranty::find($product->user->user_id);
-        $product['warranty'] = $warranty ? 1:0;
+        $product['warranty'] = $warranty ? 1 : 0;
 
         $product['noOfUsersRated'] = 0;
 
@@ -249,7 +278,7 @@ class SalesController extends Controller
     }
     public function relatedProducts($id)
     {
-        $products = SalesAdvertisement::where('adv_brand_id', $id)->limit(10)->get();
+        $products = SalesAdvertisement::where('relatedTo', $id)->get();
         foreach ($products as $key => $model) {
             $productImage = PostadImg::where('post_ad_id', $model->adv_id)->first();
             if ($productImage) {
@@ -287,6 +316,7 @@ class SalesController extends Controller
     }
     public function publishAdstore(Request $request)
     {
+
         $request->validate([
             'user_id' => 'required',
             'category_id' => 'required',
@@ -306,8 +336,12 @@ class SalesController extends Controller
 
         if ($slug) {
             $sale = SalesAdvertisement::where('slug', $slug)->first();
+            $noticeType = 'sales-modified';
+            $notice_name = 'Sales Modified';
         } else {
             $sale = new SalesAdvertisement();
+            $noticeType = 'sales-add';
+            $notice_name = 'Sales Add';
         }
 
 
@@ -328,6 +362,7 @@ class SalesController extends Controller
         $sale->adv_details = $request->input('adv_details');
         $sale->adv_name = $request->input('adv_name');
         $sale->sub_cat_id = $request->input('sub_cat_id');
+        $sale->relatedTo = $request->input('relatedTo');
         if (!$slug) {
             $baseSlug = Str::slug($originalString);
             $slug1 = $baseSlug;
@@ -342,7 +377,8 @@ class SalesController extends Controller
             $image = [];
             $images = $request->adv_img;
             foreach ($images as $key => $value) {
-                array_push($image, $value['imgid']);
+                if (is_array($value))
+                    array_push($image, $value['imgid']);
             }
 
 
@@ -368,17 +404,17 @@ class SalesController extends Controller
         $sale->currency = $request->input('currency');
         $sale->quantity = $request->input('quantity');
         $sale->payment_mode = implode(",", $request->input('payment_mode'));
-        $sale->personal_teaching = $request->input('personal_teaching') == "true" ? 1 : 0;
-        $sale->courier = $request->input('courier') == "true" ? 1 : 0;
+        $sale->personal_teaching = $request->input('personal_teaching') ? 1 : 0;
+        $sale->courier = $request->input('courier') ? 1 : 0;
         $sale->courier_cost = $request->input('courier_cost');
-        $sale->free_courier = $request->input('free_courier') == "true" ? 1 : 0;
-        $sale->romanian_mail = $request->input('romanian_mail') == "true" ? 1 : 0;
+        $sale->free_courier = $request->input('free_courier') ? 1 : 0;
+        $sale->romanian_mail = $request->input('romanian_mail') ? 1 : 0;
         $sale->romanian_mail_cost = $request->input('romanian_mail_cost');
-        $sale->free_romanian_mail = $request->input('free_romanian_mail') == "true" ? 1 : 0;
+        $sale->free_romanian_mail = $request->input('free_romanian_mail') ? 1 : 0;
         $sale->price = $request->input('price');
         $sale->b2bprice = $request->input('b2bprice') ? $request->input('b2bprice') : $request->input('price');
         $sale->time_required = $request->input('time_required');
-        $sale->adv_status = $slug ? 1 :0;
+        $sale->adv_status = $slug ? 1 : 0;
         $sale->availability = $request->input('availability');
         $sale->warranty = $request->input('warranty');
         $sale->invoice = $request->input('invoice');
@@ -389,6 +425,16 @@ class SalesController extends Controller
         $sale->created =  Carbon::parse($sale->created)->format("d-m-Y");
         $sale->modified = Carbon::parse($sale->modified)->format("d-m-Y");
         $sale->save();
+
+        // Create a notice record for the registered user
+        $notice = new Notice();
+        $notice->notice_type = ucfirst($noticeType);
+        $notice->postid = $sale->user_id;
+        $notice->user_id = $request->input('user_id');
+        $notice->status = 0;
+        $notice->user_status = 0;
+        $notice->notice_name = ucfirst($notice_name);
+        $notice->save();
 
         if ($request->hasFile('adv_img')) {
             $images = $request->file('adv_img');
@@ -430,9 +476,15 @@ class SalesController extends Controller
         //     ]);
         // }
     }
-    public function recentPieseAuto()
+    public function recentPieseAuto(Request $request)
     {
-        $products = SalesAdvertisement::orderBy('created', 'desc')->limit(3)->get();
+        $clientIpAddress = $request->ip();
+
+        $recentcheck = RecentView::where('ip_id', $clientIpAddress)->orderBy('created', 'asc')->pluck("adv_id");
+
+        // return response()->json($recentcheck);
+
+        $products = SalesAdvertisement::orderBy('created', 'desc')->whereIn("adv_id", $recentcheck)->get();
         foreach ($products as $key => $model) {
             $productImage = PostadImg::where('post_ad_id', $model->adv_id)->first();
             if ($productImage) {
@@ -542,5 +594,136 @@ class SalesController extends Controller
         return response()->json([
             'status' => 'There was an error deleting the advertisement',
         ]);
+    }
+
+    // public function autoComplete(Request $request)
+    // {
+    //     $searchTerm = $request->input('search');
+
+    //     $results = DB::table('request_parts')
+    //         ->select(
+    //             'sales_brands.brand_name as value',
+    //             'master_users.first_name as value',
+    //             'master_users.last_name as value'
+    //         )
+    //         ->join('sales_brands', 'request_parts.brand_id', '=', 'sales_brands.brand_id')
+    //         ->join('master_users', 'request_parts.user_id', '=', 'master_users.user_id')
+    //         ->where('sales_brands.brand_name', 'LIKE', '%' . $searchTerm . '%')
+    //         ->orWhere('master_users.first_name', 'LIKE', '%' . $searchTerm . '%')
+    //         ->orWhere('master_users.last_name', 'LIKE', '%' . $searchTerm . '%')
+    //         ->distinct() // Apply distinct to ensure unique results
+    //         ->limit(10)
+    //         ->get();
+
+    //     $resultsSalesAdvertisements = DB::table('sales_advertisements')
+    //         ->select('adv_name as value')
+    //         ->where('adv_name', 'LIKE', '%' . $searchTerm . '%')
+    //         ->orWhere('adv_details', 'LIKE', '%' . $searchTerm . '%')
+    //         ->distinct() // Apply distinct to ensure unique results
+    //         ->limit(10)
+    //         ->get();
+
+    //     // Combine and merge results from both queries
+    //     $combinedResults = $results->merge($resultsSalesAdvertisements);
+
+    //     return response()->json($combinedResults);
+    // }
+
+
+    public function autoComplete(Request $request)
+    {
+        // Validate the search term
+        $validatedData = $request->validate([
+            'search' => 'required|string|max:255',
+        ]);
+
+        $searchTerm = $validatedData['search'];
+
+        $results = DB::table('request_parts')
+            ->select('sales_brands.brand_name as value')
+            ->join('sales_brands', 'request_parts.brand_id', '=', 'sales_brands.brand_id')
+            ->where('sales_brands.brand_name', 'LIKE', '%' . $searchTerm . '%')
+            ->distinct() // Apply distinct to ensure unique results
+            ->limit(10)
+            ->get();
+
+        $resultsSalesAdvertisements = DB::table('sales_advertisements')
+            ->select('adv_name as value')
+            ->where('adv_name', 'LIKE', '%' . $searchTerm . '%')
+            ->orWhere('adv_details', 'LIKE', '%' . $searchTerm . '%')
+            ->limit(10)
+            ->get();
+
+        // Combine results from both queries
+        $combinedResults = $results->merge($resultsSalesAdvertisements);
+
+        // Highlight the matching word within the value
+        $combinedResults->transform(function ($item) use ($searchTerm) {
+            $item->value = str_replace($searchTerm, '<strong>' . $searchTerm . '</strong>', $item->value);
+            return $item;
+        });
+
+        return response()->json($combinedResults);
+    }
+
+    public function getRelatedProduct(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+        ]);
+
+        $searchdata = $request->input('name');
+        $data = array();
+
+        $relatedProducts = SalesAdvertisement::where('adv_name', 'like', "%$searchdata%")
+            ->orWhere('adv_details', 'like', "%$searchdata%")
+            ->get();
+
+        if ($relatedProducts->isNotEmpty()) {
+            foreach ($relatedProducts as $key => $value) {
+                $data[$key]['value'] = $value->adv_id;
+                $data[$key]['label'] = $value->adv_name ?? 'N/A';
+                $relatedProductsImages = PostadImg::where('post_ad_id', $value->adv_id)->first();
+
+                $imagePath = $relatedProductsImages ? public_path('uploads/postad/' . $relatedProductsImages->img_path) : null;
+
+                if ($imagePath && file_exists($imagePath)) {
+                    $data[$key]['image'] = asset('uploads/postad/' . $relatedProductsImages->img_path);
+                } else {
+                    $data[$key]['image'] = asset('uploads/postad/noimage.jpg');
+                }
+            }
+        }
+        return response()->json($data);
+    }
+
+    public function storeRecentView(Request $request)
+    {
+        $clientIpAddress = $request->ip();
+
+        $request->validate([
+            'adv_id' => 'required|integer',
+        ]);
+
+        $advId = $request->input('adv_id');
+
+        $recentcheck = RecentView::where('ip_id', $clientIpAddress)->where('adv_id', $advId)->orderBy('created', 'asc')->first();
+
+        $RecentView = RecentView::where('ip_id', $clientIpAddress)->orderBy('created', 'asc')->count();
+        // dd($RecentView);
+
+        if (!$recentcheck) {
+            RecentView::create([
+                'ip_id' => $clientIpAddress,
+                'adv_id' => $advId,
+                'created' => now(),
+                'exp_date' => now()->addDays(7),
+            ]);
+            if ($RecentView > 4) {
+                $RecentView = RecentView::where('ip_id', $clientIpAddress)->orderBy('created', 'asc')->first()->delete();
+            }
+        }
+
+        return response()->json(['message' => 'Recent view stored successfully']);
     }
 }

@@ -18,7 +18,7 @@ class ReportsController extends Controller
               ->leftjoin('master_users as ms','sales_questions.user_id','=','ms.user_id')
               ->select('sales_questions.*','ms.first_name')
               ->where('sales_questions.parent', '=', 0)
-              ->paginate(10);
+              ->get();
         return view("reports.list", compact("data"));
     }
    

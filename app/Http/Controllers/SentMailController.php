@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\models\NewsletterTemplate;
-use App\models\MailToSubscriber;
-use App\models\SalesBrand;
-use App\models\SalesCategory;
-use App\models\MasterCountry;
+use App\Models\NewsletterTemplate;
+use App\Models\MailToSubscriber;
+use App\Models\SalesBrand;
+use App\Models\SalesCategory;
+use App\Models\MasterCountry;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendFormDataMail;
 
@@ -22,7 +22,7 @@ class SentMailController extends Controller
         $data = DB::table('mail_to_subscriber as ms')
         ->leftjoin('newsletter_template as nt','ms.compose_id','=','nt.compose_id')
         ->select('ms.*','nt.mail_subject')
-        ->paginate(5);
+        ->get();
        
         return view("newsLetters.sent_mail", compact("data"));
 

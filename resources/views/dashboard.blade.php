@@ -19,7 +19,7 @@
                         <div id="admissionRatio"></div>
                     </div>
                     <div class="card-header card-no-border pb-0">
-                        <!-- <div class="header-top daily-revenue-card">
+                        <div class="header-top daily-revenue-card">
                             <div class="dropdown icon-dropdown">
                                 <button class="btn dropdown-toggle" id="userdropdown" type="button"
                                     data-bs-toggle="dropdown" aria-expanded="false"><i
@@ -29,15 +29,15 @@
                                         href="#">Monthly</a><a class="dropdown-item" href="#">Yearly</a>
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2">
                                 <div class="d-flex total-icon">
-                                    <p class="mb-0 up-arrow bg-light-success"><i class="fa fa-arrow-up text-success"></i></p><span class="f-w-500 font-success">+ 20.08% </span>
+                                    <p class="mb-0 up-arrow bg-light-success"><i class="fa fa-arrow-up text-success"></i></p><span class="f-w-500 font-success">+ {{ $monthlyPercentageChange }}%</span>
                                 </div>
                             </div>
-                            <h4>Total No Of Users</h4>
-                            <p class="text-truncate">Compared to Jan 2023</p>
+                            <h4>Total No of Users</h4>
+                            <p class="text-truncate">Compared to {{ $comparisonDate }}</p>
                         </div>
                     </div>
                 </div>
@@ -51,25 +51,19 @@
                         <div id="order-value"></div>
                     </div>
                     <div class="card-header card-no-border pb-0">
-                        <!-- <div class="header-top daily-revenue-card">
-                            <div class="dropdown icon-dropdown">
-                                <button class="btn dropdown-toggle" id="userdropdown2" type="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false"><i
-                                        class="icon-more-alt"></i></button>
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userdropdown2"><a
-                                        class="dropdown-item" href="#">Weekly</a><a class="dropdown-item"
-                                        href="#">Monthly</a><a class="dropdown-item" href="#">Yearly</a>
-                                </div>
-                            </div>
-                        </div> -->
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2">
 
                                 <div class="d-flex total-icon">
-                                    <p class="mb-0 up-arrow bg-light-danger"><i class="fa fa-arrow-up text-danger"></i></p><span class="f-w-500 font-danger">- 10.02%</span>
+                                    <p class="mb-0 up-arrow bg-light-{{$totalbuyerthisyear < 0 ? 'danger' : 'success'}}">
+                                        <i class="fa fa-arrow-{{$totalbuyerthisyear < 0 ? 'down' : 'up'}} text-{{$totalbuyerthisyear < 0 ? 'danger' : 'success'}}"></i>
+                                    </p>
+                                    <span class="f-w-500 font-{{$totalbuyerthisyear < 0 ? 'danger' : 'success'}}">
+                                        {{$totalbuyerthisyear < 0 ? '-' : '+'}} {{$totalbuyerthisyear}}%
+                                    </span>
                                 </div>
                             </div>
-                            <h4>Byer</h4>
+                            <h4>Buyer</h4>
                             <p class="text-truncate">{{$buyerPercent}}% Buyer from Total user</p>
                         </div>
                     </div>
@@ -97,7 +91,12 @@
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2">
                                 <div class="d-flex total-icon">
-                                    <p class="mb-0 up-arrow bg-light-success"><i class="fa fa-arrow-up text-success"></i></p><span class="f-w-500 font-success">+ 13.23%</span>
+                                    <p class="mb-0 up-arrow bg-light-{{$totalSellerthisyear < 0 ? 'danger' : 'success'}}">
+                                        <i class="fa fa-arrow-{{$totalSellerthisyear < 0 ? 'down' : 'up'}} text-{{$totalSellerthisyear < 0 ? 'danger' : 'success'}}"></i>
+                                    </p>
+                                    <span class="f-w-500 font-{{$totalSellerthisyear < 0 ? 'danger' : 'success'}}">
+                                        {{$totalSellerthisyear < 0 ? '-' : '+'}} {{$totalSellerthisyear}}%
+                                    </span>
                                 </div>
                             </div>
                             <h4>Seller</h4>
@@ -129,7 +128,12 @@
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2">
                                 <div class="d-flex total-icon">
-                                    <p class="mb-0 up-arrow bg-light-danger"><i class="fa fa-arrow-up text-danger"></i></p><span class="f-w-500 font-danger">- 17.06%</span>
+                                <p class="mb-0 up-arrow bg-light-{{$totalSalesmadethisyear < 0 ? 'danger' : 'success'}}">
+                                        <i class="fa fa-arrow-{{$totalSalesmadethisyear < 0 ? 'down' : 'up'}} text-{{$totalSalesmadethisyear < 0 ? 'danger' : 'success'}}"></i>
+                                    </p>
+                                    <span class="f-w-500 font-{{$totalSalesmadethisyear < 0 ? 'danger' : 'success'}}">
+                                        {{$totalSalesmadethisyear < 0 ? '-' : '+'}} {{$totalSalesmadethisyear}}%
+                                    </span>
                                 </div>
                             </div>
                             <h4>Total Sales Made</h4>
@@ -144,7 +148,7 @@
                             <div class="flex-shrink-0"><img src="/images/revenue1.png" alt="icon">
                             </div>
                         </div>
-                        <div id="daily-revenue"></div>
+                        <!-- <div id="daily-revenue"></div> -->
                     </div>
                     <div class="card-header card-no-border pb-0">
                         <!-- <div class="header-top daily-revenue-card">
@@ -236,7 +240,7 @@
                                 $salespath = "https://agrodepot-frontend.vercel.app/sales-details/{$slug}";
 
                                 $postadimg = App\Models\PostadImg::where('post_ad_id',$latestVisit->adv_id)->first();
-                                $profileImagePath = asset('uploads/postad/128x120_' . $postadimg->img_path);
+                                $profileImagePath = asset('uploads/postad/' . $postadimg->img_path);
                                 @endphp
 
                                 <li class="item">
@@ -396,3 +400,346 @@
     </div>
     <!-- Container-fluid Ends-->
 </x-app-layout>
+
+<script>
+    // Update the series data dynamically based on weekly, monthly, and yearly counts
+var admissionRatioOption = {
+    series: [
+        {
+            name: 'Total Users',
+            data: [{{$weeklyTotalUsers}}, {{$monthlyTotalUsers}}, {{$yearlyTotalUsers}}],
+        },
+    ],
+    chart: {
+        type: 'area',
+        height: 90,
+        offsetY: -10,
+        offsetX: 0,
+        toolbar: {
+            show: false,
+        },
+    },
+    stroke: {
+        width: 2,
+        curve: 'smooth'
+    },
+    grid: {
+        show: false,
+        borderColor: 'var(--light)',
+        padding: {
+            top: 5,
+            right: 0,
+            bottom: -30,
+            left: 0,
+        },
+    },
+    fill: {
+        type: "gradient",
+        gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.5,
+            opacityTo: 0.1,
+            stops: [0, 90, 100]
+        }
+    },
+    dataLabels: {
+        enabled: false,
+    },
+    colors: [MofiAdminConfig.primary],
+    xaxis: {
+        categories: ['Weekly', 'Monthly', 'Yearly'], // Add labels here
+        labels: {
+            show: true,
+        },
+        tooltip: {
+            enabled: false,
+        },
+        axisBorder: {
+            show: false,
+        },
+        axisTicks: {
+            show: false,
+        },
+    },
+    yaxis: {
+        opposite: false,
+        min: {{$weeklyTotalUsers}}, // Set min value dynamically
+        max: {{$yearlyTotalUsers}}, // Set max value dynamically
+        logBase: 100,
+        tickAmount: 4,
+        forceNiceScale: false,
+        floating: false,
+        decimalsInFloat: undefined,
+        labels: {
+            show: false,
+            offsetX: -12,
+            offsetY: -15,
+            rotate: 0,
+        },
+    },
+    legend: {
+        horizontalAlign: 'left',
+    },
+};
+
+var admissionRatio = new ApexCharts(document.querySelector('#admissionRatio'), admissionRatioOption);
+admissionRatio.render();
+
+
+var admissionRatioOption = {
+    series: [
+        {
+            name: 'Buyers',
+            data: [{{$weeklyBuyers}}, {{$monthlyBuyers}}, {{$yearlyBuyers}}],
+        },
+    ],
+    chart: {
+        type: 'area',
+        height: 90,
+        offsetY: -10,
+        offsetX: 0,
+        toolbar: {
+            show: false,
+        },
+    },
+    stroke: {
+        width: 2,
+        curve: 'smooth'
+    },
+    grid: {
+        show: false,
+        borderColor: 'var(--light)',
+        padding: {
+            top: 5,
+            right: 0,
+            bottom: -30,
+            left: 0,
+        },
+    },
+    fill: {
+        type: "gradient",
+        gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.5,
+            opacityTo: 0.1,
+            stops: [0, 80, 100]
+        }
+    },
+    dataLabels: {
+        enabled: false,
+    },
+    colors: [MofiAdminConfig.secondary],
+    xaxis: {
+        categories: ['Weekly', 'Monthly', 'Yearly'], // Add labels here
+        labels: {
+            show: false,
+        },
+        tooltip: {
+            enabled: false,
+        },
+        axisBorder: {
+            show: false,
+        },
+        axisTicks: {
+            show: false,
+        },
+    },
+    yaxis: {
+        opposite: false,
+        min: {{$weeklyBuyers}}, // Set min value dynamically
+        max: {{$yearlyBuyers}}, // Set max value dynamically
+        logBase: 100,
+        tickAmount: 4,
+        forceNiceScale: false,
+        floating: false,
+        decimalsInFloat: undefined,
+        labels: {
+            show: false,
+            offsetX: -12,
+            offsetY: -15,
+            rotate: 0,
+        },
+    },
+    legend: {
+        horizontalAlign: 'left',
+    },
+    responsive: [
+
+    ],
+};
+
+var admissionRatio = new ApexCharts(document.querySelector('#order-value'), admissionRatioOption);
+admissionRatio.render();
+    // ======================================
+var admissionRatioOption = {
+    series: [
+        {
+            name: 'Seller',
+            data: [{{$weeklySeller}}, {{$monthlyBuyers}}, {{$yearlySeller}}],
+        },
+    ],
+    chart: {
+        type: 'area',
+        height: 90,
+        offsetY: -10,
+        offsetX: 0,
+        toolbar: {
+            show: false,
+        },
+    },
+    stroke: {
+        width: 2,
+        curve: 'smooth'
+    },
+    grid: {
+        show: false,
+        borderColor: 'var(--light)',
+        padding: {
+            top: 5,
+            right: 0,
+            bottom: -30,
+            left: 0,
+        },
+    },
+    fill: {
+        type: "gradient",
+        gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.5,
+            opacityTo: 0.1,
+            stops: [0, 90, 100]
+        }
+    },
+    dataLabels: {
+        enabled: false,
+    },
+    colors: ['#C95E9E'],
+    xaxis: {
+        categories: ['Weekly', 'Monthly', 'Yearly'], // Add labels here
+        labels: {
+            show: false,
+        },
+        tooltip: {
+            enabled: false,
+        },
+        axisBorder: {
+            show: false,
+        },
+        axisTicks: {
+            show: false,
+        },
+    },
+    yaxis: {
+        opposite: false,
+        min: {{$weeklySeller}}, // Set min value dynamically
+        max: {{$yearlySeller}}, // Set max value dynamically
+        logBase: 100,
+        tickAmount: 4,
+        forceNiceScale: false,
+        floating: false,
+        decimalsInFloat: undefined,
+        labels: {
+            show: false,
+            offsetX: -12,
+            offsetY: -15,
+            rotate: 0,
+        },
+    },
+    legend: {
+        horizontalAlign: 'left',
+    },
+    responsive: [
+
+    ],
+};
+
+
+var admissionRatio = new ApexCharts(document.querySelector('#daily-value'), admissionRatioOption);
+    admissionRatio.render();
+
+var admissionRatioOption = {
+    series: [
+        {
+            name: 'Total Sales Made',
+            data: [{{$weeklySalesmade}}, {{$monthlySalesmade}}, {{$yearlySalesmade}}],
+        },
+    ],
+    chart: {
+        type: 'area',
+        height: 90,
+        offsetY: -10,
+        offsetX: 0,
+        toolbar: {
+            show: false,
+        },
+    },
+    stroke: {
+        width: 2,
+        curve: 'smooth'
+    },
+    grid: {
+        show: false,
+        borderColor: 'var(--light)',
+        padding: {
+            top: 5,
+            right: 0,
+            bottom: -30,
+            left: 0,
+        },
+    },
+    fill: {
+        type: "gradient",
+        gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.5,
+            opacityTo: 0.1,
+            stops: [0, 90, 100]
+        }
+    },
+    dataLabels: {
+        enabled: false,
+    },
+    colors: ['#C95E9E'],
+    xaxis: {
+        categories: ['Weekly', 'Monthly', 'Yearly'], // Add labels here
+        labels: {
+            show: false,
+        },
+        tooltip: {
+            enabled: false,
+        },
+        axisBorder: {
+            show: false,
+        },
+        axisTicks: {
+            show: false,
+        },
+    },
+    yaxis: {
+        opposite: false,
+        min: {{$weeklySalesmade}}, // Set min value dynamically
+        max: {{$yearlySalesmade}}, // Set max value dynamically
+        logBase: 100,
+        tickAmount: 4,
+        forceNiceScale: false,
+        floating: false,
+        decimalsInFloat: undefined,
+        labels: {
+            show: false,
+            offsetX: -12,
+            offsetY: -15,
+            rotate: 0,
+        },
+    },
+    legend: {
+        horizontalAlign: 'left',
+    },
+    responsive: [
+
+    ],
+};
+
+
+var admissionRatio = new ApexCharts(document.querySelector('#daily-revenue'), admissionRatioOption);
+
+</script>

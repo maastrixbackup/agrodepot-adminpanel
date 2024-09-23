@@ -6,56 +6,86 @@
         </div>
         <div class="col-2"><a href="{{ route('categories.create') }}" class="btn btn-primary">Create new</a></div>
     </div>
-    <table class="table table-hover" id="cmspageslist">
-        <thead>
-            <tr>
-                <th scope="col">SL#</th>
-                <th scope="col">Category Name</th>
-                <th scope="col">Parent</th>
-                <th scope="col">Slug</th>
-                <th scope="col" style="width: 200px;">Status</th>
-                <th scope="col">Meta Description</th>
-                <th scope="col">Meta Keywords</th>
-                <th scope="col">Created</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($data as $index => $menu)
-            <tr>
-                <th scope="row">{{ $index + 1 }}</th>
-                <td class="text-capitalize">{{ $menu->category_name }}</td>
-                <td class="text-capitalize">{{ optional($menu->categoryName)->category_name }}</td>
-                <td class="text-capitalize">{{ $menu->slug }}</td>
-                <td>
-
-                    <select name="status" class="form-select-sm status-select" data-cat-id="{{ $menu->category_id }}">
-                        <option value="1" {{ $menu->status == '1' ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ $menu->status == '0' ? 'selected' : '' }}>Inactive
-                        </option>
+    <div class="">
+        <form action="{{ route('categories.index') }}" method="GET" style="
+            margin-bottom: 15px;
+        ">
+            <div class="row align-items-center">
+                <div class="col-3">
+                    <select name="flag" id="prnt_cat_id" class="form-select input-sm pull-right">
+                        <option value='' {{ empty($par_ct) ? 'selected=selected' : '' }}>-Select-</option>
+                        @if ($parent)
+                            @foreach ($parent as $key => $val)
+                                <option value='{{ $key }}' {{ $key == $par_ct ? 'selected' : '' }}>
+                                    {{ $val }}
+                                </option>
+                            @endforeach
+                        @endif
                     </select>
-                </td>
-                <td class="text-capitalize">{{ $menu->meta_description }}</td>
-                <td class="text-capitalize">{{ $menu->meta_keywords }}</td>
-                <td class="text-capitalize">{{ $menu->created }}</td>
-                <td>
-                    <div class="customButtonContainer"><a class="mx-2" href="{{ url('admin/categories/' . $menu->category_id . '/edit') }}"><i class="fas fa-edit"></i></a>
-                    </div>
-                    <!-- <form action="{{ url('admin/categories/' . $menu->category_id) }}" method="POST" style="display: inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-link text-danger" onclick="return confirm('Are you sure you want to delete this category?')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </form> -->
-                    <button title="Delete" class="btn btn-link text-danger trash remove-categories" data-id="{{ $menu->category_id }}" data-action="{{ url('admin/categories/' . $menu->category_id) }}"><i class="fas fa-trash"></i></button>
-                    </div>
-                </td>
+                </div>
+                <div class="col-2">
+                    <button type="submit" class="btn btn-info px-5">Search</button>
+                </div>
+                <div class="col-2">
+                    <input type="reset" value="Reset" class="btn btn-info px-5">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="custom-scrollbar">
+        <table class="table table-hover" id="cmspageslist">
+            <thead>
+                <tr>
+                    <th scope="col">SL#</th>
+                    <th scope="col">Category Name</th>
+                    <th scope="col">Parent</th>
+                    <th scope="col">Slug</th>
+                    <th scope="col" style="width: 200px;">Status</th>
+                    <th scope="col">Meta Description</th>
+                    <th scope="col">Meta Keywords</th>
+                    <th scope="col">Created</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($data as $index => $menu)
+                    <tr>
+                        <th scope="row">{{ $index + 1 }}</th>
+                        <td class="text-capitalize">{{ $menu->category_name }}</td>
+                        <td class="text-capitalize">{{ optional($menu->categoryName)->category_name }}</td>
+                        <td class="text-capitalize">{{ $menu->slug }}</td>
+                        <td>
 
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                            <select name="status" class="form-select-sm status-select"
+                                data-cat-id="{{ $menu->category_id }}">
+                                <option value="1" {{ $menu->status == '1' ? 'selected' : '' }}>Active</option>
+                                <option value="0" {{ $menu->status == '0' ? 'selected' : '' }}>Inactive
+                                </option>
+                            </select>
+                        </td>
+                        <td class="text-capitalize">{{ $menu->meta_description }}</td>
+                        <td class="text-capitalize">{{ $menu->meta_keywords }}</td>
+                        <td class="text-capitalize">{{ date('d/m/Y', strtotime($menu->created)) }}</td>
+                        <td>
+                            <div class="d-flex customButtonContainer">
+                                <a class="edit-btn" title="Edit"
+                                    href="{{ url('admin/categories/' . $menu->category_id . '/edit') }}"><i
+                                        class="fas fa-edit"></i></a>
+                                <a class="edit-btn" title="View"
+                                    href="{{ url('admin/categories/' . $menu->category_id) }}"><i
+                                        class="fas fa-eye"></i></a>
+                                <button title="Delete" class="dl-btn trash remove-categories"
+                                    data-id="{{ $menu->category_id }}"
+                                    data-action="{{ url('admin/categories/' . $menu->category_id) }}"><i
+                                        class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
     <script>
         $(document).ready(function() {
             $("body").on("click", ".remove-categories", function() {
@@ -75,10 +105,15 @@
                         var token = jQuery('meta[name="csrf-token"]').attr('content');
                         var id = current_object.attr('data-id');
 
-                        $('body').html("<form class='form-inline remove-form' method='post' action='" + action + "'></form>");
-                        $('body').find('.remove-form').append('<input name="_method" type="hidden" value="DELETE">');
-                        $('body').find('.remove-form').append('<input name="_token" type="hidden" value="' + token + '">');
-                        $('body').find('.remove-form').append('<input name="id" type="hidden" value="' + id + '">');
+                        $('body').html(
+                            "<form class='form-inline remove-form' method='post' action='" +
+                            action + "'></form>");
+                        $('body').find('.remove-form').append(
+                            '<input name="_method" type="hidden" value="DELETE">');
+                        $('body').find('.remove-form').append(
+                            '<input name="_token" type="hidden" value="' + token + '">');
+                        $('body').find('.remove-form').append(
+                            '<input name="id" type="hidden" value="' + id + '">');
                         $('body').find('.remove-form').submit();
                     }
                 });
@@ -102,7 +137,8 @@
                     success: function(response) {
                         console.log('AJAX success:', response);
                         // Show success message in page body
-                        $('.page-body').prepend('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                        $('.page-body').prepend(
+                            '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
                             response.message +
                             '</div>');
                         // Automatically close the success message after 5 seconds

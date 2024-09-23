@@ -8,11 +8,11 @@
     <div class="row">
 
         <div class="col-10">
-            <h1 class="text-center mb-3">Manage Sales</h1>
+            <h1 class="text-center mb-3">Manage Membership</h1>
         </div>
         <div class="col-2"><a href="{{ route('memberships.create') }}" class="btn btn-primary">Create new</a></div>
     </div>
-    <div class="table-scroll">
+    <div class="table-scroll custom-scrollbar">
         <table class="brandsTable table table-hover" id="cmspageslist">
             <thead>
                 <tr>
@@ -27,40 +27,45 @@
             </thead>
             <tbody id="brands_sortable">
                 @foreach ($data as $index => $menu)
-                <tr id="{{ $menu->memb_id }}">
-                    <td scope="row">{{ $index + 1 }}</td>
-                    <td scope="row">{{ $menu->memb_type }}</td>
-                    <td scope="row">{{ $menu->price }}</td>
-                    <td scope="row">{{ $menu->credits }}</td>
-                    <td scope="row"><select name="status" class="form-select-sm act-select" data-mem-id="{{ $menu->memb_id }}">
-                            <option value="1" {{ $menu->status == '1' ? 'selected' : '' }}>Active</option>
-                            <option value="0" {{ $menu->status == '0' ? 'selected' : '' }}>Inactive
-                            </option>
-                        </select></td>
-                    <td scope="row">{{ $menu->created }}</td>
+                    <tr id="{{ $menu->memb_id }}">
+                        <td scope="row">{{ $index + 1 }}</td>
+                        <td scope="row">{{ $menu->memb_type }}</td>
+                        <td scope="row">{{ number_format($menu->price, 2) }}</td>
+                        <td scope="row">{{ $menu->credits }}</td>
+                        <td scope="row"><select name="status" class="form-select-sm act-select"
+                                data-mem-id="{{ $menu->memb_id }}">
+                                <option value="1" {{ $menu->status == '1' ? 'selected' : '' }}>Active</option>
+                                <option value="0" {{ $menu->status == '0' ? 'selected' : '' }}>Inactive
+                                </option>
+                            </select></td>
+                        <td scope="row">{{ $menu->created }}</td>
 
-                    <td>
-                        <div class="d-flex">
-                            <div class="customButtonContainer"><a class="mx-2" href="{{ url('admin/memberships/' . $menu->memb_id . '/edit') }}"><i class="fas fa-edit"></i></a>
-                            </div>
-                            <div class="customButtonContainer">
+                        <td>
+                            <div class="d-flex customButtonContainer">
                                 <!-- <form method="POST" action="{{ url('admin/memberships/' . $menu->memb_id) }}">@csrf
                                     @method('DELETE')<button type="submit"><i class="fas fa-trash"></i></button></form> -->
-                                <button title="Delete" class="trash remove-membership" data-id="{{ $menu->memb_id }}" data-action="{{ url('admin/memberships/' . $menu->memb_id) }}"><i class="fas fa-trash"></i></button>
+                                <a class="edit-btn" title="Edit"
+                                    href="{{ url('admin/memberships/' . $menu->memb_id . '/edit') }}"><i
+                                        class="fas fa-edit"></i>
+                                </a>
+                                <a class="edit-btn" title="View"
+                                    href="{{ url('admin/memberships/' . $menu->memb_id) }}"><i
+                                        class="fas fa-eye"></i></a>
+                                <button title="Delete" class="dl-btn trash remove-membership"
+                                    data-id="{{ $menu->memb_id }}"
+                                    data-action="{{ url('admin/memberships/' . $menu->memb_id) }}"><i
+                                        class="fas fa-trash"></i></button>
                             </div>
-                        </div>
 
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 
     <script>
-        $('#cmspageslist').dataTable({
-            "bPaginate": false
-        });
+        let table = new DataTable('#cmspageslist');
     </script>
 
 
@@ -83,10 +88,15 @@
                         var token = jQuery('meta[name="csrf-token"]').attr('content');
                         var id = current_object.attr('data-id');
 
-                        $('body').html("<form class='form-inline remove-form' method='post' action='" + action + "'></form>");
-                        $('body').find('.remove-form').append('<input name="_method" type="hidden" value="DELETE">');
-                        $('body').find('.remove-form').append('<input name="_token" type="hidden" value="' + token + '">');
-                        $('body').find('.remove-form').append('<input name="id" type="hidden" value="' + id + '">');
+                        $('body').html(
+                            "<form class='form-inline remove-form' method='post' action='" +
+                            action + "'></form>");
+                        $('body').find('.remove-form').append(
+                            '<input name="_method" type="hidden" value="DELETE">');
+                        $('body').find('.remove-form').append(
+                            '<input name="_token" type="hidden" value="' + token + '">');
+                        $('body').find('.remove-form').append(
+                            '<input name="id" type="hidden" value="' + id + '">');
                         $('body').find('.remove-form').submit();
                     }
                 });
@@ -110,7 +120,8 @@
                     success: function(response) {
                         console.log('AJAX success:', response);
                         // Show success message in page body
-                        $('.page-body').prepend('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                        $('.page-body').prepend(
+                            '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
                             response.message +
                             '</div>');
                         // Automatically close the success message after 5 seconds

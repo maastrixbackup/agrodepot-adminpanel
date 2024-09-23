@@ -285,6 +285,11 @@ class UserDashBoardController extends Controller
         $data = array();
         $sales_adv_list = SalesAdvertisement::where('user_id', $userid)->get();
 
+        if ($sales_adv_list->isEmpty()) {
+            return response()->json(['message' => 'No data available'], 404);
+        }
+
+        $count = 0;
         foreach ($sales_adv_list as $key => $order_list) {
             $sales_order = SalesOrder::where('adv_id', $order_list->adv_id)->first();
 
@@ -297,47 +302,26 @@ class UserDashBoardController extends Controller
                 $carbonTimestamp = Carbon::parse($isoTimestamp);
                 $formatted_Date = $carbonTimestamp->format('d-m-Y');
 
-                $data[$key]['advertisement_name'] =  $order_list->adv_name;
-                $data[$key]['command_id'] =  $sales_order->orderid;
-                if ($sales_order !== null && $sales_order->qty) {
-                    $data[$key]['quantity'] =  $sales_order->qty;
-                } else {
-                    $data[$key]['quantity'] =  null;
-                }
-                $data[$key]['price'] =  $sales_order->totprice;
-                $data[$key]['ordered_prin'] =  $user->first_name . ' ' . $user->last_name;
-                $data[$key]['delivery_name'] =  $sales_order->fname . ' ' . $sales_order->lname;
-                if ($country != null) {
-                    $data[$key]['country'] =  $country->country_name;
-                } else {
-                    $data[$key]['country'] =  null;
-                }
-                if ($location != null) {
-                    $data[$key]['location'] =  $location->location_name;
-                } else {
-                    $data[$key]['location'] =  null;
-                }
-                $data[$key]['postal_code'] =  $sales_order->postcode;
-                $data[$key]['delivery_method'] =  $sales_order->delivery_method;
-                $data[$key]['delivery_address'] =  $sales_order->delivery_add;
-                $data[$key]['order_date'] =  $formatted_Date;
-            } else {
-                $data[$key]['command_id'] =  null;
-                $data[$key]['quantity'] =  null;
-                $data[$key]['price'] =  null;
-                $data[$key]['ordered_prin'] =  null;
-                $data[$key]['delivery_name'] =  null;
-                $data[$key]['country'] =  null;
-                $data[$key]['location'] =  null;
-                $data[$key]['postal_code'] =  null;
-                $data[$key]['delivery_method'] =  null;
-                $data[$key]['delivery_address'] =  null;
-                $data[$key]['order_date'] =  null;
+                $data[$count]['advertisement_name'] =  $order_list->adv_name;
+                $data[$count]['command_id'] =  $sales_order->orderid;
+                $data[$count]['quantity'] =  $sales_order->qty ?? null;
+                $data[$count]['price'] =  $sales_order->totprice;
+                $data[$count]['ordered_prin'] =  $user->first_name . ' ' . $user->last_name;
+                $data[$count]['delivery_name'] =  $sales_order->fname . ' ' . $sales_order->lname;
+                $data[$count]['country'] =  $country ? $country->country_name : null;
+                $data[$count]['location'] =  $location ? $location->location_name : null;
+                $data[$count]['postal_code'] =  $sales_order->postcode;
+                $data[$count]['delivery_method'] =  $sales_order->delivery_method;
+                $data[$count]['delivery_address'] =  $sales_order->delivery_add;
+                $data[$count]['order_date'] =  $formatted_Date;
+                $data[$count]['slug'] =  $order_list->slug;
+                $count++;
             }
         }
 
         return response()->json($data);
     }
+
 
     // public function ratingGivenSeller(Request $request, $userid)
     // {
@@ -357,6 +341,10 @@ class UserDashBoardController extends Controller
         $data = array();
         $sales_adv_list = SalesAdvertisement::where('user_id', $userid)->get();
 
+        if ($sales_adv_list->isEmpty()) {
+            return response()->json(['message' => 'No data found']);
+        }
+        $count = 0;
         foreach ($sales_adv_list as $key => $order_list) {
             $sales_order = SalesOrder::where('adv_id', $order_list->adv_id)->first();
 
@@ -369,47 +357,26 @@ class UserDashBoardController extends Controller
                 $carbonTimestamp = Carbon::parse($isoTimestamp);
                 $formatted_Date = $carbonTimestamp->format('d-m-Y');
 
-                $data[$key]['advertisement_name'] =  $order_list->adv_name;
-                $data[$key]['command_id'] =  $sales_order->orderid;
-                if ($sales_order !== null && $sales_order->qty) {
-                    $data[$key]['quantity'] =  $sales_order->qty;
-                } else {
-                    $data[$key]['quantity'] =  null;
-                }
-                $data[$key]['price'] =  $sales_order->totprice;
-                $data[$key]['ordered_prin'] =  $user->first_name . ' ' . $user->last_name;
-                $data[$key]['delivery_name'] =  $sales_order->fname . ' ' . $sales_order->lname;
-                if ($country != null) {
-                    $data[$key]['country'] =  $country->country_name;
-                } else {
-                    $data[$key]['country'] =  null;
-                }
-                if ($location != null) {
-                    $data[$key]['location'] =  $location->location_name;
-                } else {
-                    $data[$key]['location'] =  null;
-                }
-                $data[$key]['postal_code'] =  $sales_order->postcode;
-                $data[$key]['delivery_method'] =  $sales_order->delivery_method;
-                $data[$key]['delivery_address'] =  $sales_order->delivery_add;
-                $data[$key]['order_date'] =  $formatted_Date;
-            } else {
-                $data[$key]['command_id'] =  null;
-                $data[$key]['quantity'] =  null;
-                $data[$key]['price'] =  null;
-                $data[$key]['ordered_prin'] =  null;
-                $data[$key]['delivery_name'] =  null;
-                $data[$key]['country'] =  null;
-                $data[$key]['location'] =  null;
-                $data[$key]['postal_code'] =  null;
-                $data[$key]['delivery_method'] =  null;
-                $data[$key]['delivery_address'] =  null;
-                $data[$key]['order_date'] =  null;
+                $data[$count]['advertisement_name'] =  $order_list->adv_name;
+                $data[$count]['command_id'] =  $sales_order->orderid;
+                $data[$count]['quantity'] =  $sales_order->qty;
+                $data[$count]['slug'] =  $order_list->slug;
+                $data[$count]['price'] =  $sales_order->totprice;
+                $data[$count]['ordered_prin'] =  $user->first_name . ' ' . $user->last_name;
+                $data[$count]['delivery_name'] =  $sales_order->fname . ' ' . $sales_order->lname;
+                $data[$count]['country'] =  $country ? $country->country_name : null;
+                $data[$count]['location'] =  $location ? $location->location_name : null;
+                $data[$count]['postal_code'] =  $sales_order->postcode;
+                $data[$count]['delivery_method'] =  $sales_order->delivery_method;
+                $data[$count]['delivery_address'] =  $sales_order->delivery_add;
+                $data[$count]['order_date'] =  $formatted_Date;
+                $count++;
             }
         }
 
         return response()->json($data);
     }
+
 
     public function messageInbox(Request $request, $userid)
     {
@@ -433,66 +400,75 @@ class UserDashBoardController extends Controller
                 $data[$key]['message_id'] = $inbox_list->msg_id;
                 $data[$key]['from_user_id'] = $from_user->user_id;
             }
-
         } else {
             $data = array();
         }
         return response()->json($data);
-
     }
     public function deleteInboxMsg(Request $request, $msgId)
     {
         $message_inbox = ManageMessage::find($msgId);
         try {
             $message_inbox->delete();
-        return response()->json(["msg"=>"Deleted Succesfully"]);
-
+            return response()->json(["msg" => "Deleted Succesfully"]);
         } catch (\Throwable $th) {
-        return response()->json(["msg"=>"There was some error"]);
-
+            return response()->json(["msg" => "There was some error"]);
         }
     }
 
     public function sentMessage($userid)
     {
         $data = array();
-        $from_user = ManageMessage::where('from_user', $userid)->where('status', "1")->first();
-        if ($from_user) {
-            $sent_messages = ManageMessage::where('parent', $from_user->msg_id)->where('status', "1")->get();
-
-            foreach ($sent_messages as $key => $message_list) {
-
-
-                $isoTimestamp = $message_list->created;
-                $carbonTimestamp = Carbon::parse($isoTimestamp);
-                $formatted_Date = $carbonTimestamp->format('d-m-Y');
+        $from_user = ManageMessage::where('from_user', $userid)->where('status', "1")->orderBy("msg_id","desc")->get();
+        foreach ($from_user as $key => $message_list) {
+            $sent_to = MasterUser::find($message_list->to_user);
+            $repliedTo = ManageMessage::find($message_list->parent);
+            $isoTimestamp = $message_list->created;
+            $carbonTimestamp = Carbon::parse($isoTimestamp);
+            $formatted_Date = $carbonTimestamp->format('d-m-Y');
 
 
-                $data[$key]['sent_to'] =  $from_user->to_user;
-                $data[$key]['message'] =  $from_user->message;
-                $data[$key]['reply'] = $message_list->message;
-                $data[$key]['order_date'] =  $formatted_Date;
-            }
-
-        } else {
-            // $message = "Data Not Found";
-            // return response()->json(array('data' => $data, 'message' => $message));
-            // $data[$key]['sent_to'] = null;
-            // $data[$key]['message'] = null;
-            // $data[$key]['reply'] = null;
-            // $data[$key]['order_date'] = null;
-            $data = array();
+            $data[$key]['sent_to'] =  $sent_to->first_name . ' ' . $sent_to->last_name;
+            $data[$key]['message'] =  $message_list->message;
+            $data[$key]['reply'] = $repliedTo ? $repliedTo->message:"";
+            $data[$key]['order_date'] =  $formatted_Date;
         }
+        // if ($from_user) {
+        //     $sent_messages = ManageMessage::where('parent', $from_user->msg_id)->where('status', "1")->get();
+
+        //     foreach ($sent_messages as $key => $message_list) {
+
+
+        //         $isoTimestamp = $message_list->created;
+        //         $carbonTimestamp = Carbon::parse($isoTimestamp);
+        //         $formatted_Date = $carbonTimestamp->format('d-m-Y');
+
+
+        //         $data[$key]['sent_to'] =  $from_user->to_user;
+        //         $data[$key]['message'] =  $from_user->message;
+        //         $data[$key]['reply'] = $message_list->message;
+        //         $data[$key]['order_date'] =  $formatted_Date;
+        //     }
+        // } else {
+        //     // $message = "Data Not Found";
+        //     // return response()->json(array('data' => $data, 'message' => $message));
+        //     // $data[$key]['sent_to'] = null;
+        //     // $data[$key]['message'] = null;
+        //     // $data[$key]['reply'] = null;
+        //     // $data[$key]['order_date'] = null;
+        //     $data = array();
+        // }
         return response()->json($data);
     }
 
     public function archiveMessage($userid)
     {
         $data = array();
-        $archive_message = ManageMessage::where('to_user', $userid)->where('status', '!=', '0')->get();
+        $archive_message = ManageMessage::where('to_user', $userid)->where('status', '!=', '0')->orderBy("msg_id","desc")->get();
 
         if ($archive_message) {
             foreach ($archive_message as $key => $message_list) {
+                $replied_to = ManageMessage::find($message_list->parent);
                 $from_user = MasterUser::where('user_id', $message_list->from_user)->first();
                 $to_user = MasterUser::where('user_id', $message_list->to_user)->first();
 
@@ -502,7 +478,7 @@ class UserDashBoardController extends Controller
 
                 $data[$key]['submitted_by'] =  $from_user->first_name . ' ' . $from_user->last_name;
                 $data[$key]['message'] =  $message_list->message;
-                $data[$key]['replied_to'] = $to_user->first_name . ' ' . $to_user->last_name;
+                $data[$key]['replied_to'] = $replied_to?$replied_to->message:"";
                 if ($message_list->status == "1") {
                     $data[$key]['message_type'] =  "Inbox";
                 } else {
@@ -510,7 +486,6 @@ class UserDashBoardController extends Controller
                 }
                 $data[$key]['order_date'] =  $formatted_Date;
             }
-
         } else {
             $data = array();
         }
@@ -535,7 +510,6 @@ class UserDashBoardController extends Controller
                 $data[$key]['message'] =  $message_list->message;
                 $data[$key]['order_date'] =  $formatted_Date;
             }
-
         } else {
             $data = array();
         }
@@ -602,7 +576,6 @@ class UserDashBoardController extends Controller
                 $data[$key]['assessment'] = $rating / 4;
                 $data[$key]['quality'] =  $rating_list->grade;
             }
-
         } else {
             $data = array();
         }
@@ -627,7 +600,6 @@ class UserDashBoardController extends Controller
                 $data[$key]['status'] = $story->status;
                 $data[$key]['posted_date'] =  $formatted_Date;
             }
-
         } else {
             $data = array();
         }

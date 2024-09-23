@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TempMembershipDetail
- * 
+ *
  * @property int $temp_mem_id
  * @property int $randomid
  * @property string $fname

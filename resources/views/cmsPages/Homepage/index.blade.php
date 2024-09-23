@@ -2,38 +2,38 @@
     <ul class="nav nav-tabs nav-fill mb-3 umaTable" id="ex1" role="tablist">
         <li class="nav-item" role="presentation">
             <a class="nav-link active" id="ex2-tab-1" data-bs-toggle="tab" href="#ex2-tabs-1" role="tab"
-                aria-controls="ex2-tabs-1" aria-selected="true">Banner Section</a>
+                aria-controls="ex2-tabs-1" aria-selected="true">Our Working Process Section</a>
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link" id="ex2-tab-2" data-bs-toggle="tab" href="#ex2-tabs-2" role="tab"
                 aria-controls="ex2-tabs-2" aria-selected="false">Sale section</a>
         </li>
-        <li class="nav-item" role="presentation">
+        {{-- <li class="nav-item" role="presentation">
             <a class="nav-link" id="ex2-tab-3" data-bs-toggle="tab" href="#ex2-tabs-3" role="tab"
                 aria-controls="ex2-tabs-3" aria-selected="false">Statistics section</a>
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link" id="ex2-tab-4" data-bs-toggle="tab" href="#ex2-tabs-4" role="tab"
                 aria-controls="ex2-tabs-4" aria-selected="false">Success section</a>
-        </li>
+        </li> --}}
     </ul>
-    <form action="{{ url('dashboard/cms-pages/' . $data->title) }}" method="post" enctype="multipart/form-data">
+    <form action="{{ url('admin/cms-pages/' . $data->title) }}" method="post" enctype="multipart/form-data">
         @method('PUT')
         @csrf
         <div class="tab-content" id="ex2-content">
 
             <div class="tab-pane fade show active" id="ex2-tabs-1" role="tabpanel" aria-labelledby="ex2-tab-1">
-                @include('cmsPages.Homepage.banner')
+                @include('cmsPages.Homepage.working-process')
             </div>
             <div class="tab-pane fade" id="ex2-tabs-2" role="tabpanel" aria-labelledby="ex2-tab-2">
                 @include('cmsPages.Homepage.saleSection')
             </div>
-            <div class="tab-pane fade" id="ex2-tabs-3" role="tabpanel" aria-labelledby="ex2-tab-3">
+            {{-- <div class="tab-pane fade" id="ex2-tabs-3" role="tabpanel" aria-labelledby="ex2-tab-3">
                 @include('cmsPages.Homepage.statisticsSection')
             </div>
             <div class="tab-pane fade" id="ex2-tabs-4" role="tabpanel" aria-labelledby="ex2-tab-4">
                 @include('cmsPages.Homepage.sucessSection')
-            </div>
+            </div> --}}
         </div>
         <button class="btn btn-primary customSaveButton" type="submit">Save</button>
     </form>

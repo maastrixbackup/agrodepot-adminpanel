@@ -19,7 +19,7 @@ class BidOfferController extends Controller
                ->leftjoin('request_parts as rp','bo.request_id','=','rp.request_id')
                ->leftjoin('request_accessories as ra','bo.parts_id','=','ra.part_id')
                ->select('bo.*','ms.first_name','ms.last_name','ra.status as sts')
-               ->paginate(10);
+               ->get();
         return view("reports.bid_offer", compact("data"));
     }
 

@@ -45,11 +45,11 @@ class CMSPagesController extends Controller
      */
     public function edit(string $id)
     {
-        //
         $data = cmsPage::where("title", $id)->first();
         $fieldData = json_decode($data->fields);
-        return view('cmsPages.' . $id . '.index', compact('data','fieldData'));
+        return view('cmsPages.' . $id . '.index', compact('data', 'fieldData'));
     }
+
 
 
     /**
@@ -67,7 +67,7 @@ class CMSPagesController extends Controller
             if ($file->isValid()) {
                 $fileName = uniqid() . '_' . $file->getClientOriginalName();
                 $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
-                $fileName = $key.'.'.$fileExtension;
+                $fileName = $key . '.' . $fileExtension;
 
                 $file->move(public_path('images'), $fileName);
 
@@ -80,8 +80,7 @@ class CMSPagesController extends Controller
             $cmsPageData->fields = json_encode(array_merge(json_decode($cmsPageData->fields, true), $allData));
             $cmsPageData->save();
         }
-
-        dd($allData);
+        return redirect()->route('cms-pages.index')->with('success', 'Updated successfully');
     }
 
 

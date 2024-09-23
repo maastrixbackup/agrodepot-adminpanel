@@ -109,7 +109,7 @@ class SalesAdvertisement extends Model
         'meta_desc',
         'meta_keywords',
         'created',
-        'modified'
+        'modified','sku',
     ];
     public function user()
     {

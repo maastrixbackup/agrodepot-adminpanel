@@ -6,53 +6,60 @@
         </div>
 
     </div>
-    <table class="brandsTable table table-hover" id="cmspageslist">
-        <thead>
-            <tr>
-                <th scope="col">SL#</th>
-                <th scope="col">Sent By</th>
-                <th scope="col">Sent To</th>
-                <th scope="col">Offer Name</th>
-                <th scope="col">Request Parts</th>
-                <th scope="col">Question</th>
-                <th scope="col">Status</th>
-                <th scope="col">Created Date</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody id="brands_sortable">
-            @foreach ($data as $index => $menu)
-            <tr id="{{ $menu->qid  }}">
-                <td scope="row">{{ $index + 1 }}</td>
-                <td scope="row">{{ $menu->first_name }}</td>
-                <td scope="row">{{ optional($menu->receiver)->first_name }}</td>
-                <td scope="row">{{ $menu->piece}}</td>
-                <td scope="row">{{ $menu->desc}}</td>
-                <td scope="row">{{ $menu->description }}</td>
-                <td class="text-capitalize"><select name="status" class="form-select-sm sell-select" data-sell-id="{{ $menu->qid }}">
-                        <option value="1" {{ $menu->status == '1' ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ $menu->status == '0' ? 'selected' : '' }}>Inactive
-                        </option>
-                    </select></td>
-                <td scope="row">{{ $menu->created}}</td>
-                <td>
-                    <div class="d-flex">
-                        <div class="customButtonContainer">
+    <div class="custom-scrollbar">
+        <table class="brandsTable table table-hover" id="cmspageslist">
+            <thead>
+                <tr>
+                    <th scope="col">SL#</th>
+                    <th scope="col">Sent By</th>
+                    <th scope="col">Sent To</th>
+                    <th scope="col">Offer Name</th>
+                    <th scope="col">Request Parts</th>
+                    <th scope="col">Question</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Created Date</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="brands_sortable">
+                @foreach ($data as $index => $menu)
+                    <tr id="{{ $menu->qid }}">
+                        <td scope="row">{{ $index + 1 }}</td>
+                        <td scope="row">{{ $menu->first_name }}</td>
+                        <td scope="row">{{ optional($menu->receiver)->first_name }}</td>
+                        <td scope="row">{{ $menu->piece }}</td>
+                        <td scope="row">{{ $menu->desc }}</td>
+                        <td scope="row">{{ $menu->description }}</td>
+                        <td class="text-capitalize"><select name="status" class="form-select-sm sell-select"
+                                data-sell-id="{{ $menu->qid }}">
+                                <option value="1" {{ $menu->status == '1' ? 'selected' : '' }}>Active</option>
+                                <option value="0" {{ $menu->status == '0' ? 'selected' : '' }}>Inactive
+                                </option>
+                            </select></td>
+                        <td scope="row">{{ $menu->created }}</td>
+                        <td>
+                            <div class="d-flex">
+                                <div class="customButtonContainer">
 
-                            <a class="mx-2" href="{{ url('admin/sellers/' . $menu->qid ) }}"><i class="fas fa-eye"></i></a>
-                        </div>
-                        <div class="customButtonContainer">
-                            <!-- <form method="POST" action="{{ url('admin/sellers/' . $menu->qid ) }}">@csrf
+                                    <a class="edit-btn" title="View"
+                                        href="{{ url('admin/sellers/' . $menu->qid) }}"><i class="fas fa-eye"></i></a>
+                                </div>
+                                <div class="customButtonContainer">
+                                    <!-- <form method="POST" action="{{ url('admin/sellers/' . $menu->qid) }}">@csrf
                                     @method('DELETE')<button type="submit"><i class="fas fa-trash"></i></button></form> -->
-                            <button title="Delete" class="trash remove-sellers" data-id="{{ $menu->qid }}" data-action="{{ url('admin/sellers/' . $menu->qid ) }}"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
+                                    <button title="Delete" class="dl-btn trash remove-sellers"
+                                        data-id="{{ $menu->qid }}"
+                                        data-action="{{ url('admin/sellers/' . $menu->qid) }}"><i
+                                            class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
 
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
     <script>
         $(document).ready(function() {
@@ -73,10 +80,15 @@
                         var token = jQuery('meta[name="csrf-token"]').attr('content');
                         var id = current_object.attr('data-id');
 
-                        $('body').html("<form class='form-inline remove-form' method='post' action='" + action + "'></form>");
-                        $('body').find('.remove-form').append('<input name="_method" type="hidden" value="DELETE">');
-                        $('body').find('.remove-form').append('<input name="_token" type="hidden" value="' + token + '">');
-                        $('body').find('.remove-form').append('<input name="id" type="hidden" value="' + id + '">');
+                        $('body').html(
+                            "<form class='form-inline remove-form' method='post' action='" +
+                            action + "'></form>");
+                        $('body').find('.remove-form').append(
+                            '<input name="_method" type="hidden" value="DELETE">');
+                        $('body').find('.remove-form').append(
+                            '<input name="_token" type="hidden" value="' + token + '">');
+                        $('body').find('.remove-form').append(
+                            '<input name="id" type="hidden" value="' + id + '">');
                         $('body').find('.remove-form').submit();
                     }
                 });
@@ -101,7 +113,8 @@
                     success: function(response) {
                         console.log('AJAX success:', response);
                         // Show success message in page body
-                        $('.page-body').prepend('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                        $('.page-body').prepend(
+                            '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
                             response.message +
                             '</div>');
                         // Automatically close the success message after 5 seconds
@@ -119,11 +132,7 @@
         });
     </script>
     <script>
-        $('#cmspageslist').dataTable({
-            "bPaginate": false
-        });
+        let table = new DataTable('#cmspageslist');
     </script>
-
-    {{$data->links()}}
 
 </x-app-layout>

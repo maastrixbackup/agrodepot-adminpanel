@@ -21,7 +21,37 @@ class DashBoardController extends Controller
     {
         $currentDate = Carbon::now();
         $totalUser = MasterUser::count();
+
+        // Fetch data for weekly, monthly, and yearly total users
+        // $weeklyTotalUsers = MasterUser::where('created', '>=', $currentDate->startOfWeek()->subWeek()->format('Y-m-d H:i:s'))->count();
+        // $monthlyTotalUsers = MasterUser::where('created', '>=', $currentDate->startOfMonth()->subMonth()->format('Y-m-d H:i:s'))->count();
+        // $yearlyTotalUsers = MasterUser::where('created', '>=', $currentDate->startOfYear()->subYear()->format('Y-m-d H:i:s'))->count();
+
+        // Get counts for last week
+        $weeklyTotalUsers = MasterUser::whereBetween('created', [$currentDate->copy()->subWeek(), $currentDate])
+            ->count();
+
+        // Get counts for current month
+        $monthlyTotalUsers = MasterUser::whereYear('created', $currentDate->year)
+            ->whereMonth('created', $currentDate->month)
+            ->count();
+
+        // Get counts for current year
+        $yearlyTotalUsers = MasterUser::whereYear('created', $currentDate->year)
+            ->count();
+        // dd($yearlyTotalUsers);
+
+        // Calculate monthly percentage change
+        $monthlyPercentageChange = $yearlyTotalUsers / ($totalUser - $yearlyTotalUsers) * 100;
+
+        $monthlyPercentageChange = round($monthlyPercentageChange);
+
+
+        // Format the date string for comparison
+        $comparisonDate = Carbon::now()->subMonth()->format('M Y');
+
         $totalBuyer = MasterUser::where('user_type_id', 1)->count();
+        // dd($totalBuyer);
         $totalSeller = MasterUser::where('user_type_id', 2)->count();
 
         $totalSellerBuyer = $totalSeller + $totalBuyer;
@@ -30,26 +60,88 @@ class DashBoardController extends Controller
 
         $sellerPercent = round($sellerPercent);
         $buyerPercent = round($buyerPercent);
+
+
+        // $yearlyBuyers = MasterUser::where('user_type_id', 1)->where('created', '>=', $currentDate->startOfYear()->subYear()->format('Y-m-d H:i:s'))->count();
+        $yearlyBuyers = MasterUser::where('user_type_id', 1)
+            ->whereYear('created', $currentDate->year)
+            ->count();
+
+        $totalbuyerthisyear = round($yearlyBuyers / ($totalBuyer - $yearlyBuyers) * 100);
+        // $weeklyBuyers = MasterUser::where('user_type_id', 1)->where('created', '>=', $currentDate->startOfWeek()->subWeek()->format('Y-m-d H:i:s'))->count();
+        $weeklyBuyers = MasterUser::where('user_type_id', 1)
+            ->whereBetween('created', [$currentDate->copy()->subWeek(), $currentDate])
+            ->count();
+        // $monthlyBuyers = MasterUser::where('user_type_id', 1)->where('created', '>=', $currentDate->startOfMonth()->subMonth()->format('Y-m-d H:i:s'))->count();
+        $monthlyBuyers = MasterUser::where('user_type_id', 1)
+            ->whereYear('created', $currentDate->year)
+            ->whereMonth('created', $currentDate->month)
+            ->count();
+        // dd($totalbuyerlastyear);
+
+
+        // $yearlySeller = MasterUser::where('user_type_id', 2)->where('created', '>=', $currentDate->startOfYear()->subYear()->format('Y-m-d H:i:s'))->count();
+        // Get counts for current year
+        $yearlySeller = MasterUser::where('user_type_id', 2)
+            ->whereYear('created', $currentDate->year)
+            ->count();
+
+        $totalSellerthisyear = round($yearlySeller / ($totalSeller - $yearlySeller) * 100);
+
+
+        // $weeklySeller = MasterUser::where('user_type_id', 2)->where('created', '>=', $currentDate->startOfWeek()->subWeek()->format('Y-m-d H:i:s'))->count();
+        // Get counts for last week
+        $weeklySeller = MasterUser::where('user_type_id', 2)
+            ->whereBetween('created', [$currentDate->copy()->subWeek(), $currentDate])
+            ->count();
+        // $monthlySeller = MasterUser::where('user_type_id', 2)->where('created', '>=', $currentDate->startOfMonth()->subMonth()->format('Y-m-d H:i:s'))->count();
+        // Get counts for current month
+        $monthlySeller = MasterUser::where('user_type_id', 2)
+            ->whereYear('created', $currentDate->year)
+            ->whereMonth('created', $currentDate->month)
+            ->count();
+
+
         $totSalesMade =  SalesOrder::where('status', 2)->orderby('id', 'desc')->count();
+        // dd($totSalesMade);
+
+        // $yearlySalesmade = SalesOrder::where('status', 2)->orderby('id', 'desc')->where('created', '>=', $currentDate->startOfYear()->subYear()->format('Y-m-d H:i:s'))->count();
+        // Get counts for current year
+        $yearlySalesmade = SalesOrder::where('status', 2)->orderby('id', 'desc')->whereYear('created', $currentDate->year)
+            ->count();
+        // dd($yearlySalesmade);
+
+        $totalSalesmadethisyear = round($yearlySalesmade / ($totSalesMade - $yearlySalesmade) * 100);
+
+
+        // Get counts for last week
+        $weeklySalesmade = SalesOrder::where('status', 2)->orderby('id', 'desc')->whereBetween('created', [$currentDate->copy()->subWeek(), $currentDate])
+            ->count();
+
+        // Get counts for current month
+        $monthlySalesmade = SalesOrder::where('status', 2)->orderby('id', 'desc')->whereYear('created', $currentDate->year)
+            ->whereMonth('created', $currentDate->month)
+            ->count();
+
         $totalautoParts = SalesAdvertisement::count();
 
-            
+
         $latestVisits = RecentView::leftJoin('sales_advertisements', 'sales_advertisements.adv_id', '=', 'recent_views.adv_id')->whereDate('recent_views.exp_date', '>=', $currentDate)
-        ->orWhere('adv_status', 1)
-        ->orderByDesc('recent_views.created')
-        ->limit(5)
-        ->select(
-            'recent_views.*',
-            'sales_advertisements.adv_id',
-            'sales_advertisements.adv_name',
-            'sales_advertisements.slug',
-            'sales_advertisements.product_cond',
-            'sales_advertisements.price',
-            'sales_advertisements.currency',
-            'sales_advertisements.quantity',
-            'sales_advertisements.adv_details',
-        )
-        ->get();
+            ->orWhere('adv_status', 1)
+            ->orderByDesc('recent_views.created')
+            ->limit(5)
+            ->select(
+                'recent_views.*',
+                'sales_advertisements.adv_id',
+                'sales_advertisements.adv_name',
+                'sales_advertisements.slug',
+                'sales_advertisements.product_cond',
+                'sales_advertisements.price',
+                'sales_advertisements.currency',
+                'sales_advertisements.quantity',
+                'sales_advertisements.adv_details',
+            )
+            ->get();
 
         $mostViewRes = SalesView::leftJoin('sales_advertisements', 'sales_view.adv_id', '=', 'sales_advertisements.adv_id')
             ->leftJoin('postad_img as pi', 'sales_advertisements.adv_id', '=', 'pi.post_ad_id')
@@ -67,7 +159,7 @@ class DashBoardController extends Controller
             ->limit(5)
             ->get();
 
-        return view('dashboard', compact('totalUser', 'totalBuyer', 'totalSeller', 'sellerPercent', 'buyerPercent', 'totSalesMade', 'totalautoParts','latestVisits', 'mostViewRes'));
+        return view('dashboard', compact('totalUser', 'totalBuyer', 'totalSeller', 'sellerPercent', 'buyerPercent', 'totSalesMade', 'totalautoParts', 'latestVisits', 'mostViewRes', 'weeklyTotalUsers', 'monthlyTotalUsers', 'yearlyTotalUsers', 'monthlyPercentageChange', 'comparisonDate', 'totalbuyerthisyear', 'totalSellerthisyear', 'totalSalesmadethisyear', 'weeklyBuyers', 'monthlyBuyers', 'yearlyBuyers', 'weeklySeller', 'monthlyBuyers', 'yearlySeller', 'weeklySalesmade', 'monthlySalesmade', 'yearlySalesmade'));
     }
 
     /**
@@ -226,8 +318,8 @@ class DashBoardController extends Controller
             } elseif ($record->status == 4) {
                 $status = 'cancel Order';
             }
-            $url = url('admin/saleorder/' . $record->id) ;
-            $order = '<a href="'. $url  .'">'.$record->orderid.'</a>';
+            $url = url('admin/saleorder/' . $record->id);
+            $order = '<a href="' . $url  . '">' . $record->orderid . '</a>';
 
             $data[] = array(
                 "orderid" => $order,
@@ -248,7 +340,7 @@ class DashBoardController extends Controller
     }
 
 
-     /**
+    /**
      * Get Latest Part Orders
      */
     public function latestPartOrders(Request $request)
@@ -265,7 +357,7 @@ class DashBoardController extends Controller
         $data = array();
 
 
-        
+
         $totalRecords = PartsOrder::leftJoin('request_accessories as ra', 'parts_order.parts_id', '=', 'ra.part_id')->select('parts_order.count(*) as allcount')->count();
         $totalRecordswithFilter = PartsOrder::leftJoin('request_accessories as ra', 'parts_order.parts_id', '=', 'ra.part_id')->select('parts_order.count(*) as allcount')->where('orderid', 'like', '%' . $searchValue . '%')->orwhere('name_piece', 'like', '%' . $searchValue . '%')->orwhere('parts_order.status', 'like', '%' . $searchValue . '%')->orwhere('parts_order.created', 'like', '%' . $searchValue . '%')->count();
         // Fetch records
@@ -288,8 +380,8 @@ class DashBoardController extends Controller
             } elseif ($record->status == 4) {
                 $status = 'cancel Order';
             }
-            $url = url('admin/saleorder/' . $record->id) ;
-            $order = '<a href="'. $url  .'">'.$record->orderid.'</a>';
+            $url = url('admin/saleorder/' . $record->id);
+            $order = '<a href="' . $url  . '">' . $record->orderid . '</a>';
 
             $data[] = array(
                 "orderid" => $order,

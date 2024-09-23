@@ -57,10 +57,7 @@
 
 
 
-                <p>{{ $item->name }} - Status: <span class="status">{{ $item->status }}</span></p>
-        <button class="btn btn-toggle" data-item-id="{{ $item->id }}">
-            {{ $item->status === 'active' ? 'Deactivate' : 'Activate' }}
-        </button>
+               
                 <div>
                     <label for="meta_description">Meta Description</label>
                         <textarea name="meta_description" class="form-control" id="meta_description">{{ old('meta_description') }}</textarea>

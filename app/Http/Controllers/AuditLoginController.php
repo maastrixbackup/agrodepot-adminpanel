@@ -16,7 +16,7 @@ class AuditLoginController extends Controller
         $data =DB::table('audit_logins as al')
            ->leftjoin('master_users as ms','al.user_id','=','ms.user_id')
            ->select('al.*','ms.first_name')
-           ->paginate(10);
+           ->get();
         return view("reports.audit-login", compact("data"));
     }
 

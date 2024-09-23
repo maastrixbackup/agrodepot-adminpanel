@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AdminLang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use NumberFormatter;
 
 class AdminLangsController extends Controller
 {
@@ -38,20 +39,72 @@ class AdminLangsController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+
+        $formatter = new NumberFormatter("en", NumberFormatter::SPELLOUT);
+
         $language = new AdminLang();
         $language->en_label = $request->input('en_label');
         $language->roman_label = $request->input('roman_label');
+
         $language->save();
+
+        $numberString = $formatter->format($language->lid);
+
+        $numberString = str_replace([' ', '-'], '', $numberString);
+
+        $language->numberstring = $numberString;
+
+        if ($language->save()) {
+            \Log::info("Stored admin_lang id {$language->id} with numberstring {$numberString} successfully");
+        } else {
+            \Log::error("Failed to store admin_lang id {$language->id} with numberstring {$numberString}");
+        }
+
         return redirect()->route('admin-langs.index')->with('success', 'Language added successfully');
     }
+
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        //
+        // Debug statement to ensure the method is being called
+        \Log::info('show method called');
+
+        // Create the NumberFormatter instance
+        $formatter = new NumberFormatter("en", NumberFormatter::SPELLOUT);
+
+        // Chunk through the admin_langs table
+        AdminLang::chunk(100, function ($adminLangs) use ($formatter) {
+            foreach ($adminLangs as $adminLang) {
+                // Convert number to string
+                $numberString = $formatter->format($adminLang->lid);
+
+                // Remove spaces and hyphens
+                $numberString = str_replace([' ', '-'], '', $numberString);
+
+                // Debug statement to see the converted string
+                \Log::info("Converted {$adminLang->lid} to {$numberString}");
+
+                // Update the numberstring field and check the result
+                $adminLang->numberstring = $numberString;
+
+                // Debug statement to check if the update was successful
+                if ($adminLang->save()) {
+                    \Log::info("Updated admin_lang id {$adminLang->id} successfully");
+                } else {
+                    \Log::error("Failed to update admin_lang id {$adminLang->id}");
+                }
+            }
+        });
+
+        // Return a response or view as needed
+        return response()->json(['message' => 'Number strings updated successfully']);
     }
+
+
+
 
     /**
      * Show the form for editing the specified resource.
@@ -89,5 +142,8 @@ class AdminLangsController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    public function convert()
+    {
     }
 }

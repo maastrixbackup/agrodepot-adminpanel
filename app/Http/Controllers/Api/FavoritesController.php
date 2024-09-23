@@ -16,32 +16,6 @@ class FavoritesController extends Controller
      */
     public function index(Request $request)
     {
-        $user_id = $request->user_id;
-        $advid = $request->input('advid');
-        $ipaddress = $request->ip();
-
-        $checkfav = SalesAdvertisement::where('user_id', $user_id)
-            ->where('adv_id', $advid)
-            ->first();
-
-        if ($checkfav) {
-            return response()->json(['message' => 'You have already added to favourite']);
-        } else {
-            $options = [
-                'user_id' => $user_id,
-                'adv_id' => $advid,
-                'ip_address' => $ipaddress,
-                'favcount' => 1,
-                'created' => date('y-m-d h:i:s'),
-                'modified' => date('y-m-d h:i:s')
-            ];
-
-            if (SalesAddToFavourite::create($options)) {
-                return response()->json(['message' => 'Added to favourites successfully']);
-            } else {
-                return response()->json(['message' => 'You have Add to favourite adding failed']);
-            }
-        }
     }
 
     /**
@@ -57,8 +31,29 @@ class FavoritesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'user_id' => 'required',
+            'advid' => 'required',
+        ]);
+
+        $user_id = $validatedData['user_id'];
+        $advid = $validatedData['advid'];
+        $ipaddress = $request->ip();
+
+        $favorite = SalesAddToFavourite::firstOrCreate(
+            ['user_id' => $user_id, 'adv_id' => $advid],
+            ['ip_address' => $ipaddress, 'favcount' => 1]
+        );
+
+
+        if ($favorite->wasRecentlyCreated) {
+            return response()->json(['message' => 'Added to favourites successfully'], 201);
+        } else {
+            return response()->json(['message' => 'You have already added to favourites'], 409);
+        }
     }
+
+
 
     /**
      * Display the specified resource.
@@ -92,10 +87,10 @@ class FavoritesController extends Controller
         //
     }
 
-    public function mostViewed(Request $request)
+    public function mostViewed(Request $request, $id)
     {
         \DB::enableQueryLog();
-        $user_id = $request->user_id;
+        $user_id = $id;
         \DB::statement("SET SQL_BIG_SELECTS=1");
 
         $most_viewed = SalesAdvertisement::leftJoin('sales_view', 'sales_view.adv_id', '=', 'sales_advertisements.adv_id')
@@ -126,10 +121,10 @@ class FavoritesController extends Controller
         //dd(\DB::getQueryLog());
     }
 
-    public function favorites(Request $request)
+    public function favorites(Request $request, $id)
     {
         \DB::enableQueryLog();
-        $user_id = $request->user_id;
+        $user_id = $id;
         \DB::statement("SET SQL_BIG_SELECTS=1");
 
 
@@ -173,39 +168,39 @@ class FavoritesController extends Controller
         $user_id = $request->user_id;
         $adv_id =  $request->advid;
 
-        $user_type_id = MasterUser::where('user_id',$user_id)->first()->user_type_id;
-       
+        $user_type_id = MasterUser::where('user_id', $user_id)->first()->user_type_id;
+
         $sale_add_to_favs = SalesAddToFavourite::where('user_id', $user_id)->where('adv_id', $adv_id)->first();
         $sale_advs = SalesAdvertisement::where('adv_id', $adv_id)->first();
-          
+
         $price = 0;
-        if($user_type_id == 3){
-            $price =  isset($sale_advs->b2bprice) ? $sale_advs->b2bprice : 0 ;
+        if ($user_type_id == 3) {
+            $price =  isset($sale_advs->b2bprice) ? $sale_advs->b2bprice : 0;
         }
-       
+
         $data = !empty($sale_add_to_favs) ? 1 : 0;
-        return response()->json(['data' =>  $data ,'b2bprice' => $price ]);
+        return response()->json(['data' =>  $data, 'b2bprice' => $price]);
     }
 
-    public function favoritesAds(Request $request)
+    public function favoritesAds(Request $request, $id)
     {
         \DB::enableQueryLog();
-        $user_id = $request->user_id;
+        $user_id = $id;
         \DB::statement("SET SQL_BIG_SELECTS=1");
 
-        $fav =  \DB::select("SELECT `sales_advertisements`.*, COUNT(*) as totfav, `sales_add_to_favourites`.`user_id` 
-            FROM `sales_advertisements` 
-            LEFT JOIN `sales_add_to_favourites` 
-            ON `sales_add_to_favourites`.`adv_id` = `sales_advertisements`.`adv_id` 
-            WHERE `sales_advertisements`.`user_id` = " . $user_id . "  
-            GROUP BY `sales_advertisements`.`adv_id`, `sales_add_to_favourites`.`user_id` 
-            ORDER BY `totfav` DESC 
-            LIMIT 10");
+        $fav = \DB::table('sales_advertisements')
+            ->leftJoin('sales_add_to_favourites', 'sales_add_to_favourites.adv_id', '=', 'sales_advertisements.adv_id')
+            ->select('sales_advertisements.*', \DB::raw('COUNT(sales_add_to_favourites.adv_id) as totfav'), 'sales_add_to_favourites.user_id')
+            ->where('sales_advertisements.user_id', $user_id)
+            ->groupBy('sales_advertisements.adv_id', 'sales_add_to_favourites.user_id')
+            ->orderBy('totfav', 'DESC')
+            ->limit(10)
+            ->get();
 
         // dd(\DB::getQueryLog());
         $fav_data = [];
 
-        if (!empty($fav)) {
+        if (!$fav->isEmpty()) {
             foreach ($fav as $key => $row) {
                 $user = MasterUser::where('user_id', $row->user_id)->first();
                 $adv_id = stripslashes($row->adv_id);
@@ -214,15 +209,15 @@ class FavoritesController extends Controller
                 $PostadImg = PostadImg::where('post_ad_id', $adv_id)->first();
                 $adImg = !empty($PostadImg->img_path) ? $PostadImg->img_path : "";
 
-
-                $fav_data[$key]['opinion'] =  $adv_name;
-                $fav_data[$key]['image_ad'] =    asset('uploads/postad/' . $adImg);
-                $fav_data[$key]['total_view'] =  $row->totfav;
-                $fav_data[$key]['slug'] =  $slug;
-                $fav_data[$key]['sales_clerk'] =   !empty($user) ?  $user->first_name . ' ' . $user->last_name : "";
-                $fav_data[$key]['userId'] =   !empty($user) ?  $user->user_id  : 0;
+                $fav_data[$key]['opinion'] = $adv_name;
+                $fav_data[$key]['image_ad'] = asset('uploads/postad/' . $adImg);
+                $fav_data[$key]['total_view'] = $row->totfav;
+                $fav_data[$key]['slug'] = $slug;
+                $fav_data[$key]['sales_clerk'] = !empty($user) ? $user->first_name . ' ' . $user->last_name : "";
+                $fav_data[$key]['userId'] = !empty($user) ? $user->user_id : 0;
             }
         }
-        return response()->json(['data' =>  $fav_data]);
+
+        return response()->json(['data' => $fav_data]);
     }
 }

@@ -44,7 +44,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
 
-        $userid = $request->userId;
+        $userid = $request->user_id;
 
         $warrantyDetails = SalesWarranty::where('user_id', $userid)->first();
 
@@ -87,7 +87,7 @@ class OrderController extends Controller
         $newOrder->phone = $request->telephone1;
         $newOrder->county = $request->country_id;
         $newOrder->location = $request->locality_id;
-        $newOrder->postcode = $request->postal;
+        $newOrder->postcode = $request->postal_code;
         $newOrder->delivery_add = $request->deliveryAddress;
         $newOrder->status = 0;
         $newOrder->delivery_status = 0;
@@ -106,20 +106,7 @@ class OrderController extends Controller
                     $objSalesOrderDetail->adv_id = $val['adv_id'];
                     $objSalesOrderDetail->product_quantity = $val['addedQuantity'];
                     $objSalesOrderDetail->amount = $val['addedQuantity']  * $product->price;
-                    $objSalesOrderDetail->email = $user->email;
-                    $objSalesOrderDetail->name = $request->first_name . ' ' . $request->last_name;
-                    $objSalesOrderDetail->phone_mobile = $request->telephone1;
-                    $objSalesOrderDetail->region_id = $request->country_id;
-                    $objSalesOrderDetail->locality_id = $request->locality_id;
-                    $objSalesOrderDetail->zip = $request->postal;
-                    $objSalesOrderDetail->address = $request->deliveryAddress;
-                    $objSalesOrderDetail->notes = "";
-                    $objSalesOrderDetail->seller_notes = "";
-                    $objSalesOrderDetail->delivery = "";
                     $objSalesOrderDetail->status = 0;
-                    $objSalesOrderDetail->delivery_method  =  $val['deliveryMethod'];
-                    $objSalesOrderDetail->created = date('y-m-d h:m:s');
-                    $objSalesOrderDetail->modified = date('y-m-d h:m:s');
                     $objSalesOrderDetail->save();
 
                     $tr .= '<tr><td>' . stripslashes($product->adv_name) . '</td><td>' . stripslashes($val['addedQuantity']) . '</td><td>' . stripslashes($val['addedQuantity'] * $product->price) . ' RON</td></tr>';
@@ -157,7 +144,7 @@ class OrderController extends Controller
                 'body' => $body
             ];
 
-            Mail::to('swetalina.maastrix@gmail.com')->send(new SalesOrderMail($body));
+            Mail::to('amlannayak530@gmail.com')->send(new SalesOrderMail($body));
 
 
             $emailTemplate1 = EmailTemplate::where('email_of', 5)->first()->mail_body;
@@ -174,7 +161,7 @@ class OrderController extends Controller
                 'body' => $body1
             ];
 
-            Mail::to('swetalina.maastrix@gmail.com')->send(new SalesOrderAdminMail($body1));
+            Mail::to('amlannayak530@gmail.com')->send(new SalesOrderAdminMail($body1));
 
 
             return response()->json(['message' => 'Order Placed Succesfully'], 200);
@@ -347,9 +334,9 @@ class OrderController extends Controller
         return response()->json(['data' => $sales_orders_data]);
     }
 
-    public function outOfStock(Request $request)
+    public function outOfStock(Request $request,$userid)
     {
-        $user_id = $request->user_id;
+        $user_id = $userid;
 
         DB::enableQueryLog();
         $outofstocks = SalesOrder::leftJoin('sales_advertisements', 'sales_order.adv_id', '=', 'sales_advertisements.adv_id')
@@ -378,7 +365,7 @@ class OrderController extends Controller
                     $outofstock_data[$key]['qty'] =   $qty;
                     $outofstock_data[$key]['price'] =   $price;
                     $outofstock_data[$key]['currency'] =   $currency;
-                    $outofstock_data[$key]['created'] =  $created;
+                    $outofstock_data[$key]['created'] =  date('Y-m-d H:i:s', strtotime($created));;
                     $outofstock_data[$key]['slug'] =  $slug;
                 }
             }

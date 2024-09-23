@@ -33,7 +33,7 @@ class PagesController extends Controller
     public function store(Request $request)
     {
 
-       
+
         $validator = Validator::make($request->all(), [
             'page_name' => 'string|required',
             'page_title' => 'required',
@@ -41,7 +41,7 @@ class PagesController extends Controller
             'meta_desc' => 'required',
             'meta_keywords' => 'required',
             'page_desc' => 'required',
-            
+
         ]);
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
@@ -50,7 +50,7 @@ class PagesController extends Controller
         $originalString = $request->input('page_name');
         $page->page_name = $request->input('page_name');
         $page->page_slug = Str::slug($originalString);
-       
+
         $page->page_title = $request->input('page_title');
         $page->meta_title = $request->input('meta_title');
         $page->meta_desc = $request->input('meta_desc');
@@ -58,8 +58,8 @@ class PagesController extends Controller
         $page->page_desc = $request->input('page_desc');
         $page->created = Carbon::parse($page->created)->format("d-m-Y");
         $page->modified = Carbon::parse($page->modified)->format("d-m-Y");
-        $page->is_active = $request->input('status')? 1 : 0;
-       
+        $page->is_active = $request->input('status') ? 1 : 0;
+
         $page->save();
 
         return redirect()->route('pages.index')->with('success', 'Sale added successfully');
@@ -70,7 +70,9 @@ class PagesController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $adminpage = AdminPage::find($id);
+
+        return view('pages.show', compact('adminpage'));
     }
 
     /**
@@ -91,7 +93,7 @@ class PagesController extends Controller
         $originalString = $request->input('page_name');
         $page->page_name = $request->input('page_name');
         $page->page_slug = Str::slug($originalString);
-       
+
         $page->page_title = $request->input('page_title');
         $page->meta_title = $request->input('meta_title');
         $page->meta_desc = $request->input('meta_desc');
@@ -99,7 +101,7 @@ class PagesController extends Controller
         $page->page_desc = $request->input('page_desc');
         $page->created = Carbon::parse($page->created)->format("d-m-Y");
         $page->modified = Carbon::parse($page->modified)->format("d-m-Y");
-        $page->is_active = $request->input('status')? 1 : 0;
+        $page->is_active = $request->input('status') ? 1 : 0;
         $page->save();
         return redirect()->route('pages.index')->with('success', 'AdminUser updated successfully');
     }
@@ -110,7 +112,7 @@ class PagesController extends Controller
     public function destroy(string $id)
     {
         $page = AdminPage::find($id);
-        
+
         $page->delete();
         return redirect()->route('pages.index')->with('success', 'AdminPage deleted successfully');
     }

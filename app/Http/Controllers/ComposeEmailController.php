@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\models\NewsletterTemplate;
+use App\Models\NewsletterTemplate;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
@@ -14,7 +14,7 @@ class ComposeEmailController extends Controller
      */
     public function index()
     {
-        $data = NewsletterTemplate::paginate(10);
+        $data = NewsletterTemplate::get();
         return view("newsLetters.compose-mail", compact('data'));
     }
 

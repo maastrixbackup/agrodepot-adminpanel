@@ -6,40 +6,45 @@
         </div>
 
     </div>
-    <table class="brandsTable table table-hover" id="cmspageslist">
-        <thead>
-            <tr>
-                <th scope="col">SL#</th>
-                <th scope="col">Name</th>
-                <th scope="col">Login Time</th>
-                <th scope="col">Logout Time</th>
-                <th scope="col">Ip Address</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody id="brands_sortable">
-            @foreach ($data as $index => $menu)
-            <tr id="{{ $menu->audit_id }}">
-                <td scope="row">{{ $index + 1 }}</td>
-                <td scope="row">{{ $menu->first_name }}</td>
-                <td scope="row">{{ $menu->login_time }}</td>
-                <td scope="row">{{ $menu->logout_time}}</td>
-                <td scope="row">{{ $menu->ip_address}}</td>
-                <td>
-                    <div class="d-flex">
+    <div class="custom-scrollbar">
+        <table class="brandsTable table table-hover" id="cmspageslist">
+            <thead>
+                <tr>
+                    <th scope="col">SL#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Login Time</th>
+                    <th scope="col">Logout Time</th>
+                    <th scope="col">Ip Address</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="brands_sortable">
+                @foreach ($data as $index => $menu)
+                    <tr id="{{ $menu->audit_id }}">
+                        <td scope="row">{{ $index + 1 }}</td>
+                        <td scope="row">{{ $menu->first_name }}</td>
+                        <td scope="row">{{ date('d/m/Y H:i:s', strtotime($menu->login_time)) }}</td>
+                        <td scope="row">{{ date('d/m/Y H:i:s', strtotime($menu->logout_time)) }}</td>
+                        <td scope="row">{{ $menu->ip_address }}</td>
+                        <td>
+                            <div class="d-flex">
 
-                        <div class="customButtonContainer">
-                            <!-- <form method="POST" action="{{ url('admin/audit-login/' . $menu->audit_id) }}">@csrf
+                                <div class="customButtonContainer">
+                                    <!-- <form method="POST" action="{{ url('admin/audit-login/' . $menu->audit_id) }}">@csrf
                                 @method('DELETE')<button type="submit"><i class="fas fa-trash"></i></button></form> -->
-                            <button title="Delete" class="trash remove-auditlogin" data-id="{{ $menu->audit_id }}" data-action="{{ url('admin/audit-login/' . $menu->audit_id) }}"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
+                                    <button title="Delete" class="dl-btn trash remove-auditlogin"
+                                        data-id="{{ $menu->audit_id }}"
+                                        data-action="{{ url('admin/audit-login/' . $menu->audit_id) }}"><i
+                                            class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
 
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
     <script>
         $(document).ready(function() {
             $("body").on("click", ".remove-auditlogin", function() {
@@ -59,10 +64,15 @@
                         var token = jQuery('meta[name="csrf-token"]').attr('content');
                         var id = current_object.attr('data-id');
 
-                        $('body').html("<form class='form-inline remove-form' method='post' action='" + action + "'></form>");
-                        $('body').find('.remove-form').append('<input name="_method" type="hidden" value="DELETE">');
-                        $('body').find('.remove-form').append('<input name="_token" type="hidden" value="' + token + '">');
-                        $('body').find('.remove-form').append('<input name="id" type="hidden" value="' + id + '">');
+                        $('body').html(
+                            "<form class='form-inline remove-form' method='post' action='" +
+                            action + "'></form>");
+                        $('body').find('.remove-form').append(
+                            '<input name="_method" type="hidden" value="DELETE">');
+                        $('body').find('.remove-form').append(
+                            '<input name="_token" type="hidden" value="' + token + '">');
+                        $('body').find('.remove-form').append(
+                            '<input name="id" type="hidden" value="' + id + '">');
                         $('body').find('.remove-form').submit();
                     }
                 });
@@ -70,11 +80,6 @@
         });
     </script>
     <script>
-        $('#cmspageslist').dataTable({
-            "bPaginate": false
-        });
+        let table = new DataTable('#cmspageslist');
     </script>
-
-    {{$data->links()}}
-
 </x-app-layout>

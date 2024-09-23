@@ -6,91 +6,101 @@
         </div>
 
     </div>
-    <table class="brandsTable table table-hover" id="cmspageslist">
-        <thead>
-            <tr>
-                <th scope="col">SL#</th>
-                <th scope="col">Bid By</th>
-                <th scope="col">Piesa</th>
-                <th scope="col">Price with vat</th>
-                <th scope="col">Delivery</th>
-                <th scope="col">Payment Methods</th>
-                <th scope="col">Status</th>
-                <th scope="col">Bid Date</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody id="brands_sortable">
-            @foreach ($data as $index => $menu)
-            <tr id="{{ $menu->bid_id  }}">
-                <td scope="row">{{ $index + 1 }}</td>
-                <td scope="row">{{ $menu->first_name }} {{ $menu->last_name }}</td>
-                <td scope="row">{{ $menu->piece }}</td>
-                <td scope="row">{{ $menu->price}} {{ $menu->currency}}</td>
-                <td scope="row">
+    <div class="custom-scrollbar">
+        <table class="brandsTable table table-hover" id="cmspageslist">
+            <thead>
+                <tr>
+                    <th scope="col">SL#</th>
+                    <th scope="col">Bid By</th>
+                    <th scope="col">Piesa</th>
+                    <th scope="col">Price with vat</th>
+                    <th scope="col">Delivery</th>
+                    <th scope="col">Payment Methods</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Bid Date</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="brands_sortable">
+                @foreach ($data as $index => $menu)
+                    <tr id="{{ $menu->bid_id }}">
+                        <td scope="row">{{ $index + 1 }}</td>
+                        <td scope="row">{{ $menu->first_name }} {{ $menu->last_name }}</td>
+                        <td scope="row">{{ $menu->piece }}</td>
+                        <td scope="row">{{ $menu->price }} {{ $menu->currency }}</td>
+                        <td scope="row">
 
-                    @php
-                    $delivery = [];
-                    @endphp
+                            @php
+                                $delivery = [];
+                            @endphp
 
-                    @if ($menu->personal_teaching == 1)
-                    @php $delivery[] = 'Personal Teaching'; @endphp
-                    @endif
+                            @if ($menu->personal_teaching == 1)
+                                @php $delivery[] = 'Personal Teaching'; @endphp
+                            @endif
 
-                    @if ($menu->courier == 1 || $menu->free_courier == 1)
-                    @if ($menu->free_courier == 1 && $menu->courier == 0)
-                    @php $delivery[] = 'Free delivery by courier'; @endphp
-                    @endif
-                    @if ($menu->free_courier == 0 && $menu->courier == 1)
-                    @php $delivery[] = 'Courier(' . $menu->courier_cost . ')'; @endphp
-                    @endif
-                    @endif
+                            @if ($menu->courier == 1 || $menu->free_courier == 1)
+                                @if ($menu->free_courier == 1 && $menu->courier == 0)
+                                    @php $delivery[] = 'Free delivery by courier'; @endphp
+                                @endif
+                                @if ($menu->free_courier == 0 && $menu->courier == 1)
+                                    @php $delivery[] = 'Courier(' . $menu->courier_cost . ')'; @endphp
+                                @endif
+                            @endif
 
-                    @if ($menu->roman_mail == 1 || $menu->free_roman_mail == 1)
-                    @if ($menu->free_roman_mail == 1 && $menu->roman_mail == 0)
-                    @php $delivery[] = 'Free delivery by Romanian mail'; @endphp
-                    @endif
-                    @if ($menu->free_roman_mail == 0 && $menu->roman_mail == 1)
-                    @php $delivery[] = 'Romanian Mail(' . $menu->roman_mail_cost . ')'; @endphp
-                    @endif
-                    @endif
+                            @if ($menu->roman_mail == 1 || $menu->free_roman_mail == 1)
+                                @if ($menu->free_roman_mail == 1 && $menu->roman_mail == 0)
+                                    @php $delivery[] = 'Free delivery by Romanian mail'; @endphp
+                                @endif
+                                @if ($menu->free_roman_mail == 0 && $menu->roman_mail == 1)
+                                    @php $delivery[] = 'Romanian Mail(' . $menu->roman_mail_cost . ')'; @endphp
+                                @endif
+                            @endif
 
-                    @if (!empty($delivery))
-                    {{ implode(", ", $delivery) }}
-                    @endif
-                </td>
-                <td scope="row">{{ $menu->payment_method}}</td>
-                <td class="text-capitalize"><select name="status" class="form-select-sm bid-select" data-bid-id="{{ $menu->bid_id }}">
-                        <option value="0" {{ $menu->sts == '0' ? 'selected' : '' }}>Approved</option>
-                        <option value="1" {{ $menu->sts == '1' ? 'selected' : '' }}>Winning
-                        </option>
-                        <option value="2" {{ $menu->sts == '2' ? 'selected' : '' }}>Cancel
-                        </option>
-                    </select></td>
-                <td scope="row">{{ $menu->created}}</td>
-                <td>
-                    <div class="d-flex">
-                        <div class="customButtonContainer">
+                            @if (!empty($delivery))
+                                {{ implode(', ', $delivery) }}
+                            @endif
+                        </td>
+                        <td scope="row">{{ $menu->payment_method }}</td>
+                        <td class="text-capitalize"><select name="status" class="form-select-sm bid-select"
+                                data-bid-id="{{ $menu->bid_id }}">
+                                <option value="0" {{ $menu->sts == '0' ? 'selected' : '' }}>Approved</option>
+                                <option value="1" {{ $menu->sts == '1' ? 'selected' : '' }}>Winning
+                                </option>
+                                <option value="2" {{ $menu->sts == '2' ? 'selected' : '' }}>Cancel
+                                </option>
+                            </select></td>
+                        <td scope="row">{{ date('d/m/Y', strtotime($menu->created)) }}</td>
+                        <td>
+                            <div class="d-flex">
+                                <div class="customButtonContainer">
 
-                            <a class="mx-2" href="{{ url('admin/bidoffer/' . $menu->bid_id) }}"><i class="fas fa-eye"></i></a>
+                                    <a class="edit-btn" title="View"
+                                        href="{{ url('admin/bidoffer/' . $menu->bid_id) }}"><i
+                                            class="fas fa-eye"></i></a>
 
 
-                        </div>
-                        <div class="customButtonContainer">
-                            <a class="mx-2" href="{{ route('getParts', ['Id' => $menu->bid_id]) }}"><i class="fas fa-eye"></i></a>
-                        </div>
-                        <div class="customButtonContainer">
-                            <!-- <form method="POST" action="{{ url('admin/bidoffer/' . $menu->bid_id) }}">@csrf
+                                </div>
+                                <div class="customButtonContainer">
+                                    <a class="edit-btn" title="Part Details"
+                                        href="{{ route('getParts', ['Id' => $menu->bid_id]) }}"><i
+                                            class="fas fa-info-circle"></i></a>
+                                </div>
+                                <div class="customButtonContainer">
+                                    <!-- <form method="POST" action="{{ url('admin/bidoffer/' . $menu->bid_id) }}">@csrf
                                 @method('DELETE')<button type="submit"><i class="fas fa-trash"></i></button></form> -->
-                            <button title="Delete" class="trash remove-bidoffer" data-id="{{ $menu->bid_id }}" data-action="{{ url('admin/bidoffer/' . $menu->bid_id) }}"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
+                                    <button title="Delete" class="dl-btn trash remove-bidoffer"
+                                        data-id="{{ $menu->bid_id }}"
+                                        data-action="{{ url('admin/bidoffer/' . $menu->bid_id) }}"><i
+                                            class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
 
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
     <script>
         $(document).ready(function() {
             $("body").on("click", ".remove-bidoffer", function() {
@@ -110,10 +120,15 @@
                         var token = jQuery('meta[name="csrf-token"]').attr('content');
                         var id = current_object.attr('data-id');
 
-                        $('body').html("<form class='form-inline remove-form' method='post' action='" + action + "'></form>");
-                        $('body').find('.remove-form').append('<input name="_method" type="hidden" value="DELETE">');
-                        $('body').find('.remove-form').append('<input name="_token" type="hidden" value="' + token + '">');
-                        $('body').find('.remove-form').append('<input name="id" type="hidden" value="' + id + '">');
+                        $('body').html(
+                            "<form class='form-inline remove-form' method='post' action='" +
+                            action + "'></form>");
+                        $('body').find('.remove-form').append(
+                            '<input name="_method" type="hidden" value="DELETE">');
+                        $('body').find('.remove-form').append(
+                            '<input name="_token" type="hidden" value="' + token + '">');
+                        $('body').find('.remove-form').append(
+                            '<input name="id" type="hidden" value="' + id + '">');
                         $('body').find('.remove-form').submit();
                     }
                 });
@@ -137,7 +152,8 @@
                     success: function(response) {
                         console.log('AJAX success:', response);
                         // Show success message in page body
-                        $('.page-body').prepend('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                        $('.page-body').prepend(
+                            '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
                             response.message +
                             '</div>');
                         // Automatically close the success message after 5 seconds
@@ -155,11 +171,6 @@
         });
     </script>
     <script>
-        $('#cmspageslist').dataTable({
-            "bPaginate": false
-        });
+        let table = new DataTable('#cmspageslist');
     </script>
-
-    {{$data->links()}}
-
 </x-app-layout>

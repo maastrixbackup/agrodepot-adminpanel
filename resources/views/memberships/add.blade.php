@@ -4,7 +4,7 @@
 
 
         <div class="col-10">
-            <h1 class="text-center mb-3">Add Language</h1>
+            <h1 class="text-center mb-3">Add Membership</h1>
         </div>
         <div class="col-2"><a href="{{ route('memberships.index') }}" class="btn btn-primary">Go Back</a></div>
     </div>

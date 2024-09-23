@@ -6,47 +6,52 @@
         </div>
         <div class="col-2"><a href="{{ route('sent-mail.create') }}" class="btn btn-primary">Create new</a></div>
     </div>
-    <table class="brandsTable table table-hover" id="cmspageslist">
-        <thead>
-            <tr>
-                <th scope="col">SL#</th>
-                <th scope="col">User Type</th>
-                <th scope="col">Subject</th>
-                <th scope="col">Subscriber</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody id="brands_sortable">
-            @foreach ($data as $index => $menu)
-            <tr id="{{ $menu->mail_id }}">
-                <td scope="row">{{ $index + 1 }}</td>
-                <td scope="row"> @if($menu->user_type == 3)
-                    Subscriber
-                    @elseif($menu->user_type == 2)
-                    Seller
-                    @elseif($menu->user_type == 1)
-                    Buyer
-                    @endif</td>
-                <td scope="row">{{ $menu->mail_subject}}</td>
-                <td scope="row">{{ $menu->mail_list}}</td>
-                <td>
-                    <div class="customButtonContainer">
-                        <!-- <form method="POST" action="{{ url('admin/newsletters/' . $menu->mail_id ) }}">@csrf
+    <div class="custom-scrollbar">
+        <table class="brandsTable table table-hover" id="cmspageslist">
+            <thead>
+                <tr>
+                    <th scope="col">SL#</th>
+                    <th scope="col">User Type</th>
+                    <th scope="col">Subject</th>
+                    <th scope="col">Subscriber</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="brands_sortable">
+                @foreach ($data as $index => $menu)
+                    <tr id="{{ $menu->mail_id }}">
+                        <td scope="row">{{ $index + 1 }}</td>
+                        <td scope="row">
+                            @if ($menu->user_type == 3)
+                                Subscriber
+                            @elseif($menu->user_type == 2)
+                                Seller
+                            @elseif($menu->user_type == 1)
+                                Buyer
+                            @endif
+                        </td>
+                        <td scope="row">{{ $menu->mail_subject }}</td>
+                        <td scope="row">{{ $menu->mail_list }}</td>
+                        <td>
+                            <div class="customButtonContainer">
+                                <!-- <form method="POST" action="{{ url('admin/newsletters/' . $menu->mail_id) }}">@csrf
                             @method('DELETE')<button type="submit"><i class="fas fa-trash"></i></button></form> -->
-                        <button title="Delete" class="trash remove-sentmail" data-id="{{ $menu->mail_id }}" data-action="{{ url('admin/newsletters/' . $menu->mail_id ) }}"><i class="fas fa-trash"></i></button>
-                    </div>
-                    </div>
+                                <button title="Delete" class="dl-btn trash remove-sentmail"
+                                    data-id="{{ $menu->mail_id }}"
+                                    data-action="{{ url('admin/newsletters/' . $menu->mail_id) }}"><i
+                                        class="fas fa-trash"></i></button>
+                            </div>
+    </div>
 
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
+    </td>
+    </tr>
+    @endforeach
+    </tbody>
     </table>
+    </div>
 
     <script>
-        $('#cmspageslist').dataTable({
-            "bPaginate": false
-        });
+        let table = new DataTable('#cmspageslist');
     </script>
 
     <script>
@@ -68,17 +73,19 @@
                         var token = jQuery('meta[name="csrf-token"]').attr('content');
                         var id = current_object.attr('data-id');
 
-                        $('body').html("<form class='form-inline remove-form' method='post' action='" + action + "'></form>");
-                        $('body').find('.remove-form').append('<input name="_method" type="hidden" value="DELETE">');
-                        $('body').find('.remove-form').append('<input name="_token" type="hidden" value="' + token + '">');
-                        $('body').find('.remove-form').append('<input name="id" type="hidden" value="' + id + '">');
+                        $('body').html(
+                            "<form class='form-inline remove-form' method='post' action='" +
+                            action + "'></form>");
+                        $('body').find('.remove-form').append(
+                            '<input name="_method" type="hidden" value="DELETE">');
+                        $('body').find('.remove-form').append(
+                            '<input name="_token" type="hidden" value="' + token + '">');
+                        $('body').find('.remove-form').append(
+                            '<input name="id" type="hidden" value="' + id + '">');
                         $('body').find('.remove-form').submit();
                     }
                 });
             });
         });
     </script>
-
-    {{$data->links()}}
-
 </x-app-layout>

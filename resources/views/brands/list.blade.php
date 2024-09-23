@@ -4,21 +4,49 @@
         <div class="col-10">
             <h1 class="text-center mb-3">Manage Brands</h1>
         </div>
-        <div class="col-2" style="text-align:right;"><a href="{{ route('brands.create') }}" class="btn btn-primary">Create new</a></div>
+        <div class="col-2" style="text-align:right;"><a href="{{ route('brands.create') }}" class="btn btn-primary">Create
+                new</a></div>
     </div>
-    <table class="brandsTable table table-hover" id="cmspageslist">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Brand Name</th>
-                <th scope="col">Logo</th>
-                <th scope="col">Parent</th>
-                <th scope="col">Status</th>
-                <th scope="col">Created</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-    </table>
+    <div class="">
+        <form method="GET" action="" id="search-form" name="searchform"
+            style="
+            margin-bottom: 15px;
+        ">
+            <div class="row align-items-center">
+                @if ($parent)
+                    <div class="col-3">
+                        <select name="brand" id="brand" class="form-select input-sm pull-right">
+                            <option value="" selected="selected">Select Brand</option>
+                            @foreach ($parent as $key => $val)
+                                <option value="{{ $key }}">{{ $val }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+                <div class="col-2">
+                    <input type="submit" name="search" id="search" value="Search" class="btn btn-info px-5">
+                </div>
+                <div class="col-2">
+                    <input type="reset" value="Reset" class="btn btn-info px-5">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="custom-scrollbar">
+        <table class="brandsTable table table-hover" id="cmspageslist">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Brand Name</th>
+                    <th scope="col">Logo</th>
+                    <th scope="col">Parent</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Created</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
     <script>
         $(document).ready(function() {
             // alert(234);
@@ -38,6 +66,7 @@
                         //     d.status = $('#p_status').val(),
                         //     d.min = $('#min').val(),
                         //     d.max = $('#max').val()
+                        d.brand = $('#brand').val()
                     },
                 },
                 columns: [{
@@ -128,7 +157,8 @@
                 success: function(response) {
                     console.log('AJAX success:', response);
                     // Show success message in page body
-                    $('.page-body').prepend('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                    $('.page-body').prepend(
+                        '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
                         response.message +
                         '</div>');
                     // Automatically close the success message after 5 seconds
@@ -164,10 +194,15 @@
                         var token = jQuery('meta[name="csrf-token"]').attr('content');
                         var id = current_object.attr('data-id');
 
-                        $('body').html("<form class='form-inline remove-form' method='post' action='" + action + "'></form>");
-                        $('body').find('.remove-form').append('<input name="_method" type="hidden" value="DELETE">');
-                        $('body').find('.remove-form').append('<input name="_token" type="hidden" value="' + token + '">');
-                        $('body').find('.remove-form').append('<input name="id" type="hidden" value="' + id + '">');
+                        $('body').html(
+                            "<form class='form-inline remove-form' method='post' action='" +
+                            action + "'></form>");
+                        $('body').find('.remove-form').append(
+                            '<input name="_method" type="hidden" value="DELETE">');
+                        $('body').find('.remove-form').append(
+                            '<input name="_token" type="hidden" value="' + token + '">');
+                        $('body').find('.remove-form').append(
+                            '<input name="id" type="hidden" value="' + id + '">');
                         $('body').find('.remove-form').submit();
                     }
                 });

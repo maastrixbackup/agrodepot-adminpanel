@@ -1,358 +1,358 @@
 (function () {
 
     //  Traffic chart start
-    var admissionRatioOption = {
-        series: [
-            {
-                name: '',
-                data: [30, 29.31, 29.7, 29.7, 31.32, 31.65, 31.13, 29.8, 31.79, 31.67, 32.39, 30.63, 32.89, 31.99, 31.23, 31.57, 30.84, 31.07, 31.41, 31.17, 34, 34.50, 34.50, 32.53, 31.37, 32.43, 32.44, 30.2,
-                    30.14, 30.65, 30.4, 30.65, 31.43, 31.89, 31.38, 30.64, 31.02, 30.33, 32.95, 31.89, 30.01, 30.88, 30.69, 30.58, 32.02, 32.14, 30.37, 30.51, 32.65, 32.64, 32.27, 32.1, 32.91, 30.65, 30.8, 31.92
-                ],
-            },
-        ],
-        chart: {
-            type: 'area',
-            height: 90,
-            offsetY: -10,
-            offsetX: 0,
-            toolbar: {
-                show: false,
-            },
-        },
-        stroke: {
-            width: 2,
-            curve: 'smooth'
-        },
-        grid: {
-            show: false,
-            borderColor: 'var(--light)',
-            padding: {
-                top: 5,
-                right: 0,
-                bottom: -30,
-                left: 0,
-            },
-        },
-        fill: {
-            type: "gradient",
-            gradient: {
-                shadeIntensity: 1,
-                opacityFrom: 0.5,
-                opacityTo: 0.1,
-                stops: [0, 90, 100]
-            }
-        },
-        dataLabels: {
-            enabled: false,
-        },
-        colors: [MofiAdminConfig.primary],
-        xaxis: {
-            labels: {
-                show: false,
-            },
-            tooltip: {
-                enabled: false,
-            },
-            labels: {
-                show: false,
-            },
-            axisBorder: {
-                show: false,
-            },
-            axisTicks: {
-                show: false,
-            },
-        },
-        yaxis: {
-            opposite: false,
-            min: 29,
-            max: 35,
-            logBase: 100,
-            tickAmount: 4,
-            forceNiceScale: false,
-            floating: false,
-            decimalsInFloat: undefined,
-            labels: {
-                show: false,
-                offsetX: -12,
-                offsetY: -15,
-                rotate: 0,
-            },
-        },
-        legend: {
-            horizontalAlign: 'left',
-        },
-    };
+    // var admissionRatioOption = {
+    //     series: [
+    //         {
+    //             name: '',
+    //             data: [30, 29.31, 29.7, 29.7, 31.32, 31.65, 31.13, 29.8, 31.79, 31.67, 32.39, 30.63, 32.89, 31.99, 31.23, 31.57, 30.84, 31.07, 31.41, 31.17, 34, 34.50, 34.50, 32.53, 31.37, 32.43, 32.44, 30.2,
+    //                 30.14, 30.65, 30.4, 30.65, 31.43, 31.89, 31.38, 30.64, 31.02, 30.33, 32.95, 31.89, 30.01, 30.88, 30.69, 30.58, 32.02, 32.14, 30.37, 30.51, 32.65, 32.64, 32.27, 32.1, 32.91, 30.65, 30.8, 31.92
+    //             ],
+    //         },
+    //     ],
+    //     chart: {
+    //         type: 'area',
+    //         height: 90,
+    //         offsetY: -10,
+    //         offsetX: 0,
+    //         toolbar: {
+    //             show: false,
+    //         },
+    //     },
+    //     stroke: {
+    //         width: 2,
+    //         curve: 'smooth'
+    //     },
+    //     grid: {
+    //         show: false,
+    //         borderColor: 'var(--light)',
+    //         padding: {
+    //             top: 5,
+    //             right: 0,
+    //             bottom: -30,
+    //             left: 0,
+    //         },
+    //     },
+    //     fill: {
+    //         type: "gradient",
+    //         gradient: {
+    //             shadeIntensity: 1,
+    //             opacityFrom: 0.5,
+    //             opacityTo: 0.1,
+    //             stops: [0, 90, 100]
+    //         }
+    //     },
+    //     dataLabels: {
+    //         enabled: false,
+    //     },
+    //     colors: [MofiAdminConfig.primary],
+    //     xaxis: {
+    //         labels: {
+    //             show: false,
+    //         },
+    //         tooltip: {
+    //             enabled: false,
+    //         },
+    //         labels: {
+    //             show: false,
+    //         },
+    //         axisBorder: {
+    //             show: false,
+    //         },
+    //         axisTicks: {
+    //             show: false,
+    //         },
+    //     },
+    //     yaxis: {
+    //         opposite: false,
+    //         min: 29,
+    //         max: 35,
+    //         logBase: 100,
+    //         tickAmount: 4,
+    //         forceNiceScale: false,
+    //         floating: false,
+    //         decimalsInFloat: undefined,
+    //         labels: {
+    //             show: false,
+    //             offsetX: -12,
+    //             offsetY: -15,
+    //             rotate: 0,
+    //         },
+    //     },
+    //     legend: {
+    //         horizontalAlign: 'left',
+    //     },
+    // };
 
-    var admissionRatio = new ApexCharts(document.querySelector('#admissionRatio'), admissionRatioOption);
-    admissionRatio.render();
+    // var admissionRatio = new ApexCharts(document.querySelector('#admissionRatio'), admissionRatioOption);
+    // admissionRatio.render();
     // ==============================
-    var admissionRatioOption = {
-        series: [
-            {
-                name: '',
-                data: [30, 32.31, 31.47, 30.69, 29.32, 31.65, 31.13, 31.77, 31.79, 31.67, 32.39, 32.63, 32.89, 31.99, 31.23, 31.57, 30.84, 31.07, 31.41, 31.17, 32.37, 32.19, 32.51, 32.53, 31.37, 30.43, 30.44, 30.2,
-                    30.14, 30.65, 30.4, 30.65, 31.43, 31.89, 31.38, 30.64, 30.02, 30.33, 30.95, 31.89, 31.01, 30.88, 30.69, 30.58, 32.02, 32.14, 32.37, 32.51, 32.65, 32.64, 32.27, 32.1, 32.91, 33.65, 33.8, 33.92
-                ],
-            },
-        ],
-        chart: {
-            type: 'area',
-            height: 90,
-            offsetY: -10,
-            offsetX: 0,
-            toolbar: {
-                show: false,
-            },
-        },
-        stroke: {
-            width: 2,
-            curve: 'smooth'
-        },
-        grid: {
-            show: false,
-            borderColor: 'var(--light)',
-            padding: {
-                top: 5,
-                right: 0,
-                bottom: -30,
-                left: 0,
-            },
-        },
-        fill: {
-            type: "gradient",
-            gradient: {
-                shadeIntensity: 1,
-                opacityFrom: 0.5,
-                opacityTo: 0.1,
-                stops: [0, 80, 100]
-            }
-        },
-        dataLabels: {
-            enabled: false,
-        },
-        colors: [MofiAdminConfig.secondary],
-        xaxis: {
-            labels: {
-                show: false,
-            },
-            tooltip: {
-                enabled: false,
-            },
-            labels: {
-                show: false,
-            },
-            axisBorder: {
-                show: false,
-            },
-            axisTicks: {
-                show: false,
-            },
-        },
-        yaxis: {
-            opposite: false,
-            min: 29,
-            max: 35,
-            logBase: 100,
-            tickAmount: 4,
-            forceNiceScale: false,
-            floating: false,
-            decimalsInFloat: undefined,
-            labels: {
-                show: false,
-                offsetX: -12,
-                offsetY: -15,
-                rotate: 0,
-            },
-        },
-        legend: {
-            horizontalAlign: 'left',
-        },
-        responsive: [
+    // var admissionRatioOption = {
+    //     series: [
+    //         {
+    //             name: '',
+    //             data: [30, 32.31, 31.47, 30.69, 29.32, 31.65, 31.13, 31.77, 31.79, 31.67, 32.39, 32.63, 32.89, 31.99, 31.23, 31.57, 30.84, 31.07, 31.41, 31.17, 32.37, 32.19, 32.51, 32.53, 31.37, 30.43, 30.44, 30.2,
+    //                 30.14, 30.65, 30.4, 30.65, 31.43, 31.89, 31.38, 30.64, 30.02, 30.33, 30.95, 31.89, 31.01, 30.88, 30.69, 30.58, 32.02, 32.14, 32.37, 32.51, 32.65, 32.64, 32.27, 32.1, 32.91, 33.65, 33.8, 33.92
+    //             ],
+    //         },
+    //     ],
+    //     chart: {
+    //         type: 'area',
+    //         height: 90,
+    //         offsetY: -10,
+    //         offsetX: 0,
+    //         toolbar: {
+    //             show: false,
+    //         },
+    //     },
+    //     stroke: {
+    //         width: 2,
+    //         curve: 'smooth'
+    //     },
+    //     grid: {
+    //         show: false,
+    //         borderColor: 'var(--light)',
+    //         padding: {
+    //             top: 5,
+    //             right: 0,
+    //             bottom: -30,
+    //             left: 0,
+    //         },
+    //     },
+    //     fill: {
+    //         type: "gradient",
+    //         gradient: {
+    //             shadeIntensity: 1,
+    //             opacityFrom: 0.5,
+    //             opacityTo: 0.1,
+    //             stops: [0, 80, 100]
+    //         }
+    //     },
+    //     dataLabels: {
+    //         enabled: false,
+    //     },
+    //     colors: [MofiAdminConfig.secondary],
+    //     xaxis: {
+    //         labels: {
+    //             show: false,
+    //         },
+    //         tooltip: {
+    //             enabled: false,
+    //         },
+    //         labels: {
+    //             show: false,
+    //         },
+    //         axisBorder: {
+    //             show: false,
+    //         },
+    //         axisTicks: {
+    //             show: false,
+    //         },
+    //     },
+    //     yaxis: {
+    //         opposite: false,
+    //         min: 29,
+    //         max: 35,
+    //         logBase: 100,
+    //         tickAmount: 4,
+    //         forceNiceScale: false,
+    //         floating: false,
+    //         decimalsInFloat: undefined,
+    //         labels: {
+    //             show: false,
+    //             offsetX: -12,
+    //             offsetY: -15,
+    //             rotate: 0,
+    //         },
+    //     },
+    //     legend: {
+    //         horizontalAlign: 'left',
+    //     },
+    //     responsive: [
 
-        ],
-    };
+    //     ],
+    // };
 
-    var admissionRatio = new ApexCharts(document.querySelector('#order-value'), admissionRatioOption);
-    admissionRatio.render();
+    // var admissionRatio = new ApexCharts(document.querySelector('#order-value'), admissionRatioOption);
+    // admissionRatio.render();
+    // // ======================================
+    // var admissionRatioOption = {
+    //     series: [
+    //         {
+    //             name: '',
+    //             data: [30, 29.31, 29.7, 29.7, 31.32, 31.65, 31.13, 29.8, 31.79, 31.67, 32.39, 30.63, 32.89, 31.99, 31.23, 31.57, 30.84, 31.07, 31.41, 31.17, 34, 34.50, 34.50, 32.53, 31.37, 32.43, 32.44, 30.2,
+    //                 30.14, 30.65, 30.4, 30.65, 31.43, 31.89, 31.38, 30.64, 31.02, 30.33, 32.95, 31.89, 30.01, 30.88, 30.69, 30.58, 32.02, 32.14, 30.37, 30.51, 32.65, 32.64, 32.27, 32.1, 32.91, 30.65, 30.8, 31.92
+    //             ],
+    //         },
+    //     ],
+    //     chart: {
+    //         type: 'area',
+    //         height: 90,
+    //         offsetY: -10,
+    //         offsetX: 0,
+    //         toolbar: {
+    //             show: false,
+    //         },
+    //     },
+    //     stroke: {
+    //         width: 2,
+    //         curve: 'smooth'
+    //     },
+    //     grid: {
+    //         show: false,
+    //         borderColor: 'var(--light)',
+    //         padding: {
+    //             top: 5,
+    //             right: 0,
+    //             bottom: -30,
+    //             left: 0,
+    //         },
+    //     },
+    //     fill: {
+    //         type: "gradient",
+    //         gradient: {
+    //             shadeIntensity: 1,
+    //             opacityFrom: 0.5,
+    //             opacityTo: 0.1,
+    //             stops: [0, 90, 100]
+    //         }
+    //     },
+    //     dataLabels: {
+    //         enabled: false,
+    //     },
+    //     colors: ['#D77748'],
+    //     xaxis: {
+    //         labels: {
+    //             show: false,
+    //         },
+    //         tooltip: {
+    //             enabled: false,
+    //         },
+    //         labels: {
+    //             show: false,
+    //         },
+    //         axisBorder: {
+    //             show: false,
+    //         },
+    //         axisTicks: {
+    //             show: false,
+    //         },
+    //     },
+    //     yaxis: {
+    //         opposite: false,
+    //         min: 29,
+    //         max: 35,
+    //         logBase: 100,
+    //         tickAmount: 4,
+    //         forceNiceScale: false,
+    //         floating: false,
+    //         decimalsInFloat: undefined,
+    //         labels: {
+    //             show: false,
+    //             offsetX: -12,
+    //             offsetY: -15,
+    //             rotate: 0,
+    //         },
+    //     },
+    //     legend: {
+    //         horizontalAlign: 'left',
+    //     },
+    //     responsive: [
+
+    //     ],
+    // };
+
+    // var admissionRatio = new ApexCharts(document.querySelector('#daily-value'), admissionRatioOption);
+    // admissionRatio.render();
     // ======================================
-    var admissionRatioOption = {
-        series: [
-            {
-                name: '',
-                data: [30, 29.31, 29.7, 29.7, 31.32, 31.65, 31.13, 29.8, 31.79, 31.67, 32.39, 30.63, 32.89, 31.99, 31.23, 31.57, 30.84, 31.07, 31.41, 31.17, 34, 34.50, 34.50, 32.53, 31.37, 32.43, 32.44, 30.2,
-                    30.14, 30.65, 30.4, 30.65, 31.43, 31.89, 31.38, 30.64, 31.02, 30.33, 32.95, 31.89, 30.01, 30.88, 30.69, 30.58, 32.02, 32.14, 30.37, 30.51, 32.65, 32.64, 32.27, 32.1, 32.91, 30.65, 30.8, 31.92
-                ],
-            },
-        ],
-        chart: {
-            type: 'area',
-            height: 90,
-            offsetY: -10,
-            offsetX: 0,
-            toolbar: {
-                show: false,
-            },
-        },
-        stroke: {
-            width: 2,
-            curve: 'smooth'
-        },
-        grid: {
-            show: false,
-            borderColor: 'var(--light)',
-            padding: {
-                top: 5,
-                right: 0,
-                bottom: -30,
-                left: 0,
-            },
-        },
-        fill: {
-            type: "gradient",
-            gradient: {
-                shadeIntensity: 1,
-                opacityFrom: 0.5,
-                opacityTo: 0.1,
-                stops: [0, 90, 100]
-            }
-        },
-        dataLabels: {
-            enabled: false,
-        },
-        colors: ['#D77748'],
-        xaxis: {
-            labels: {
-                show: false,
-            },
-            tooltip: {
-                enabled: false,
-            },
-            labels: {
-                show: false,
-            },
-            axisBorder: {
-                show: false,
-            },
-            axisTicks: {
-                show: false,
-            },
-        },
-        yaxis: {
-            opposite: false,
-            min: 29,
-            max: 35,
-            logBase: 100,
-            tickAmount: 4,
-            forceNiceScale: false,
-            floating: false,
-            decimalsInFloat: undefined,
-            labels: {
-                show: false,
-                offsetX: -12,
-                offsetY: -15,
-                rotate: 0,
-            },
-        },
-        legend: {
-            horizontalAlign: 'left',
-        },
-        responsive: [
+    // var admissionRatioOption = {
+    //     series: [
+    //         {
+    //             name: '',
+    //             data: [29, 30.31, 30.7, 31.69, 31.32, 31.65, 31.13, 31.77, 31.79, 31.67, 32.39, 32.63, 32.89, 31.99, 31.23, 31.57, 30.84, 31.07, 31.41, 31.17, 32.37, 32.19, 32.51, 32.53, 31.37, 30.43, 30.44, 30.2,
+    //                 30.14, 30.65, 30.4, 30.65, 31.43, 31.89, 31.38, 30.64, 30.02, 30.33, 30.95, 31.89, 31.01, 30.88, 30.69, 30.58, 32.02, 32.14, 32.37, 32.51, 32.65, 32.64, 32.27, 32.1, 32.91, 33.65, 33.8, 33.92
+    //             ],
+    //         },
+    //     ],
+    //     chart: {
+    //         type: 'area',
+    //         height: 90,
+    //         offsetY: -10,
+    //         offsetX: 0,
+    //         toolbar: {
+    //             show: false,
+    //         },
+    //     },
+    //     stroke: {
+    //         width: 2,
+    //         curve: 'smooth'
+    //     },
+    //     grid: {
+    //         show: false,
+    //         borderColor: 'var(--light)',
+    //         padding: {
+    //             top: 5,
+    //             right: 0,
+    //             bottom: -30,
+    //             left: 0,
+    //         },
+    //     },
+    //     fill: {
+    //         type: "gradient",
+    //         gradient: {
+    //             shadeIntensity: 1,
+    //             opacityFrom: 0.5,
+    //             opacityTo: 0.1,
+    //             stops: [0, 90, 100]
+    //         }
+    //     },
+    //     dataLabels: {
+    //         enabled: false,
+    //     },
+    //     colors: ['#C95E9E'],
+    //     xaxis: {
+    //         labels: {
+    //             show: false,
+    //         },
+    //         tooltip: {
+    //             enabled: false,
+    //         },
+    //         labels: {
+    //             show: false,
+    //         },
+    //         axisBorder: {
+    //             show: false,
+    //         },
+    //         axisTicks: {
+    //             show: false,
+    //         },
+    //     },
+    //     yaxis: {
+    //         opposite: false,
+    //         min: 29,
+    //         max: 35,
+    //         logBase: 100,
+    //         tickAmount: 4,
+    //         forceNiceScale: false,
+    //         floating: false,
+    //         decimalsInFloat: undefined,
+    //         labels: {
+    //             show: false,
+    //             offsetX: -12,
+    //             offsetY: -15,
+    //             rotate: 0,
+    //         },
+    //     },
+    //     legend: {
+    //         horizontalAlign: 'left',
+    //     },
+    //     responsive: [
 
-        ],
-    };
+    //     ],
+    // };
 
-    var admissionRatio = new ApexCharts(document.querySelector('#daily-value'), admissionRatioOption);
-    admissionRatio.render();
-    // ======================================
-    var admissionRatioOption = {
-        series: [
-            {
-                name: '',
-                data: [29, 30.31, 30.7, 31.69, 31.32, 31.65, 31.13, 31.77, 31.79, 31.67, 32.39, 32.63, 32.89, 31.99, 31.23, 31.57, 30.84, 31.07, 31.41, 31.17, 32.37, 32.19, 32.51, 32.53, 31.37, 30.43, 30.44, 30.2,
-                    30.14, 30.65, 30.4, 30.65, 31.43, 31.89, 31.38, 30.64, 30.02, 30.33, 30.95, 31.89, 31.01, 30.88, 30.69, 30.58, 32.02, 32.14, 32.37, 32.51, 32.65, 32.64, 32.27, 32.1, 32.91, 33.65, 33.8, 33.92
-                ],
-            },
-        ],
-        chart: {
-            type: 'area',
-            height: 90,
-            offsetY: -10,
-            offsetX: 0,
-            toolbar: {
-                show: false,
-            },
-        },
-        stroke: {
-            width: 2,
-            curve: 'smooth'
-        },
-        grid: {
-            show: false,
-            borderColor: 'var(--light)',
-            padding: {
-                top: 5,
-                right: 0,
-                bottom: -30,
-                left: 0,
-            },
-        },
-        fill: {
-            type: "gradient",
-            gradient: {
-                shadeIntensity: 1,
-                opacityFrom: 0.5,
-                opacityTo: 0.1,
-                stops: [0, 90, 100]
-            }
-        },
-        dataLabels: {
-            enabled: false,
-        },
-        colors: ['#C95E9E'],
-        xaxis: {
-            labels: {
-                show: false,
-            },
-            tooltip: {
-                enabled: false,
-            },
-            labels: {
-                show: false,
-            },
-            axisBorder: {
-                show: false,
-            },
-            axisTicks: {
-                show: false,
-            },
-        },
-        yaxis: {
-            opposite: false,
-            min: 29,
-            max: 35,
-            logBase: 100,
-            tickAmount: 4,
-            forceNiceScale: false,
-            floating: false,
-            decimalsInFloat: undefined,
-            labels: {
-                show: false,
-                offsetX: -12,
-                offsetY: -15,
-                rotate: 0,
-            },
-        },
-        legend: {
-            horizontalAlign: 'left',
-        },
-        responsive: [
-
-        ],
-    };
-
-    var admissionRatio = new ApexCharts(document.querySelector('#daily-revenue'), admissionRatioOption);
-    admissionRatio.render();
+    // var admissionRatio = new ApexCharts(document.querySelector('#daily-revenue'), admissionRatioOption);
+    // admissionRatio.render();
 
     //  ========  Morris chart  ========
     $(document).ready(function () {

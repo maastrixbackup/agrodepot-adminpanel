@@ -17,16 +17,15 @@ class UpgradeMembershipController extends Controller
     public function index()
     {
         $data = DB::table('upgrade_membership as um')
-        ->leftjoin('user_memberships as m','um.member_type','=','m.memb_id')
-        ->leftjoin('user_credit_account as c','um.upgrade_id','=','c.upgrade_id')
-        ->select('um.*','m.memb_type')
-        ->get();
+            ->leftjoin('user_memberships as m', 'um.member_type', '=', 'm.memb_id')
+            ->leftjoin('user_credit_account as c', 'um.upgrade_id', '=', 'c.upgrade_id')
+            ->select('um.*', 'm.memb_type')
+            ->get();
         foreach ($data as $menu) {
             $menu->transfer_id = Str::random(32); // Add a new property for the random key
         }
-        
-        return view("upgradeMemberships.list", compact("data"));
 
+        return view("upgradeMemberships.list", compact("data"));
     }
 
     /**
@@ -50,19 +49,20 @@ class UpgradeMembershipController extends Controller
      */
     public function show(string $id)
     {
-        //$membership = UpgradeMembership::find($id);
-
         $membership =  DB::table('upgrade_membership as um')
-        ->leftjoin('user_memberships as m', 'um.member_type', '=', 'm.memb_id')
-        ->leftjoin('user_credit_account as c', 'um.upgrade_id', '=', 'c.upgrade_id')
-        ->select('um.*', 'm.memb_type')
-        ->where('um.upgrade_id', $id) 
-        ->first();
-        //$membership->transfer_id = Str::random(32);
+            ->leftJoin('user_memberships as m', 'um.member_type', '=', 'm.memb_id')
+            ->leftJoin('user_credit_account as c', 'um.upgrade_id', '=', 'c.upgrade_id')
+            ->leftJoin('master_countries as mc', 'mc.country_id', '=', 'um.county')
+            ->leftJoin('master_locations as ml', 'ml.location_id', '=', 'um.city')
+            ->select('um.*', 'm.memb_type', 'mc.country_name', 'ml.location_name')
+            ->where('um.upgrade_id', $id)
+            ->first();
+
         $randomKey = Str::random(32);
 
-        return view('upgradeMemberships.show', compact('membership','randomKey'));
+        return view('upgradeMemberships.show', compact('membership', 'randomKey'));
     }
+
 
     /**
      * Show the form for editing the specified resource.

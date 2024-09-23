@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Validator;
 use App\Mail\NewB2BUserMail;
 use App\Models\EmailTemplate;
+use App\Models\Notice;
 use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
@@ -24,7 +25,7 @@ class UserController extends Controller
     //
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'refresh', 'logout', 'updatePass']]);
+        // $this->middleware('auth:api', ['except' => ['login', 'register', 'refresh', 'logout', 'updatePass']]);
     }
 
     public function register(Request $request)
@@ -68,24 +69,32 @@ class UserController extends Controller
             'locality_id' => $request->locality_id,
             'is_active' => $is_active,
             // newfields,
-            'company_name' => $request->$company_name,
-            'cui' => $request->$cui,
-            'reg_no' => $request->$reg_no,
-            'regd_off_add' => $request->$regd_off_add,
-            'country_regd_off' => $request->$country_regd_off,
-            'regd_off_city' => $request->$regd_off_city,
-            'regd_off_country' => $request->$regd_off_country,
-            'bank' => $request->$bank,
-            'account' => $request->$account,
+            'company_name' => $request->company_name,
+            'cui' => $request->cui,
+            'reg_no' => $request->reg_no,
+            'regd_off_add' => $request->regd_off_add,
+            'country_regd_off' => $request->country_regd_off,
+            'regd_off_city' => $request->regd_off_city,
+            'regd_off_country' => $request->regd_off_country,
+            'bank' => $request->bank,
+            'account' => $request->account,
 
         ]);
 
+        // Create a notice record for the registered user
+        $notice = new Notice();
+        $notice->notice_type = 'register';
+        $notice->postid = $user->user_id;
+        $notice->user_id = $user->user_id;
+        $notice->status = 0;
+        $notice->user_status = 0;
+        $notice->notice_name = 'Register';
+        $notice->save();
 
-        $route =  url('admin/users/' . $user->user_id . '/edit') ;
-        $AccountLink = '<a href="'.$route.'">here</a>';
+
+        $route =  url('admin/users/' . $user->user_id . '/edit');
+        $AccountLink = '<a href="' . $route . '">here</a>';
         if ($request->buyer_type == 1) {
-
-
             $emailTemplate = EmailTemplate::where('email_of', 16)->first()->mail_body;
             $emailTemplate = str_replace("{AccountLink}", $AccountLink, $emailTemplate);
             $body =  $emailTemplate;
@@ -94,7 +103,7 @@ class UserController extends Controller
                 'body' => $body
             ];
 
-            Mail::to('info@piesemasiniagricole.ro')->send(new NewB2BUserMail($body));
+            Mail::to('amlannayak530@gmail.com')->send(new NewB2BUserMail($body));
         }
 
         $token = Auth::guard('api')->login($user);
@@ -118,6 +127,12 @@ class UserController extends Controller
         ]);
 
         $user = MasterUser::where('email', $request->input('email'))->first();
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No account found for this email address.',
+            ], 401);
+        }
 
         if ($user->is_active != 1) {
             return response()->json([
@@ -394,62 +409,148 @@ class UserController extends Controller
         return response()->json(['active_data' => $active_request, 'resolved_data' => $resolved_request, 'cancelled_data' => $cancellation_request]);
     }
 
-    public function myPurchases(Request $request, $userid)
+    // public function myPurchases(Request $request, $userid)
+    // {
+    //     $data = [];
+    //     $purchase_data = [];
+    //     \DB::enableQueryLog();
+    //     $data = \DB::table('sales_order')
+    //         ->leftJoin('sales_advertisements as PostAd', 'PostAd.adv_id', '=', 'sales_order.adv_id')
+    //         ->select('PostAd.adv_id', 'PostAd.user_id', 'PostAd.adv_name', 'PostAd.slug', 'PostAd.currency', 'sales_order.orderid', 'PostAd.price', 'sales_order.qty', 'sales_order.created', 'sales_order.id')
+    //         ->where('sales_order.user_id', $userid)
+    //         ->orderBy('sales_order.orderid', 'desc')
+    //         ->limit(10)
+    //         ->get();
+    //     //  dd(\DB::getQueryLog());
+    //     // dd($data);
+    //     if ($data) {
+    //         foreach ($data as $key => $detail) {
+    //             $user = MasterUser::where('user_id', $detail->user_id)->first();
+    //             $purchase_data[$key]['user_id'] =  isset($user->user_id) ? $user->user_id : "";
+    //             $purchase_data[$key]['first_name'] = isset($user->first_name) ? $user->first_name : "";
+    //             $purchase_data[$key]['last_name'] = isset($user->last_name) ? $user->last_name : "";
+
+    //             $purchase_data[$key]['phone_no'] = isset($user->telephone1) ? $user->telephone1 : "";
+    //             $purchase_data[$key]['email'] = isset($user->email) ? $user->email : "";
+    //             $purchase_data[$key]['postal_code'] = isset($user->postal_code) ? $user->postal_code : "";
+    //             $purchase_data[$key]['address'] = isset($user->other_add) ? $user->other_add : "";
+
+    //             $purchase_data[$key]['adv_name'] = $detail->adv_name;
+    //             $purchase_data[$key]['adv_id'] = $detail->adv_id;
+    //             $purchase_data[$key]['slug'] = $detail->slug;
+    //             $purchase_data[$key]['orderid'] = $detail->orderid;
+    //             $purchase_data[$key]['price'] = $detail->price;
+    //             $purchase_data[$key]['currency'] = $detail->currency;
+    //             $purchase_data[$key]['qty'] = $detail->qty;
+    //             $purchase_data[$key]['sales_order_id'] = $detail->id;
+    //             $purchase_data[$key]['created_date'] = $detail->created;
+    //             $grade = 0;
+    //             if (!empty($user->user_id)) {
+    //                 $allpositivegrade = UserRating::where('user_id', $user->user_id)
+    //                     ->orderBy('rating_id', 'desc')
+    //                     ->get();
+
+    //                 $grade = 0;
+
+    //                 if ($allpositivegrade->isNotEmpty()) {
+    //                     foreach ($allpositivegrade as $rating) {
+    //                         $grade += $rating->grade;
+    //                     }
+    //                 }
+    //             }
+
+    //             $purchase_data[$key]['rating'] =  $grade;
+    //             // $resolved_request[$key]['model_name'] = $model_name;
+    //         }
+    //     }
+
+    //     return response()->json(['data' => $purchase_data]);
+    // }
+
+    public function myPurchases(Request $request, $userId)
     {
-        $data = [];
-        $purchase_data = [];
-        \DB::enableQueryLog();
-        $data = \DB::table('sales_order')
+        // Query for orders with sales_order_details
+        $purchaseDataWithDetails = \DB::table('sales_order')
+            ->join('sales_order_details', 'sales_order.orderid', '=', 'sales_order_details.order_id')
+            ->leftJoin('sales_advertisements as PostAd', 'PostAd.adv_id', '=', 'sales_order_details.adv_id')
+            ->select(
+                'sales_order.orderid',
+                'sales_order.user_id',
+                'sales_order_details.adv_id',
+                'sales_order_details.product_quantity',
+                'sales_order_details.amount',
+                'sales_order_details.status',
+                'sales_order.created',
+                'sales_order.id as sales_order_id',
+                'PostAd.adv_name',
+                'PostAd.slug',
+                'PostAd.currency',
+                'PostAd.price'
+            )
+            ->where('sales_order.user_id', $userId);
+
+        // Query for orders without sales_order_details but with sales_advertisements
+        $purchaseDataWithoutDetails = \DB::table('sales_order')
             ->leftJoin('sales_advertisements as PostAd', 'PostAd.adv_id', '=', 'sales_order.adv_id')
-            ->select('PostAd.adv_id', 'PostAd.user_id', 'PostAd.adv_name', 'PostAd.slug', 'PostAd.currency', 'sales_order.orderid', 'PostAd.price', 'sales_order.qty', 'sales_order.created', 'sales_order.id')
-            ->where('sales_order.user_id', $userid)
-            ->orderBy('sales_order.orderid', 'desc')
-            ->limit(10)
+            ->select(
+                'sales_order.orderid',
+                'sales_order.user_id',
+                'sales_order.adv_id',
+                \DB::raw('1 as product_quantity'),
+                \DB::raw('PostAd.price as amount'),
+                \DB::raw('"completed" as status'), // Assuming a default status if necessary
+                'sales_order.created',
+                'sales_order.id as sales_order_id',
+                'PostAd.adv_name',
+                'PostAd.slug',
+                'PostAd.currency',
+                'PostAd.price'
+            )
+            ->where('sales_order.user_id', $userId)
+            ->whereNotIn('sales_order.orderid', function ($query) {
+                $query->select('order_id')->from('sales_order_details');
+            });
+
+        // Combine the two queries using UNION
+        $purchaseData = $purchaseDataWithDetails->union($purchaseDataWithoutDetails)
+            ->orderBy('orderid', 'desc')
             ->get();
-        //  dd(\DB::getQueryLog());
-        if ($data) {
-            foreach ($data as $key => $detail) {
+
+        // Process the results as you currently do
+        if ($purchaseData->isNotEmpty()) {
+            foreach ($purchaseData as $key => $detail) {
                 $user = MasterUser::where('user_id', $detail->user_id)->first();
-                $purchase_data[$key]['user_id'] =  isset($user->user_id) ? $user->user_id : "";
-                $purchase_data[$key]['first_name'] = isset($user->first_name) ? $user->first_name : "";
-                $purchase_data[$key]['last_name'] = isset($user->last_name) ? $user->last_name : "";
 
-                $purchase_data[$key]['phone_no'] = isset($user->telephone1) ? $user->telephone1 : "";
-                $purchase_data[$key]['email'] = isset($user->email) ? $user->email : "";
-                $purchase_data[$key]['postal_code'] = isset($user->postal_code) ? $user->postal_code : "";
-                $purchase_data[$key]['address'] = isset($user->other_add) ? $user->other_add : "";
-
-                $purchase_data[$key]['adv_name'] = $detail->adv_name;
-                $purchase_data[$key]['adv_id'] = $detail->adv_id;
-                $purchase_data[$key]['slug'] = $detail->slug;
-                $purchase_data[$key]['orderid'] = $detail->orderid;
-                $purchase_data[$key]['price'] = $detail->price;
-                $purchase_data[$key]['currency'] = $detail->currency;
-                $purchase_data[$key]['qty'] = $detail->qty;
-                $purchase_data[$key]['sales_order_id'] = $detail->id;
-                $purchase_data[$key]['created_date'] = $detail->created;
                 $grade = 0;
-                if (!empty($user->user_id)) {
-                    $allpositivegrade = UserRating::where('user_id', $user->user_id)
+                if (!empty($user)) {
+                    $allPositiveGrade = UserRating::where('user_id', $user->user_id)
                         ->orderBy('rating_id', 'desc')
                         ->get();
 
-                    $grade = 0;
-
-                    if ($allpositivegrade->isNotEmpty()) {
-                        foreach ($allpositivegrade as $rating) {
-                            $grade += $rating->grade;
-                        }
+                    if ($allPositiveGrade->isNotEmpty()) {
+                        $grade = $allPositiveGrade->sum('grade');
                     }
                 }
 
-                $purchase_data[$key]['rating'] =  $grade;
-                // $resolved_request[$key]['model_name'] = $model_name;
+                $purchaseData[$key]->user_id = isset($user->user_id) ? $user->user_id : "";
+                $purchaseData[$key]->first_name = isset($user->first_name) ? $user->first_name : "";
+                $purchaseData[$key]->last_name = isset($user->last_name) ? $user->last_name : "";
+                $purchaseData[$key]->phone_no = isset($user->telephone1) ? $user->telephone1 : "";
+                $purchaseData[$key]->email = isset($user->email) ? $user->email : "";
+                $purchaseData[$key]->postal_code = isset($user->postal_code) ? $user->postal_code : "";
+                $purchaseData[$key]->address = isset($user->other_add) ? $user->other_add : "";
+                $purchaseData[$key]->rating = $grade;
+                $purchaseData[$key]->price = $detail->price;
+                $purchaseData[$key]->qty = $detail->product_quantity;
+                $purchaseData[$key]->created_date = date('Y-m-d H:i:s', strtotime($detail->created));
             }
         }
 
-        return response()->json(['data' => $purchase_data]);
+        return response()->json(['data' => $purchaseData]);
     }
+
+
+
 
     public function myQuestions(Request $request, $userid)
     {
@@ -477,7 +578,7 @@ class UserController extends Controller
                 $qs_data[$key]['adv_id'] = $detail->adv_id;
                 $qs_data[$key]['question'] = $detail->question;
                 $qs_data[$key]['question_id'] = $detail->question_id;
-                $qs_data[$key]['created_date'] = $detail->created;
+                $qs_data[$key]['created_date'] = date('Y-m-d H:i:s', strtotime($detail->created));
 
                 $grade = 0;
                 if (!empty($userdetail->user_id)) {
@@ -584,6 +685,8 @@ class UserController extends Controller
             ], 400);
         }
     }
+
+
 
     public function changeEmailAddress(Request $request)
     {

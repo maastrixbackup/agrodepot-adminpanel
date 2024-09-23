@@ -16,8 +16,9 @@ class PartsOrderController extends Controller
         ->leftjoin('bid_offers as bo','parts_order.bid_id','=','bo.bid_id')
         ->leftjoin('master_users as ms','bo.user_id','=','ms.user_id')
         ->leftjoin('request_accessories as ra','ra.part_id','=','parts_order.parts_id')
-        ->select('parts_order.*','bo.first_name','bo.last_name','ra.name_piece')
-        ->paginate(10);
+        ->select('parts_order.*','ra.name_piece')
+        // ->select('parts_order.*','bo.first_name','bo.last_name','ra.name_piece')
+        ->get();
         return view("reports.request_parts_order", compact("data"));
     }
 

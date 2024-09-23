@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use Illuminate\View\View;
+use Brian2694\Toastr\Facades\Toastr;
+use Illuminate\Support\Facades\Mail;
+use Carbon\Carbon;
+use App\Mail\AdminForgotPwMail;
+use DB;
 
 class PasswordResetLinkController extends Controller
 {
     /**
      * Display the password reset link request view.
      */
-    public function create(): View
+    public function create()
     {
         return view('auth.forgot-password');
     }
@@ -23,22 +26,36 @@ class PasswordResetLinkController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'email' => ['required', 'email'],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $token = \Str::random(64);
+        \DB::table('password_reset_tokens')->insert([
+            'email' => $request->email,
+            'token' => $token,
+            'created_at' => Carbon::now()
+        ]);
+        $action_link = route('password.reset', ['token' => $token, 'email' => $request->email]);
+        $body = "We are received a request to reset the password for Agro Depot account associated with " . $request->email .
+            ".You can reset your password by clicking the link below ";
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                            ->withErrors(['email' => __($status)]);
+
+
+        $body = [
+            'body' => $body,
+            'action_link' => $action_link,
+        ];
+
+        Mail::to($request->email)->send(new AdminForgotPwMail($body));
+        // Mail::send('emails.AdminForgotPwMail', $body, function ($message) use ($request) {
+        //     $message->to($request->email);
+        // });
+
+        return back()->with('success', 'We have emailed your password reset link');
+
+        // return redirect()->back()->with('success',  Toastr::success('We have emailed your password reset link', '', ["positionClass" => "toast-top-right"]));
     }
 }

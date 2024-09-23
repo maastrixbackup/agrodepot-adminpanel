@@ -1,91 +1,91 @@
 <x-app-layout>
 
     <style>
-        #image-preview {
-            display: flex;
-            flex-wrap: wrap;
-        }
+        /*#image-preview {*/
+        /*    display: flex;*/
+        /*    flex-wrap: wrap;*/
+        /*}*/
 
-        .preview-container {
-            position: relative;
-            margin: 5px;
-        }
+        /*.preview-container {*/
+        /*    position: relative;*/
+        /*    margin: 5px;*/
+        /*}*/
 
-        .preview-container .preview-image {
-            width: 200px;
-            height: 200px;
-        }
+        /*.preview-container .preview-image {*/
+        /*    width: 200px;*/
+        /*    height: 200px;*/
+        /*}*/
 
-        .close-icon {
-            position: absolute;
-            top: 0;
-            right: 0;
-            cursor: pointer;
-            background-color: white;
-            padding: 2px;
-        }
+        /*.close-icon {*/
+        /*    position: absolute;*/
+        /*    top: 0;*/
+        /*    right: 0;*/
+        /*    cursor: pointer;*/
+        /*    background-color: white;*/
+        /*    padding: 2px;*/
+        /*}*/
 
-        .rotate-buttons {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-        }
+        /*.rotate-buttons {*/
+        /*    position: absolute;*/
+        /*    bottom: 0;*/
+        /*    left: 50%;*/
+        /*    transform: translateX(-50%);*/
+        /*    display: flex;*/
+        /*    justify-content: space-between;*/
+        /*    width: 100%;*/
+        /*}*/
 
-        .rotate-icon {
-            cursor: pointer;
-            background-color: white;
-            padding: 2px;
-        }
+        /*.rotate-icon {*/
+        /*    cursor: pointer;*/
+        /*    background-color: white;*/
+        /*    padding: 2px;*/
+        /*}*/
 
-        .rotate-buttons i:nth-last-child(1) {
-            margin-right: 0;
-        }
+        /*.rotate-buttons i:nth-last-child(1) {*/
+        /*    margin-right: 0;*/
+        /*}*/
 
-        .image-preview-container {
-            position: relative;
+        /*.image-preview-container {*/
+        /*    position: relative;*/
             /* overflow: hidden; */
-        }
+        /*}*/
 
-        .rotate-buttons i {
-            margin-right: 15px;
-            background: #016f0f;
-            width: 30px;
-            height: 30px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: #fff;
-            cursor: pointer;
-            transition: 0.5s ease;
-            border: 2px solid gray;
-            border-radius: 6px;
-        }
+        /*.rotate-buttons i {*/
+        /*    margin-right: 15px;*/
+        /*    background: #016f0f;*/
+        /*    width: 30px;*/
+        /*    height: 30px;*/
+        /*    display: inline-flex;*/
+        /*    align-items: center;*/
+        /*    justify-content: center;*/
+        /*    font-size: 18px;*/
+        /*    color: #fff;*/
+        /*    cursor: pointer;*/
+        /*    transition: 0.5s ease;*/
+        /*    border: 2px solid gray;*/
+        /*    border-radius: 6px;*/
+        /*}*/
 
-        .rotate-buttons i:hover {
-            background: #ee5b2b;
-        }
+        /*.rotate-buttons i:hover {*/
+        /*    background: #ee5b2b;*/
+        /*}*/
 
-        .hidden {
-            display: none;
-        }
+        /*.hidden {*/
+        /*    display: none;*/
+        /*}*/
 
-        .images-container img {
-            height: 100px !important;
-            width: 100px !important;
-            display: block;
-        }
+        /*.images-container img {*/
+        /*    height: 100px !important;*/
+        /*    width: 100px !important;*/
+        /*    display: block;*/
+        /*}*/
 
-        img#modal-image-preview {
-            height: 250px;
-            width: 250px;
-            position: relative;
-            left: 20%;
-        }
+        /*img#modal-image-preview {*/
+        /*    height: 250px;*/
+        /*    width: 250px;*/
+        /*    position: relative;*/
+        /*    left: 20%;*/
+        /*}*/
 
         /* .cropper-canvas {
             height: 979px !important;
@@ -99,6 +99,51 @@
         .cropper-container {
             height: 980px !important;
         } */
+        
+        
+        /*** new ***/
+        
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    .thumbnail {
+        display: inline-block;
+        margin: 10px;
+        cursor: pointer;
+        position: relative;
+        /* Added */
+    }
+
+    .thumbnail img {
+        width: 200px;
+        height: auto;
+    }
+
+    .thumbnail .close-icon {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        color: red;
+        font-size: 18px;
+        cursor: pointer;
+        z-index: 1000;
+    }
+
+    .img-container {
+        max-width: 100%;
+        max-height: 80vh;
+        overflow: auto;
+    }
+
+    .modal-lg {
+        max-width: 1000px !important;
+    }
+    .thumbnail.active {
+        border: 2px solid #f00; /* Change border color to highlight */
+        /* Add any other styles to highlight the active thumbnail */
+    }
     </style>
     <div class="row">
 
@@ -127,7 +172,7 @@
                 <div class="row">
                     <div class="col-6"><label for="input40" class="col-sm-4 col-form-label">Select a Category</label>
                         <select name="category_id" class="form-control form-select">
-                            <option value="">Select a user</option>
+                            <option value="">Select a Category</option>
                             @foreach ($categories as $user)
                                 <option value="{{ $user->category_id }}">{{ $user->category_name }}
                                 </option>
@@ -167,17 +212,23 @@
 @enderror -->
                 </div>
 
-                <div>
+                <div class="img-prev-container">
                     {{-- <input type="file" name="files[]" id="fileupload" multiple> --}}
                     <div id="files"></div>
-                    <label for="input40" class="col-sm-4 col-form-label">Image</label>
-                    <input type="file" class="form-control" name="adv_img[]" id="adv_img" accept="image/*" multiple
-                        onchange="previewImages()">
-                    @error('adv_img')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                </div>
+                    <label for="input40" class="col-sm-4 col-form-label">Image (Rotate images by clicking on them.)</label>
+                    <!--<input type="file" class="form-control" name="adv_img[]" id="adv_img" accept="image/*" multiple-->
+                    <!--    onchange="previewImages()">-->
+                    <!--@error('adv_img')-->
+                    <!--    <span class="text-danger">{{ $message }}</span>-->
+                    <!--@enderror-->
+                    <input type="file" id="images" name="images[]" class="images form-control" multiple accept="image/*">
+                    <input type="hidden" id="rotation-angle" name="rotation_angle[]"> <!-- Add hidden input for rotation angle -->
+                            <!-- Hidden inputs for thumbnail images -->
+                     
 
+
+                </div>
+                
                 <div id="image-preview"></div>
 
                 <!-- Modal for image rotation and cropping -->
@@ -238,7 +289,7 @@
                     </div>
 
                     <div class="col-2">
-                        <button type="button" onclick="addBrandModelRow()">Add</button>
+                        <button class="add-more-btn" type="button" onclick="addBrandModelRow()">Add</button>
 
                     </div>
                 </div>
@@ -295,33 +346,42 @@
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
-                <div class="mt-2">
+                <div class="mt-2 ">
                     <label for="payment_mode">Payment Methods</label><br>
-                    <input type="checkbox" checked name="payment_mode" id="payment_mode" value="Cash on delivery"> Cash on
+                    <input type="checkbox" checked name="payment_mode" id="payment_mode" value="Cash on delivery">
+                    Cash on
                     delivery
-                    <input type="checkbox" checked name="payment_mode[]" id="payment_mode" value="Upon delivery"> Upon
+                    <input type="checkbox" checked name="payment_mode[]" id="payment_mode" value="Upon delivery">
+                    Upon
                     delivery
-                    <input type="checkbox" checked name="payment_mode[]" id="payment_mode" value="Wire Transfer"> Wire
+                    <input type="checkbox" checked name="payment_mode[]" id="payment_mode" value="Wire Transfer">
+                    Wire
                     Transfer
-                    <input type="checkbox" checked name="payment_mode[]" id="payment_mode" value="Banking Card"> Banking
+                    <input type="checkbox" checked name="payment_mode[]" id="payment_mode" value="Banking Card">
+                    Banking
                     Card
                     <input type="checkbox" checked name="payment_mode[]" id="payment_mode" value="Others"> Others
                     @error('payment_mode')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
-                <div class="mt-2">
+                <div class="mt-2 check-box-delivery">
                     <label for="delivery">Method Of Delivery</label><br>
-                    <input type="checkbox" checked name="personal_teaching" id="personal_teaching" value="1">Personal
+                    <input type="checkbox" checked name="personal_teaching" id="personal_teaching"
+                        value="1">Personal
                     Teaching<br>
-                    <input type="checkbox" checked name="courier" id="courier" value="1">Courier Delivery Cost
-                    <input type="text" name="courier_cost" id="courier_cost" value=""> RON
-                    <input type="checkbox" checked name="free_courier" id="free_courier" value="1">Free delivery by
+                    <input type="checkbox" checked name="courier" id="courier" value="1">Courier Delivery
+                    Cost
+                    <input type="text" name="courier_cost" class="" id="courier_cost" value=""> RON
+                    <input type="checkbox" checked name="free_courier" id="free_courier" value="1">Free
+                    delivery by
                     courier<br>
-                    <input type="checkbox" checked name="romanian_mail" id="romanian_mail" value="1"> Romanian Mail
+                    <input type="checkbox" checked name="romanian_mail" id="romanian_mail" value="1"> Romanian
+                    Mail
                     Delivery Cost
                     <input type="text" name="romanian_mail_cost" id="romanian_mail_cost" value=""> RON
-                    <input type="checkbox" checked name="free_romanian_mail" id="free_romanian_mail" value="1"> Free
+                    <input type="checkbox" checked name="free_romanian_mail" id="free_romanian_mail" value="1">
+                    Free
                     Shipping by Mail
                 </div>
                 <div class='col-6'>
@@ -360,6 +420,30 @@
             <button class="btn btn-primary customSaveButton" type="submit">Save</button>
         </form>
 
+    </div>
+    
+     <div class="modal previw-mod fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel">Rotate Image Before Uploading</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                <div class="modal-body">
+                    <div class="img-container text-center">
+                        <img id="image">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="rotate-left"><i class="fas fa-undo"></i></button>
+                    <button type="button" class="btn btn-primary" id="rotate-right"><i class="fas fa-redo"></i></button>
+                    <button type="button" class="btn btn-primary" id="save"> Save</button>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
         let table = new DataTable('#cmspageslist');
@@ -657,5 +741,9 @@
             });
         });
     </script> -->
+ 
 
 </x-app-layout>
+
+   
+   

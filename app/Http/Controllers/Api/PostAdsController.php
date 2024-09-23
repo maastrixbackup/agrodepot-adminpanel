@@ -22,9 +22,8 @@ class PostAdsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function deleteAd(Request $request)
+    public function deleteAd(Request $request,$userid)
     {
-        $userid =  $request->user_id;
         $alladd = SalesAdvertisement::where('adv_status', 2)->where('user_id', $userid)->orderByDesc('adv_id')->limit(10)->get();
 
         $alladd_data = [];
@@ -38,6 +37,7 @@ class PostAdsController extends Controller
                 $alladd_data[$key]['amount'] =   $row->quantity;
                 $alladd_data[$key]['price'] =   $row->price;
                 $alladd_data[$key]['currency'] =   $row->currency;
+                $alladd_data[$key]['slug'] =   $row->slug;
                 $alladd_data[$key]['image_path'] =   asset('uploads/postad/' . $firstPostadImg->img_path);
             }
         }
@@ -48,9 +48,8 @@ class PostAdsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function promotedAd(Request $request)
+    public function promotedAd(Request $request,$userid)
     {
-        $userid =  $request->user_id;
         $alladd  = \DB::table('sales_advertisements')
             ->leftJoin('promotion_ad', 'promotion_ad.adv_id', '=', 'sales_advertisements.adv_id')
             ->select('sales_advertisements.*', 'promotion_ad.*')
@@ -93,6 +92,7 @@ class PostAdsController extends Controller
                 } else {
                     $list_plan = "N/A";
                 }
+                $alladd_data[$key]['slug'] =     $row->slug;
                 $alladd_data[$key]['opinion'] =     $row->adv_name;
                 $alladd_data[$key]['home_plan'] =   $home_plan;
                 $alladd_data[$key]['list_plan'] =   $list_plan;

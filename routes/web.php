@@ -31,6 +31,9 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\RequestPartsController;
 use App\Http\Controllers\AuditLoginController;
+use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BidOfferController;
 use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\ParkQuestionController;
@@ -59,15 +62,14 @@ Route::get('/admin/optimize', [OptimizeController::class, 'optimize']);
 Route::middleware('auth')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::get('/', [AuthenticatedSessionController::class, 'create']);
-        Route::prefix('dashboard')->group(function () {
-            Route::resource('cms-pages', CMSPagesController::class);
-        });
+        Route::resource('cms-pages', CMSPagesController::class);
         Route::resource('sales', SalesController::class);
         Route::get('get-sub-categories/{catId}', [SalesController::class, 'getSubCategories'])->name('getSubCategories');
         Route::get('get-models/{Id}', [SalesController::class, 'getModels'])->name('getModels');
         Route::resource('banners', BannerController::class);
         Route::resource('promo-codes', PromoCodeController::class);
         Route::resource('admin-langs', AdminLangsController::class);
+        Route::get('admin-langs/convert', [AdminLangsController::class, 'convert']);
         Route::resource('admin-users', AdminController::class);
         Route::resource('categories', CategoriesController::class);
         Route::resource('brands', BrandController::class);
@@ -97,6 +99,31 @@ Route::middleware('auth')->group(function () {
         Route::resource('compose-mail', ComposeEmailController::class);
         Route::resource('sent-mail', SentMailController::class);
         Route::resource('logo', ManageLogoController::class);
+
+
+        Route::get('expirepromote', [SalesController::class, 'expirePromote'])->name('expirepromote');
+        Route::post('delete-expirepromote', [SalesController::class, 'deleteExpirepromote'])->name('delete-expirepromote');
+        Route::get('usercredits', [SalesController::class, 'userCredits'])->name('usercredits');
+        Route::post('autocomplete', [SalesController::class, 'autoComplete'])->name('autocomplete');
+        Route::get('add-credit', [SalesController::class, 'addCredit'])->name('add-credit');
+        Route::post('save-credit', [SalesController::class, 'saveCredit'])->name('save-credit');
+        //Edit Profile
+        Route::get('edit-profile/{id}', [AdminController::class, 'editProfile'])->name('edit-profile');
+        Route::post('profile-update/{id}', [AdminController::class, 'updateprofile'])->name('profile-update');
+
+        //Change Password
+        Route::get('change-password/{id}', [AdminController::class, 'passwordEdit'])->name('change-password');
+        Route::post('password-update/{id}', [AdminController::class, 'passwordUpdate'])->name('password-update');
+        Route::post('admin-password-update', [PasswordController::class, 'Update'])->name('admin-password-update');
+
+        Route::post('/notice/status', [AdminController::class, 'noticeStatus'])->name('notice.status');
+        Route::post('/notice/status/all', [AdminController::class, 'noticeStatusAll'])->name('notice.status.all');
+        Route::get('/export-users', [MasterUserController::class, 'exportUsersToCsv'])->name('export.users');
+        Route::post('users/{userId}/update-status', [MasterUserController::class, 'updateStatus'])->name('users.update-status');
+        Route::post('users/upgrademember/{uid}', [MasterUserController::class, 'upgrademember'])->name('users.upgrademember');
+        Route::get('users/rating/{id}', [MasterUserController::class, 'showRatings'])->name('users.rating');
+        Route::post('newsletters/resend/{id}', [NewsLetterController::class, 'newsletterResend'])->name('newsletters.resend');
+        Route::get('/confirm_email/{id}', [NewsLetterController::class, 'confirmEmail'])->name('confirm_email');
         Route::post('newsletters/{newsId}/update-status', [NewsLetterController::class, 'updateStatus'])->name('newsletters.update-status');
         Route::get('get-orders/{Id}', [SalesOrderController::class, 'getAllOrders'])->name('getOrders');
         Route::post('bidoffer/{bidId}/update-status', [BidOfferController::class, 'updateStatus'])->name('bidoffer.update-status');
@@ -138,15 +165,28 @@ Route::middleware('auth')->group(function () {
         Route::get('get-sales', [SalesController::class, 'getSales'])->name('getSales');
 
         Route::post('/rotate-image', [SalesController::class, 'rotateImage'])->name('rotate-image');
+        // Route::get('/deleteDuplicateEntries', [RequestPartsController::class, 'deleteDuplicateEntries']);
+        Route::get('/get-subbrand', [SalesController::class, 'getSubbrand'])->name('subbrand');
+        Route::get('/get-subcat', [SalesController::class, 'getSubcat'])->name('subcat');
+        Route::get('/export-sales', [SalesController::class, 'exportSalesToCsv'])->name('export.sales');
 
 
+        Route::get('/backups', [BackupController::class, 'index'])->name('backup.index');
+        Route::post('/backups/create', [BackupController::class, 'createBackup'])->name('backup.create');
+        Route::post('/backups/restore', [BackupController::class, 'restoreBackup'])->name('backup.restore');
+        Route::post('/backups/delete', [BackupController::class, 'deleteBackup'])->name('backup.delete');
+        Route::get('/backups/download/{filename}', [BackupController::class, 'downloadBackup'])->name('backup.download');
 
 
-        // Route::middleware('auth')->group(function () {
-        //     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        //     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        // });
+        Route::get('get-locations', [MasterLocationController::class, 'getLocations'])->name('getLocations');
+
+
+        Route::middleware('auth')->group(function () {
+            Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+            Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+            Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+            Route::patch('/profile-image', [ProfileController::class, 'profileImageUpdate'])->name('profile-image.update');
+        });
     });
 });
 require __DIR__ . '/auth.php';

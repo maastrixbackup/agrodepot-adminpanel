@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileImageUpdateRequest;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,15 +27,52 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $validated = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // if ($request->file('image') == null) {
+        //     $input['image'] = $user->prof_img;
+        // } else {
+        //     $destinationPath = '/uploads/adminprofile';
+        //     $imgfile = $request->file('image');
+        //     $imgFilename = $imgfile->getClientOriginalName();
+        //     $imgfile->move(public_path() . $destinationPath, $imgfile->getClientOriginalName());
+        //     $image = $imgFilename;
+        //     $user->prof_img = $image;
+        // }
+
+        $user->fill($validated);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    public function profileImageUpdate(ProfileImageUpdateRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+        $validated = $request->validated();
+
+        if ($request->file('image') == null) {
+            $input['image'] = $user->prof_img;
+        } else {
+            $destinationPath = '/uploads/adminprofile';
+            $imgfile = $request->file('image');
+            $imgFilename = $imgfile->getClientOriginalName();
+            $imgfile->move(public_path() . $destinationPath, $imgfile->getClientOriginalName());
+            $image = $imgFilename;
+            $user->prof_img = $image;
+        }
+
+        $user->fill($validated);
+
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'profile-image-updated');
     }
 
     /**

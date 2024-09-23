@@ -8,46 +8,56 @@
         </div>
         <div class="col-2"><a href="{{ route('success-stories.create') }}" class="btn btn-primary">Create new</a></div>
     </div>
-    <table class="table table-hover" id="cmspageslist">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">User Name</th>
-                <th scope="col">Submitted By</th>
-                <th scope="col">Post Date</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($data as $index => $menu)
-            <tr>
-                <td scope="row">{{ $index + 1 }}</td>
-                <td>{{ optional($menu->user)->first_name }} {{ optional($menu->user)->last_name }}
-                </td>
-                <td class="text-capitalize">
-                    @if ($menu->submit_from == 1)
-                    Admin
-                    @else
-                    User
-                    @endif
-                </td>
-                <td class="text-capitalize">{{ $menu->created }}</td>
-                <td>
-                    <div class="d-flex">
-                        <div class="customButtonContainer"><a class="mx-2" href="{{ url('admin/success-stories/' . $menu->success_id . '/edit') }}"><i class="fas fa-edit"></i></a>
-                        </div>
-                        <div class="customButtonContainer">
-                            <!-- <form method="POST" action="{{ url('admin/success-stories/' . $menu->success_id) }}">@csrf
+    <div class="custom-scrollbar">
+        <table class="table table-hover" id="cmspageslist">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">User Name</th>
+                    <th scope="col">Submitted By</th>
+                    <th scope="col">Post Date</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($data as $index => $menu)
+                    <tr>
+                        <td scope="row">{{ $index + 1 }}</td>
+                        <td>{{ optional($menu->user)->first_name }} {{ optional($menu->user)->last_name }}
+                        </td>
+                        <td class="text-capitalize">
+                            @if ($menu->submit_from == 1)
+                                Admin
+                            @else
+                                User
+                            @endif
+                        </td>
+                        <td class="text-capitalize">{{ date('d/m/Y', strtotime($menu->created)) }}</td>
+                        <td>
+                            <div class="d-flex customButtonContainer">
+                                <!-- <form method="POST" action="{{ url('admin/success-stories/' . $menu->success_id) }}">@csrf
                                 @method('DELETE')<button type="submit"><i class="fas fa-trash"></i></button></form> -->
-                            <button title="Delete" class="trash remove-successstories" data-id="{{ $menu->success_id }}" data-action="{{ url('admin/success-stories/' . $menu->success_id) }}"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
+                                <a class="edit-btn" title="Edit"
+                                    href="{{ url('admin/success-stories/' . $menu->success_id . '/edit') }}"><i
+                                        class="fas fa-edit"></i>
+                                </a>
+                                <a class="edit-btn" title="View"
+                                    href="{{ url('admin/success-stories/' . $menu->success_id) }}"><i
+                                        class="fas fa-eye"></i></a>
 
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+
+                                <button title="Delete" class="dl-btn trash remove-successstories"
+                                    data-id="{{ $menu->success_id }}"
+                                    data-action="{{ url('admin/success-stories/' . $menu->success_id) }}"><i
+                                        class="fas fa-trash"></i></button>
+                            </div>
+
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
     <script>
         $(document).ready(function() {
@@ -68,10 +78,15 @@
                         var token = jQuery('meta[name="csrf-token"]').attr('content');
                         var id = current_object.attr('data-id');
 
-                        $('body').html("<form class='form-inline remove-form' method='post' action='" + action + "'></form>");
-                        $('body').find('.remove-form').append('<input name="_method" type="hidden" value="DELETE">');
-                        $('body').find('.remove-form').append('<input name="_token" type="hidden" value="' + token + '">');
-                        $('body').find('.remove-form').append('<input name="id" type="hidden" value="' + id + '">');
+                        $('body').html(
+                            "<form class='form-inline remove-form' method='post' action='" +
+                            action + "'></form>");
+                        $('body').find('.remove-form').append(
+                            '<input name="_method" type="hidden" value="DELETE">');
+                        $('body').find('.remove-form').append(
+                            '<input name="_token" type="hidden" value="' + token + '">');
+                        $('body').find('.remove-form').append(
+                            '<input name="id" type="hidden" value="' + id + '">');
                         $('body').find('.remove-form').submit();
                     }
                 });

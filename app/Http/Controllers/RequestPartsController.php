@@ -21,7 +21,7 @@ class RequestPartsController extends Controller
             ->leftjoin('request_accessories as ra', 'request_parts.request_id', '=', 'ra.request_id')
             ->leftjoin('master_users as ms', 'request_parts.user_id', '=', 'ms.user_id')
             ->select('request_parts.*', 'ms.first_name', 'sb.brand_name', 'ra.name_piece')->orderBy("request_parts.request_id", "desc")
-            ->paginate(10);
+            ->get();
         return view('reports.request-parts', compact('data'));
     }
 
@@ -106,6 +106,25 @@ class RequestPartsController extends Controller
 
         return response()->json(['message' => 'Status updated successfully', 'status' => $parts->status]);
     }
+    public function deleteDuplicateEntries()
+    {
+        $requestAccessories = RequestAccessory::all();
 
-   
+        // Loop through each request accessory
+        foreach ($requestAccessories as $requestAccessory) {
+            $slug = $requestAccessory->slug;
+            $count = 1;
+
+            // Check if the slug already exists in the database
+            while (RequestAccessory::where('slug', $slug)->exists()) {
+                // If it exists, modify the slug
+                $slug = $requestAccessory->slug . '-' . $count;
+                $count++;
+            }
+
+            // Update the slug in the database
+            $requestAccessory->slug = $slug;
+            $requestAccessory->save();
+        }
+    }
 }

@@ -43,7 +43,7 @@
                 </div>
                 <div>
                     <label for="page_desc">Page Content</label>
-                    <textarea name="page_desc" class="form-control" id="page_desc">{{ optional($data)->page_desc }}</textarea>
+                    <textarea name="page_desc" class="ckeditor form-control" id="page_desc">{{ optional($data)->page_desc }}</textarea>
                     @error('page_desc')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror

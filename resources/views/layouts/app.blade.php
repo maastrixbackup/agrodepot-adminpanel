@@ -24,7 +24,7 @@
             var table = $('#latest-members').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{route('dashboard.latest-members')}}",
+                ajax: "{{ route('dashboard.latest-members') }}",
                 columns: [{
                         data: 'profile_img'
                     },
@@ -37,14 +37,14 @@
                     {
                         data: 'join_date'
                     }
-                ]
+                ],
+                dom: 'lrtip' // Exclude 'f' (filter) to hide the search bar
             });
-
 
             var table = $('#latest-orders').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{route('dashboard.latest-orders')}}",
+                ajax: "{{ route('dashboard.latest-orders') }}",
                 columns: [{
                         data: 'orderid'
                     },
@@ -57,14 +57,14 @@
                     {
                         data: 'created'
                     }
-                ]
+                ],
+                dom: 'lrtip' // Exclude 'f' (filter) to hide the search bar
             });
-
 
             var table = $('#latest-parts-orders').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{route('dashboard.latest-part-orders')}}",
+                ajax: "{{ route('dashboard.latest-part-orders') }}",
                 columns: [{
                         data: 'orderid'
                     },
@@ -77,14 +77,13 @@
                     {
                         data: 'created'
                     }
-                ]
+                ],
+                dom: 'lrtip' // Exclude 'f' (filter) to hide the search bar
             });
 
-
-
-            
         });
     </script>
+
     </body>
 
 </html>

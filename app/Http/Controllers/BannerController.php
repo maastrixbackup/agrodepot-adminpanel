@@ -58,7 +58,9 @@ class BannerController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $banner = Banner::find($id);
+
+        return view('banners.show', compact('banner'));
     }
 
     /**

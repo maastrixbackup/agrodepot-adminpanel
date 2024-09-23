@@ -23,7 +23,7 @@ class AdvertisementController extends Controller
      */
     public function create()
     {
-       
+
         return view('advertisements.add');
     }
 
@@ -37,36 +37,36 @@ class AdvertisementController extends Controller
             'ad_type' => 'required',
             'show_position' => 'required',
             'status' => 'required',
-            
+
         ]);
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
         $advertise = new Advertisement();
-       
+
         if ($request->hasFile('banner_image')) {
             $image = $request->file('banner_image');
             $imageName = time() . '_' . $image->getClientOriginalName();
             $image->move(public_path('uploads/advertisement'), $imageName);
             $advertise->banner_image = $imageName;
         }
-       
+
         $advertise->title = $request->input('title');
-      
+
         $advertise->ad_type = $request->input('ad_type');
         $advertise->banner_title = $request->input('banner_title');
         $advertise->banner_link = $request->input('banner_link');
-       
+
         $advertise->ad_script = $request->input('ad_script');
-      
+
         $advertise->show_position = $request->input('show_position');
         $advertise->created = Carbon::parse($advertise->created)->format("d-m-Y");
         $advertise->modified = Carbon::parse($advertise->modified)->format("d-m-Y");
-        $advertise->status = $request->input('status')? 1 : 0;
-      
+        $advertise->status = $request->input('status') ? 1 : 0;
+
         $advertise->save();
 
-       // dd( $advertise);
+        // dd( $advertise);
 
         return redirect()->route('advertises.index')->with('success', 'Sale added successfully');
     }
@@ -76,7 +76,9 @@ class AdvertisementController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $advertisement_data = Advertisement::find($id);
+
+        return view('advertisements.show', compact('advertisement_data'));
     }
 
     /**
@@ -110,7 +112,7 @@ class AdvertisementController extends Controller
         $advertise->show_position = $request->input('show_position');
         $advertise->created = Carbon::parse($advertise->created)->format("d-m-Y");
         $advertise->modified = Carbon::parse($advertise->modified)->format("d-m-Y");
-        $advertise->status = $request->input('status')? 1 : 0;
+        $advertise->status = $request->input('status') ? 1 : 0;
         $advertise->save();
         return redirect()->route('advertises.index')->with('success', 'Advertise saved successfully');
     }
@@ -140,5 +142,4 @@ class AdvertisementController extends Controller
 
         return response()->json(['message' => 'Status updated successfully', 'status' => $advertise->status]);
     }
-
 }

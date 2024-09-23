@@ -6,65 +6,73 @@
         </div>
         <div class="col-2"><a href="{{ route('advertises.create') }}" class="btn btn-primary">Create new</a></div>
     </div>
-    <table class="table table-hover" id="cmspageslist">
-        <thead>
-            <tr>
-                <th scope="col">SL#</th>
-                <th scope="col">Title</th>
-                <th scope="col">Ad Type</th>
-                <th scope="col">Show Position</th>
-                <th scope="col">Status</th>
-                <th scope="col">Created</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($data as $index => $menu)
-            <tr>
-                <th scope="row">{{ $index + 1 }}</th>
-                <td class="text-capitalize">{!! $menu->title !!}</td>
-                <td class="text-capitalize"> @if($menu->ad_type == 1)
-                    Banner
-                    @else
-                    Script
-                    @endif
-                </td>
-                <td class="text-capitalize">
-                    @if($menu->show_position == 1)
-                    Top
-                    @elseif($menu->show_position == 2)
-                    left1
-                    @elseif($menu->show_position == 3)
-                    left2
-                    @elseif($menu->show_position == 4)
-                    Middle
-                    @else
-                    Unknown Position
-                    @endif
-                </td>
-                <td class="text-capitalize"><select name="status" class="form-select-sm ad-select" data-ad-id="{{ $menu->ad_id }}">
-                        <option value="1" {{ $menu->status == '1' ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ $menu->status == '0' ? 'selected' : '' }}>Inactive
-                        </option>
-                    </select></td>
-                <td class="text-capitalize">{!! $menu->created !!}</td>
-                <td>
-                    <div class="d-flex">
-                        <div class="customButtonContainer"><a class="mx-2" href="{{ url('admin/advertises/' . $menu->ad_id . '/edit') }}"><i class="fas fa-edit"></i></a>
-
-                        </div>
-                        <div class="customButtonContainer">
-                            <!-- <form method="POST" action="{{ url('admin/advertises/' . $menu->ad_id) }}">@csrf
+    <div class="custom-scrollbar">
+        <table class="table table-hover" id="cmspageslist">
+            <thead>
+                <tr>
+                    <th scope="col">SL#</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Ad Type</th>
+                    <th scope="col">Show Position</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Created</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($data as $index => $menu)
+                    <tr>
+                        <th scope="row">{{ $index + 1 }}</th>
+                        <td class="text-capitalize">{!! $menu->title !!}</td>
+                        <td class="text-capitalize">
+                            @if ($menu->ad_type == 1)
+                                Banner
+                            @else
+                                Script
+                            @endif
+                        </td>
+                        <td class="text-capitalize">
+                            @if ($menu->show_position == 1)
+                                Top
+                            @elseif($menu->show_position == 2)
+                                left1
+                            @elseif($menu->show_position == 3)
+                                left2
+                            @elseif($menu->show_position == 4)
+                                Middle
+                            @else
+                                Unknown Position
+                            @endif
+                        </td>
+                        <td class="text-capitalize"><select name="status" class="form-select-sm ad-select"
+                                data-ad-id="{{ $menu->ad_id }}">
+                                <option value="1" {{ $menu->status == '1' ? 'selected' : '' }}>Active</option>
+                                <option value="0" {{ $menu->status == '0' ? 'selected' : '' }}>Inactive
+                                </option>
+                            </select></td>
+                        <td class="text-capitalize">{!! $menu->created !!}</td>
+                        <td>
+                            <div class="d-flex customButtonContainer">
+                                <!-- <form method="POST" action="{{ url('admin/advertises/' . $menu->ad_id) }}">@csrf
                                     @method('DELETE')<button type="submit"><i class="fas fa-trash"></i></button></form> -->
+                                <a class="edit-btn" title="Edit"
+                                    href="{{ url('admin/advertises/' . $menu->ad_id . '/edit') }}"><i
+                                        class="fas fa-edit"></i>
+                                </a>
+                                <a class="edit-btn" title="View"
+                                    href="{{ url('admin/advertises/' . $menu->ad_id) }}"><i class="fas fa-eye"></i></a>
 
-                            <button title="Delete" class="trash remove-advertise" data-id="{{ $menu->ad_id }}" data-action="{{ url('admin/advertises/' . $menu->ad_id) }}"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                                <button title="Delete" class="dl-btn trash remove-advertise"
+                                    data-id="{{ $menu->ad_id }}"
+                                    data-action="{{ url('admin/advertises/' . $menu->ad_id) }}"><i
+                                        class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
     <script>
         let table = new DataTable('#cmspageslist');
     </script>
@@ -87,10 +95,15 @@
                         var token = jQuery('meta[name="csrf-token"]').attr('content');
                         var id = current_object.attr('data-id');
 
-                        $('body').html("<form class='form-inline remove-form' method='post' action='" + action + "'></form>");
-                        $('body').find('.remove-form').append('<input name="_method" type="hidden" value="DELETE">');
-                        $('body').find('.remove-form').append('<input name="_token" type="hidden" value="' + token + '">');
-                        $('body').find('.remove-form').append('<input name="id" type="hidden" value="' + id + '">');
+                        $('body').html(
+                            "<form class='form-inline remove-form' method='post' action='" +
+                            action + "'></form>");
+                        $('body').find('.remove-form').append(
+                            '<input name="_method" type="hidden" value="DELETE">');
+                        $('body').find('.remove-form').append(
+                            '<input name="_token" type="hidden" value="' + token + '">');
+                        $('body').find('.remove-form').append(
+                            '<input name="id" type="hidden" value="' + id + '">');
                         $('body').find('.remove-form').submit();
                     }
                 });
@@ -115,7 +128,8 @@
                     success: function(response) {
                         console.log('AJAX success:', response);
                         // Show success message in page body
-                        $('.page-body').prepend('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                        $('.page-body').prepend(
+                            '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
                             response.message +
                             '</div>');
                         // Automatically close the success message after 5 seconds

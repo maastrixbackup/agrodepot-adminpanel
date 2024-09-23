@@ -4,7 +4,9 @@ use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CmsPagesController;
 use App\Http\Controllers\Api\CompanyPartsController;
+use App\Http\Controllers\Api\IpcartController;
 use App\Http\Controllers\Api\LocationController;
+use App\Http\Controllers\Api\NoticeController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\RequestPartsController;
 use App\Http\Controllers\Api\SalesController;
@@ -18,9 +20,13 @@ use App\Http\Controllers\Api\FavoritesController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\SalesParksController;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\ForgotPwController;
+use App\Http\Controllers\Api\PagesController;
 use App\Http\Controllers\Api\PromoCodeController;
 use App\Http\Controllers\Api\SalesWarrantyController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\WishlistController;
+use App\Http\Controllers\Api\NewsLetterController;
+use App\Http\Controllers\Api\AdminLangController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,19 +46,25 @@ Route::middleware('auth.bearer')->group(function () {
     Route::post('login', [UserController::class, 'login']);
     Route::post('logout', [UserController::class, 'logout']);
     Route::post('updatePass', [UserController::class, 'updatePass']);
+    Route::post('forgot-password-api', [ForgotPwController::class, 'forgotPasswordSendMail']);
+    Route::post('reset-password', [ForgotPwController::class, 'resetPassword']);
     // CMS PAGES
     Route::get('cmsPages/{id}', [CmsPagesController::class, 'cmsPageDetails']);
     Route::get('homePages', [CmsPagesController::class, 'homePageDetails']);
     Route::get('homePagesPartTwo', [CmsPagesController::class, 'homePagePartTwo']);
+    Route::get('footer-categories', [CmsPagesController::class, 'footerCategories']);
+    Route::get('footer-brands', [CmsPagesController::class, 'footerBrands']);
     Route::get('countries', [LocationController::class, 'getCountries']);
     Route::get('get-cities/{Id}', [LocationController::class, 'getCities']);
     Route::post('brands-list', [BrandController::class, 'BrandsList']);
     Route::post('piese-auto', [SalesController::class, 'getSalesProducts']);
+    Route::post('/autocomplete', [SalesController::class, 'autoComplete']);
     Route::get('categories/{paginate?}', [CategoryController::class, 'getCategories']);
     Route::get('sales-details/{slug?}', [SalesController::class, 'getProductDetails']);
     Route::get('related-products/{id}', [SalesController::class, 'relatedProducts']);
     Route::post('request-parts', [RequestPartsController::class, 'index']);
-    Route::get('request-parts/addQuestions', [RequestPartsController::class, 'addQuestions']);
+    Route::post('request-parts/addQuestions', [RequestPartsController::class, 'addQuestions']);
+    Route::get('request-questions-list/{request_id}', [RequestPartsController::class, 'questionsList']);
     Route::post('request-parts/offerStore', [RequestPartsController::class, 'offerStore']);
     Route::get('request-parts/{slug}', [RequestPartsController::class, 'requestPartsDetails']);
     Route::get('get-sub-categories/{catId}', [SalesController::class, 'getSubCategories']);
@@ -72,6 +84,38 @@ Route::middleware('auth.bearer')->group(function () {
     Route::get('recent-piese-auto', [SalesController::class, 'recentPieseAuto']);
     // API's created by Santosh Kumar Sahoo
     Route::get('/recent-company-spare-parts/{slug}', [RequestPartsController::class, 'recent_company_spare_parts']);
+
+    Route::get('/pages/{pageId}', [PagesController::class, 'Pages']);
+    Route::post('/carts', [CartController::class, 'lists']);
+    Route::get('/sales-questions-list/{adv_id}', [AskQuestionController::class, 'index']);
+    Route::get('/park-questions-list/{adv_id}', [TruckPartsController::class, 'questionsList']);
+    Route::get('/user-notices/{user_id}', [NoticeController::class, 'getUserNoticeData'])->name('user-notices');
+    Route::get('/clear-notifications/{user_id}', [NoticeController::class, 'clearNotication']);
+    Route::get('/read-notification/{notice_id}', [NoticeController::class, 'readNotification']);
+
+
+    Route::post('get-relatedProduct/', [SalesController::class, 'getRelatedProduct']);
+    Route::post('store-recent-view/', [SalesController::class, 'storeRecentView']);
+
+    Route::post('/cart-sync', [CartController::class, 'cartSync']);
+    Route::get('cms-pages/{id}', [CmsPagesController::class, 'getData'])->name('cms-pages.getData');
+    Route::get('/trade-statistics', [CmsPagesController::class, 'getCounts']);
+
+    Route::post('/newsletter', [NewsLetterController::class, 'store']);
+    Route::get('/newsletter/confirm/{id}', [NewsLetterController::class, 'confirm'])->name('newsletter.confirm');
+
+    Route::get('/lang/{language}', [AdminLangController::class, 'getLanguageLabels']);
+
+
+    // offlineCart
+    Route::post('/ip-carts', [IpcartController::class, 'lists']);
+    Route::post('/add-to-cart-ip', [IpcartController::class, 'store']);
+    Route::post('/update-cart-ip', [IpcartController::class, 'update']);
+    Route::post('/empty-cart-ip', [IpcartController::class, 'emptyCart']);
+    Route::post('/delete-cart-ip/{id}', [IpcartController::class, 'destroy']);
+    // offlineCart
+
+
 });
 
 
@@ -130,9 +174,9 @@ Route::middleware('auth:api')->group(function () {
 
     // Route::get('index/{userid}', [SalesParksController::class, 'index']);
 
-    Route::post('/out-of-stock', [OrderController::class, 'outOfStock']);
-    Route::post('/delete-ad', [PostAdsController::class, 'deleteAd']);
-    Route::post('/promoted-ad', [PostAdsController::class, 'promotedAd']);
+    Route::get('/out-of-stock/{userid}', [OrderController::class, 'outOfStock']);
+    Route::get('/delete-ad/{userid}', [PostAdsController::class, 'deleteAd']);
+    Route::get('/promoted-ad/{userid}', [PostAdsController::class, 'promotedAd']);
     Route::post('/question-asked', [AskQuestionController::class, 'askQuestion']);
 
     Route::get('/sent-questions/{id}', [AskQuestionController::class, 'sentQuestions']);
@@ -141,24 +185,30 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/answer-the-question', [AskQuestionController::class, 'answerTheQuestion']);
 
     Route::post('/sale-details', [SalesController::class, 'saleDetails']);
-    Route::post('/add-to-fav', [FavoritesController::class, 'index']);
-    Route::post('/most-viewed', [FavoritesController::class, 'mostViewed']);
-    Route::post('/favorites', [FavoritesController::class, 'favorites']);
+    Route::post('/add-to-fav', [FavoritesController::class, 'store']);
+    Route::get('/most-viewed/{id}', [FavoritesController::class, 'mostViewed']);
+    Route::get('/favorites/{id}', [FavoritesController::class, 'favorites']);
     Route::post('/is-favorite', [FavoritesController::class, 'isFavorite']);
-    Route::post('/favorites-ads', [FavoritesController::class, 'favoritesAds']);
+    Route::get('/favorites-ads/{id}', [FavoritesController::class, 'favoritesAds']);
     Route::post('/rate-product', [SalesController::class, 'rateProduct']);
 
     Route::get('/rating-receive-buyer/{id}', [RatingController::class, 'ratingReceiveBuyer']);
+    Route::get('/rating-receive-seller/{id}', [RatingController::class, 'ratingReceiveSeller']);
 
     Route::get('/question-rec/{userid}', [SalesParksController::class, 'questionRec']);
     Route::get('/sent-question/{userid}', [SalesParksController::class, 'sentQuestion']);
 
-    Route::get('/offer-losing', [RequestPartsController::class, 'offerLosing']);
+    Route::get('/offer-losing/{userid}', [RequestPartsController::class, 'offerLosing']);
+    Route::get('/offer-active/{userid}', [RequestPartsController::class, 'offerActive']);
+    Route::get('/offer-inactive/{userid}', [RequestPartsController::class, 'offerInActive']);
     Route::post('/active-sale', [SalesController::class, 'activate_sale']);
 
     //Api for SalesParks
     Route::get('truck-parks-list/{userid}', [SalesParksController::class, 'index']);
     Route::post('/delete-truck-parks', [SalesParksController::class, 'deleteTruckPark']);
+    Route::post('/add-truckpart', [SalesParksController::class, 'store']);
+    Route::get('/edit-truckpart/{id}', [SalesParksController::class, 'edit']);
+    Route::post('/update-truckpart', [SalesParksController::class, 'update']);
     //Api for Companypieces
     Route::get('companypieces-list/{userid}', [SalesParksController::class, 'companyPiecesList']);
     Route::post('/delete-companypieces', [SalesParksController::class, 'deleteCompanyPieces']);
@@ -166,8 +216,10 @@ Route::middleware('auth:api')->group(function () {
     //Carts
     Route::post('/add-to-cart', [CartController::class, 'store']);
     Route::post('/update-cart', [CartController::class, 'update']);
-    Route::post('/carts', [CartController::class, 'lists']);
-    Route::delete('/delete-cart/{id}', [CartController::class, 'destroy']);
+    Route::post('/empty-cart', [CartController::class, 'emptyCart']);
+    Route::post('/delete-cart/{id}', [CartController::class, 'destroy']);
+
+
 
 
     Route::get('/ask-seller/{userid}', [RequestPartsController::class, 'askSeller']);
@@ -177,6 +229,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/delete-request-question', [RequestPartsController::class, 'deleteRequestQuestion']);
 
     Route::get('/offer-my-request/{userid}', [RequestPartsController::class, 'offerMyRequest']);
+
+    Route::get('/parts-order/{userid}', [RequestPartsController::class, 'partsOrder']);
 
     Route::post('/sales-warranty-store', [SalesWarrantyController::class, 'store']);
 
@@ -195,5 +249,16 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/delete-advertisement', [SalesController::class, 'deleteAdvertisement']);
 
     Route::post('/supply-demand', [RequestPartsController::class, 'supplyDemand']);
+    Route::post('/delete-request-part', [RequestPartsController::class, 'deleteRequestPart']);
+    Route::post('/request-parts-update/{id}', [RequestPartsController::class, 'update']);
+
+
+    Route::post('/add-sales-questions', [AskQuestionController::class, 'addSalesQuestion']);
+
+    Route::post('/savewishlist', [WishlistController::class, 'store']);
+    // Route::post('/empty-wishlist', [WishlistController::class, 'emptyWishlist']);
+    Route::post('/delete-wishlist', [WishlistController::class, 'destroy']);
+    Route::post('/wishlist', [WishlistController::class, 'lists']);
+    Route::post('/add-truck-ques', [TruckPartsController::class, 'addParkQuestion']);
 });
 // Protected Routes End

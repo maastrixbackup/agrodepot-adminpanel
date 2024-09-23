@@ -6,74 +6,82 @@
         </div>
 
     </div>
-    <table class="brandsTable table table-hover" id="cmspageslist">
-        <thead>
-            <tr>
-                <th scope="col">SL#</th>
-                <th scope="col">Ordered By</th>
-                <th scope="col">Ordered To</th>
-                <th scope="col">Order ID</th>
-                <th scope="col">Sales Name</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Price</th>
-                <th scope="col">Status</th>
-                <th scope="col">Delivery Status</th>
-                <th scope="col">Ordered Date</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody id="brands_sortable">
-            @foreach ($data as $index => $menu)
-            <tr id="{{ $menu->id  }}">
-                <td scope="row">{{ $index + 1 }}</td>
-                <td scope="row">{{ $menu->first_name }} {{ $menu->last_name }}</td>
-                <td scope="row">{{ optional(optional($menu->salesAdvertisement)->user)->first_name }}
-                    {{ optional(optional($menu->salesAdvertisement)->user)->last_name }}
-                </td>
-                <td scope="row">{{ $menu->orderid}}</td>
-                <td scope="row">{{ $menu->adv_name}}</td>
-                <td scope="row">{{ $menu->qty}}</td>
-                <td scope="row">{{ $menu->totprice}}RON</td>
-                <td class="text-capitalize"><select name="status" class="form-select-sm order-select" data-ord-id="{{ $menu->id }}">
-                        <option value="0" {{ $menu->status == '0' ? 'selected' : '' }}>New order</option>
-                        <option value="1" {{ $menu->status == '1' ? 'selected' : '' }}>confirmed order
-                        </option>
-                        <option value="2" {{ $menu->status == '2' ? 'selected' : '' }}>completed order
-                        </option>
-                        <option value="3" {{ $menu->status == '3' ? 'selected' : '' }}>shipped order
-                        </option>
-                        <option value="4" {{ $menu->status == '4' ? 'selected' : '' }}>cancel Order
-                        </option>
-                    </select></td>
-                <td class="text-capitalize"><select name="delivery_status" class="form-select-sm delivery-select" data-del-id="{{ $menu->id }}">
-                        <option value="0" {{ $menu->delivery_status == '0' ? 'selected' : '' }}>Pending</option>
-                        <option value="1" {{ $menu->delivery_status == '1' ? 'selected' : '' }}>Delivered
-                        </option>
-                    </select></td>
+    <button class="scroll-btn scroll-left" onclick="scrollTable(-1)">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="scroll-btn scroll-right" onclick="scrollTable(1)">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+    <div class="custom-scrollbar" id="table-container">
+        <table class="brandsTable table table-hover" id="cmspageslist">
+            <thead>
+                <tr>
+                    <th scope="col">SL#</th>
+                    <th scope="col">Ordered By</th>
+                    <th scope="col">Ordered To</th>
+                    <th scope="col">Order ID</th>
+                    <th scope="col">Sales Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Delivery Status</th>
+                    <th scope="col">Ordered Date</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="brands_sortable">
+                @foreach ($data as $index => $menu)
+                <tr id="{{ $menu->id  }}">
+                    <td scope="row">{{ $index + 1 }}</td>
+                    <td scope="row">{{ $menu->first_name }} {{ $menu->last_name }}</td>
+                    <td scope="row">{{ optional(optional($menu->salesAdvertisement)->user)->first_name }}
+                        {{ optional(optional($menu->salesAdvertisement)->user)->last_name }}
+                    </td>
+                    <td scope="row">{{ $menu->orderid}}</td>
+                    <td scope="row">{{ $menu->adv_name}}</td>
+                    <td scope="row">{{ $menu->qty}}</td>
+                    <td scope="row">{{ $menu->totprice}}RON</td>
+                    <td class="text-capitalize"><select name="status" class="form-select-sm order-select" data-ord-id="{{ $menu->id }}">
+                            <option value="0" {{ $menu->status == '0' ? 'selected' : '' }}>New order</option>
+                            <option value="1" {{ $menu->status == '1' ? 'selected' : '' }}>confirmed order
+                            </option>
+                            <option value="2" {{ $menu->status == '2' ? 'selected' : '' }}>completed order
+                            </option>
+                            <option value="3" {{ $menu->status == '3' ? 'selected' : '' }}>shipped order
+                            </option>
+                            <option value="4" {{ $menu->status == '4' ? 'selected' : '' }}>cancel Order
+                            </option>
+                        </select></td>
+                    <td class="text-capitalize"><select name="delivery_status" class="form-select-sm delivery-select" data-del-id="{{ $menu->id }}">
+                            <option value="0" {{ $menu->delivery_status == '0' ? 'selected' : '' }}>Pending</option>
+                            <option value="1" {{ $menu->delivery_status == '1' ? 'selected' : '' }}>Delivered
+                            </option>
+                        </select></td>
 
-                <td scope="row">{{ $menu->created}}</td>
-                <td>
-                    <div class="d-flex">
-                        <div class="customButtonContainer">
+                    <td scope="row">{{ date('d/m/Y', strtotime($menu->created)) }}</td>
+                    <td>
+                        <div class="d-flex">
+                            <div class="customButtonContainer">
 
-                            <a class="mx-2" href="{{ url('admin/saleorder/' . $menu->id) }}"><i class="fas fa-eye"></i></a>
-                        </div>
-                        <div class="customButtonContainer">
+                                <a class="edit-btn" title="Order Details" href="{{ url('admin/saleorder/' . $menu->id) }}"><i class="fas fa-eye"></i></a>
+                            </div>
+                            <div class="customButtonContainer">
 
-                            <a class="mx-2" href="{{ route('getOrders', ['Id' => $menu->id]) }}"><i class="fas fa-eye"></i></a>
-                        </div>
-                        <div class="customButtonContainer">
-                            <!-- <form method="POST" action="{{ url('admin/saleorder/' . $menu->id) }}">@csrf
+                                <a class="edit-btn" title="Sales Details" href="{{ route('getOrders', ['Id' => $menu->id]) }}"><i class="fas fa-info-circle"></i></a>
+                            </div>
+                            <div class="customButtonContainer">
+                                <!-- <form method="POST" action="{{ url('admin/saleorder/' . $menu->id) }}">@csrf
                                 @method('DELETE')<button type="submit"><i class="fas fa-trash"></i></button></form> -->
-                            <button title="Delete" class="trash remove-saleorder" data-id="{{ $menu->id }}" data-action="{{ url('admin/saleorder/' . $menu->id) }}"><i class="fas fa-trash"></i></button>
+                                <button title="Delete" class="dl-btn trash remove-saleorder" data-id="{{ $menu->id }}" data-action="{{ url('admin/saleorder/' . $menu->id) }}"><i class="fas fa-trash"></i></button>
+                            </div>
                         </div>
-                    </div>
 
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
     <script>
         $(document).ready(function() {
@@ -171,11 +179,6 @@
         });
     </script>
     <script>
-        $('#cmspageslist').dataTable({
-            "bPaginate": false
-        });
+        let table = new DataTable('#cmspageslist');
     </script>
-
-    {{$data->links()}}
-
 </x-app-layout>

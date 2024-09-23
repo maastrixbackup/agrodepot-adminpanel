@@ -8,41 +8,54 @@
         </div>
         <div class="col-2"><a href="{{ route('banners.create') }}" class="btn btn-primary">Create new</a></div>
     </div>
-    <table class="table table-hover" id="cmspageslist">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Image</th>
-                <th scope="col">Title</th>
-                <th scope="col">Caption</th>
-                <th scope="col">Created</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($data as $index => $menu)
-            <tr>
-                <th scope="row">{{ $index + 1 }}</th>
-                <td class="tableImg"><img src="{{ asset('uploads/banner/' . $menu->banner_img) }}" alt="" srcset=""> </td>
-                <td class="text-capitalize"><a href="{{ url('admin/banners/' . $menu->banner_id . '/edit') }}">{{ $menu->banner_title }}</a></td>
-                <td class="text-capitalize">{!! $menu->banner_caption !!}</td>
-                <td class="text-capitalize">{{ $menu->created }}</td>
-                <td>
-                    <div class="d-flex">
-                        <div class="customButtonContainer"><a class="mx-2" href="{{ url('admin/banners/' . $menu->banner_id . '/edit') }}"><i class="fas fa-edit"></i></a>
-                        </div>
-                        <div class="customButtonContainer">
-                            <!-- <form method="POST" action="{{ url('admin/banners/' . $menu->banner_id) }}">@csrf
-                                @method('DELETE')<button type="submit"><i class="fas fa-trash"></i></button></form> -->
-                            <button title="Delete" class="trash remove-banner" data-id="{{ $menu->id }}" data-action="{{ url('admin/banners/' . $menu->banner_id) }}"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
+    <div class="custom-scrollbar">
+        <table class="table table-hover" id="cmspageslist">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Caption</th>
+                    <th scope="col">Created</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($data as $index => $menu)
+                    <tr>
+                        <th scope="row">{{ $index + 1 }}</th>
+                        <td class="tableImg">
+                            @if ($menu->banner_img)
+                                <img src="{{ asset('uploads/banner/' . $menu->banner_img) }}" alt=""
+                                    srcset="">
+                            @else
+                                <img src="{{ asset('/uploads/no-image.jpg') }}" alt="" srcset="">
+                            @endif
+                        </td>
+                        <td class="text-capitalize"><a
+                                href="{{ url('admin/banners/' . $menu->banner_id . '/edit') }}">{{ $menu->banner_title }}</a>
+                        </td>
+                        <td class="text-capitalize">{!! $menu->banner_caption !!}</td>
+                        <td class="text-capitalize">{{ $menu->created }}</td>
+                        <td>
+                            <div class="d-flex customButtonContainer">
+                                <a class="edit-btn" title="Edit"
+                                    href="{{ url('admin/banners/' . $menu->banner_id . '/edit') }}"><i
+                                        class="fas fa-edit"></i></a>
+                                <a class="edit-btn" title="View"
+                                    href="{{ url('admin/banners/' . $menu->banner_id) }}"><i class="fas fa-eye"></i></a>
 
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                                <button title="Delete" class="dl-btn trash remove-banner" data-id="{{ $menu->id }}"
+                                    data-action="{{ url('admin/banners/' . $menu->banner_id) }}"><i
+                                        class="fas fa-trash"></i></button>
+                            </div>
+
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
     <script>
         let table = new DataTable('#cmspageslist');
     </script>
@@ -66,10 +79,15 @@
                         var token = jQuery('meta[name="csrf-token"]').attr('content');
                         var id = current_object.attr('data-id');
 
-                        $('body').html("<form class='form-inline remove-form' method='post' action='" + action + "'></form>");
-                        $('body').find('.remove-form').append('<input name="_method" type="hidden" value="DELETE">');
-                        $('body').find('.remove-form').append('<input name="_token" type="hidden" value="' + token + '">');
-                        $('body').find('.remove-form').append('<input name="id" type="hidden" value="' + id + '">');
+                        $('body').html(
+                            "<form class='form-inline remove-form' method='post' action='" +
+                            action + "'></form>");
+                        $('body').find('.remove-form').append(
+                            '<input name="_method" type="hidden" value="DELETE">');
+                        $('body').find('.remove-form').append(
+                            '<input name="_token" type="hidden" value="' + token + '">');
+                        $('body').find('.remove-form').append(
+                            '<input name="id" type="hidden" value="' + id + '">');
                         $('body').find('.remove-form').submit();
                     }
                 });

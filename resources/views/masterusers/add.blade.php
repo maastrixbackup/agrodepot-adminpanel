@@ -42,28 +42,28 @@
                 <div>
                     <label for="email">Phone 1</label>
                     <input type="text" name="telephone1" class="form-control" id="email">
-                    @error('email')
+                    @error('telephone1')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
                     <label for="email">Phone 2</label>
                     <input type="text" name="telephone2" class="form-control" id="email">
-                    @error('email')
+                    @error('telephone2')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
                     <label for="email">Phone 3</label>
                     <input type="text" name="telephone3" class="form-control" id="email">
-                    @error('email')
+                    @error('telephone3')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
                     <label for="email">Phone 4</label>
                     <input type="text" name="telephone4" class="form-control" id="email">
-                    @error('email')
+                    @error('telephone4')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>

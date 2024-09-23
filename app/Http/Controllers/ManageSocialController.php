@@ -62,7 +62,9 @@ class ManageSocialController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $socialicon_data = SocialIcon::find($id);
+
+        return view('socialIcons.show', compact('socialicon_data'));
     }
 
     /**

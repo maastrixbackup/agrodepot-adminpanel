@@ -74,7 +74,9 @@ class MembershipController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $usermembership = UserMembership::find($id);
+
+        return view('memberships.show', compact('usermembership'));
     }
 
     /**

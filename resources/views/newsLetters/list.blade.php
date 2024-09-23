@@ -6,58 +6,63 @@
         </div>
         <div class="col-2"><a href="{{ route('newsletters.create') }}" class="btn btn-primary">Create new</a></div>
     </div>
-    <table class="brandsTable table table-hover" id="cmspageslist">
-        <thead>
-            <tr>
-                <th scope="col">SL#</th>
-                <th scope="col">Name</th>
-                <th scope="col">E-Mail ID</th>
-                <th scope="col">Status</th>
-                <th scope="col">Subscribe Date</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody id="brands_sortable">
-            @foreach ($data as $index => $menu)
-            <tr id="{{ $menu->news_letter_id  }}">
-                <td scope="row">{{ $index + 1 }}</td>
-                <td scope="row">{{ $menu->news_name }}</td>
-                <td scope="row">{{ $menu->news_email}}</td>
-                <td class="text-capitalize"><select name="status" class="form-select-sm news-select" data-news-id="{{ $menu->news_letter_id }}">
-                        <option value="0" {{ $menu->status == '0' ? 'selected' : '' }}>Not Confirmed</option>
-                        <option value="1" {{ $menu->status == '1' ? 'selected' : '' }}>Confirmed
-                        </option>
-                    </select></td>
-                <td scope="row">{{ $menu->created}}</td>
-                <td>
-                    <div class="d-flex">
-                        <div class="customButtonContainer">
-                            @if($menu->status == '0')
-                            <a class="mx-2" href="{{ url('admin/newsletters/' . $menu->news_letter_id ) }}"><i class="fas fa-eye"></i></a>
-                            @endif
-                        </div>
+    <div class="custom-scrollbar">
+        <table class="brandsTable table table-hover" id="cmspageslist">
+            <thead>
+                <tr>
+                    <th scope="col">SL#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">E-Mail ID</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Subscribe Date</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="brands_sortable">
+                @foreach ($data as $index => $menu)
+                    <tr id="{{ $menu->news_letter_id }}">
+                        <td scope="row">{{ $index + 1 }}</td>
+                        <td scope="row">{{ $menu->news_name }}</td>
+                        <td scope="row">{{ $menu->news_email }}</td>
+                        <td class="text-capitalize"><select name="status" class="form-select-sm news-select"
+                                data-news-id="{{ $menu->news_letter_id }}">
+                                <option value="0" {{ $menu->status == '0' ? 'selected' : '' }}>Not Confirmed
+                                </option>
+                                <option value="1" {{ $menu->status == '1' ? 'selected' : '' }}>Confirmed
+                                </option>
+                            </select></td>
+                        <td scope="row">{{ $menu->created }}</td>
+                        <td>
+                            <div class="d-flex customButtonContainer">
+                                @if ($menu->status == '0')
+                                    <form method="POST"
+                                        action="{{ route('newsletters.resend', ['id' => $menu->news_letter_id]) }}">
+                                        @csrf
+                                        <button type="submit" class="edit-btn" title="Resend"><i
+                                                class="fas fa-retweet"></i></button>
+                                    </form>
+                                @endif
 
-                        <div class="customButtonContainer">
-                            <a href="{{ url('admin/newsletters/' . $menu->news_letter_id . '/edit') }}"><i class="fas fa-edit"></i></a>
-
-                        </div>
-                        <div class="customButtonContainer">
-                            <!-- <form method="POST" action="{{ url('admin/newsletters/' . $menu->news_letter_id ) }}">@csrf
+                                <a class="edit-btn" title="Edit"
+                                    href="{{ url('admin/newsletters/' . $menu->news_letter_id . '/edit') }}"><i
+                                        class="fas fa-edit"></i></a>
+                                <!-- <form method="POST" action="{{ url('admin/newsletters/' . $menu->news_letter_id) }}">@csrf
                                 @method('DELETE')<button type="submit"><i class="fas fa-trash"></i></button></form> -->
-                            <button title="Delete" class="trash remove-newsletter" data-id="{{ $menu->news_letter_id }}" data-action="{{ url('admin/newsletters/' . $menu->news_letter_id ) }}"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
+                                <button title="Delete" class="dl-btn trash remove-newsletter"
+                                    data-id="{{ $menu->news_letter_id }}"
+                                    data-action="{{ url('admin/newsletters/' . $menu->news_letter_id) }}"><i
+                                        class="fas fa-trash"></i></button>
+                            </div>
 
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
     <script>
-        $('#cmspageslist').dataTable({
-            "bPaginate": false
-        });
+        let table = new DataTable('#cmspageslist');
     </script>
 
 
@@ -80,10 +85,15 @@
                         var token = jQuery('meta[name="csrf-token"]').attr('content');
                         var id = current_object.attr('data-id');
 
-                        $('body').html("<form class='form-inline remove-form' method='post' action='" + action + "'></form>");
-                        $('body').find('.remove-form').append('<input name="_method" type="hidden" value="DELETE">');
-                        $('body').find('.remove-form').append('<input name="_token" type="hidden" value="' + token + '">');
-                        $('body').find('.remove-form').append('<input name="id" type="hidden" value="' + id + '">');
+                        $('body').html(
+                            "<form class='form-inline remove-form' method='post' action='" +
+                            action + "'></form>");
+                        $('body').find('.remove-form').append(
+                            '<input name="_method" type="hidden" value="DELETE">');
+                        $('body').find('.remove-form').append(
+                            '<input name="_token" type="hidden" value="' + token + '">');
+                        $('body').find('.remove-form').append(
+                            '<input name="id" type="hidden" value="' + id + '">');
                         $('body').find('.remove-form').submit();
                     }
                 });
@@ -108,7 +118,8 @@
                     success: function(response) {
                         console.log('AJAX success:', response);
                         // Show success message in page body
-                        $('.page-body').prepend('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                        $('.page-body').prepend(
+                            '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
                             response.message +
                             '</div>');
                         // Automatically close the success message after 5 seconds
@@ -125,7 +136,4 @@
             });
         });
     </script>
-
-    {{$data->links()}}
-
 </x-app-layout>

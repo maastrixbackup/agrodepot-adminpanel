@@ -13,6 +13,7 @@ use App\Models\AdminLang;
 use App\Models\Advertisement;
 use App\Models\MasterCountry;
 use App\Models\MasterLocation;
+use App\Models\MasterUser;
 use App\Models\News;
 use App\Models\PromotionAd;
 use App\Models\RequestImg;
@@ -200,7 +201,7 @@ class CmsPagesController extends Controller
             ->select('master_users.*')
             ->where('master_users.is_active', 1)
             ->where('master_users.wrong_login_attempt', '<=', 3)
-            ->groupBy('promotion_ad.user_id', 'master_users.user_id', 'master_users.first_name', 'master_users.first_name', 'master_users.last_name', 'master_users.email', 'master_users.pass', 'master_users.pass', 'master_users.telephone1', 'master_users.telephone2', 'master_users.telephone3', 'master_users.telephone4', 'master_users.country_id', 'master_users.locality_id', 'master_users.postal_code', 'master_users.other_add', 'master_users.user_type_id', 'master_users.profile_img', 'master_users.is_active', 'master_users.is_admin', 'master_users.is_facebook', 'master_users.fb_id', 'master_users.wrong_login_attempt', 'master_users.last_login', 'master_users.is_premium', 'master_users.created', 'master_users.modified', 'master_users.password', 'master_users.email_verified_at', 'master_users.remember_token', 'master_users.created_at', 'master_users.updated_at')
+            ->groupBy('promotion_ad.user_id', 'master_users.user_id', 'master_users.first_name', 'master_users.first_name', 'master_users.last_name', 'master_users.email', 'master_users.pass', 'master_users.pass', 'master_users.telephone1', 'master_users.telephone2', 'master_users.telephone3', 'master_users.telephone4', 'master_users.country_id', 'master_users.locality_id', 'master_users.postal_code', 'master_users.other_add', 'master_users.user_type_id', 'master_users.profile_img', 'master_users.is_active', 'master_users.is_admin', 'master_users.is_facebook', 'master_users.fb_id', 'master_users.wrong_login_attempt', 'master_users.last_login', 'master_users.is_premium', 'master_users.company_name', 'master_users.cui', 'master_users.reg_no', 'master_users.regd_off_add', 'master_users.country_regd_off', 'master_users.regd_off_city', 'master_users.regd_off_country', 'master_users.bank', 'master_users.account', 'master_users.created', 'master_users.modified', 'master_users.password', 'master_users.email_verified_at', 'master_users.fgt_pw_token', 'master_users.created_at', 'master_users.updated_at')
             ->orderByDesc('promotion_ad.user_id')
             ->get();
         foreach ($premiumRes as $key => $value) {
@@ -221,6 +222,7 @@ class CmsPagesController extends Controller
             ->where('promotion_ad.is_home_expire', '>=', $currentDate)
             ->select(
                 'sales_advertisements.adv_id',
+                'sales_advertisements.slug',
                 'sales_advertisements.adv_name',
                 'sales_advertisements.price',
                 'sales_advertisements.currency',
@@ -229,6 +231,7 @@ class CmsPagesController extends Controller
             ->groupBy(
                 'sales_advertisements.adv_id',
                 'sales_advertisements.adv_name',
+                'sales_advertisements.slug',
                 'sales_advertisements.price',
                 'sales_advertisements.currency',
                 'promotion_ad.promotion_id'
@@ -320,11 +323,12 @@ class CmsPagesController extends Controller
             ->select(
                 FacadesDB::raw('COUNT(*) as totfav'),
                 'SalesAdvertisement.adv_id',
+                'SalesAdvertisement.slug',
                 'SalesAdvertisement.adv_name',
                 'SalesAdvertisement.price',
                 'SalesAdvertisement.currency',
             )
-            ->groupBy('SalesAddToFavourite.adv_id', 'SalesAdvertisement.adv_id', 'SalesAdvertisement.adv_name', 'SalesAdvertisement.price', 'SalesAdvertisement.currency')
+            ->groupBy('SalesAddToFavourite.adv_id', 'SalesAdvertisement.adv_id', 'SalesAdvertisement.adv_name', 'SalesAdvertisement.slug', 'SalesAdvertisement.price', 'SalesAdvertisement.currency')
             ->orderByDesc('totfav')
             ->limit(5)
             ->get();
@@ -343,6 +347,7 @@ class CmsPagesController extends Controller
         $mostViewRes = SalesAdvertisement::selectRaw('COUNT(*) as totview, sales_advertisements.adv_id')
             ->addSelect(
                 'sales_advertisements.adv_id',
+                'sales_advertisements.slug',
                 'sales_advertisements.adv_name',
                 'sales_advertisements.price',
                 'sales_advertisements.currency',
@@ -353,6 +358,7 @@ class CmsPagesController extends Controller
                 'sales_advertisements.adv_name',
                 'sales_advertisements.price',
                 'sales_advertisements.currency',
+                'sales_advertisements.slug',
             )
             ->orderByDesc('totview')
             ->limit(5)
@@ -381,5 +387,158 @@ class CmsPagesController extends Controller
             'storyRes' => $storyRes,
             'newsRes' => $newsRes,
         ], 200);
+    }
+
+    public function footerBrands(Request $request)
+    {
+        $brands = SalesBrand::where('flag', 0)->limit(8)->get();
+        $brand_data = [];
+
+        if (!$brands->isEmpty()) {
+            foreach ($brands as $key => $row) {
+                $brand_data[$key]['brand_name'] = $row->brand_name;
+                $brand_data[$key]['brand_id'] = $row->brand_id;
+            }
+        }
+
+        return response()->json(['data' => $brand_data]);
+    }
+
+    public function footerCategories(Request $request)
+    {
+        $categories = SalesCategory::where('flag', 0)->limit(8)->get();
+        $category_data = [];
+
+        if (!$categories->isEmpty()) {
+            foreach ($categories as $key => $row) {
+                $category_data[$key]['category_name'] = $row->category_name;
+                $category_data[$key]['category_id'] = $row->category_id;
+            }
+        }
+
+        return response()->json(['data' => $categories]);
+    }
+
+
+
+
+    // public function getData(Request $request, string $id)
+    // {
+    //     $cmsPageData = cmsPage::where("title", $id)->first();
+
+    //     if (!$cmsPageData) {
+    //         return response()->json(['error' => 'Page not found'], 404);
+    //     }
+
+    //     $fieldData = json_decode($cmsPageData->fields, true);
+    //     $structuredData = [
+    //         'products' => [
+    //             'images' => [
+    //                 $fieldData['product1image'] ?? null,
+    //                 $fieldData['product2image'] ?? null,
+    //                 $fieldData['product3image'] ?? null
+    //             ],
+    //             'titles' => [
+    //                 [
+    //                     'title1' => $fieldData['product1title1'] ?? null,
+    //                     'title2' => $fieldData['product1title2'] ?? null
+    //                 ],
+    //                 [
+    //                     'title1' => $fieldData['product2title1'] ?? null,
+    //                     'title2' => $fieldData['product2title2'] ?? null
+    //                 ],
+    //                 [
+    //                     'title1' => $fieldData['product3title1'] ?? null,
+    //                     'title2' => $fieldData['product3title2'] ?? null
+    //                 ]
+    //             ],
+    //             'buttonUrls' => [
+    //                 $fieldData['product1ButtonUrl'] ?? null,
+    //                 $fieldData['product2ButtonUrl'] ?? null,
+    //                 $fieldData['product3ButtonUrl'] ?? null
+    //             ]
+    //         ],
+    //         'steps' => [
+    //             [
+    //                 'number' => $fieldData['step1Number'] ?? null,
+    //                 'title' => $fieldData['step1Title'] ?? null,
+    //                 'image' => $fieldData['step1Image'] ?? null
+    //             ],
+    //             [
+    //                 'number' => $fieldData['step2Number'] ?? null,
+    //                 'title' => $fieldData['step2Title'] ?? null,
+    //                 'image' => $fieldData['step2Image'] ?? null
+    //             ],
+    //             [
+    //                 'number' => $fieldData['step3Number'] ?? null,
+    //                 'title' => $fieldData['step3Title'] ?? null,
+    //                 'image' => $fieldData['step3Image'] ?? null
+    //             ]
+    //         ]
+    //     ];
+
+    //     return response()->json($structuredData);
+    // }
+
+    public function getData(Request $request, string $id)
+    {
+        $cmsPageData = cmsPage::where("title", $id)->first();
+
+        if (!$cmsPageData) {
+            return response()->json(['error' => 'Page not found'], 404);
+        }
+
+        $fieldData = json_decode($cmsPageData->fields, true);
+        $baseUrl = asset('images');
+
+        $structuredData = [
+            'product1image' => isset($fieldData['product1image']) ? $baseUrl . '/' . $fieldData['product1image'] : null,
+            'product2image' => isset($fieldData['product2image']) ? $baseUrl . '/' . $fieldData['product2image'] : null,
+            'product3image' => isset($fieldData['product3image']) ? $baseUrl . '/' . $fieldData['product3image'] : null,
+            'product1title1' => $fieldData['product1title1'] ?? null,
+            'product1title2' => $fieldData['product1title2'] ?? null,
+            'product2title1' => $fieldData['product2title1'] ?? null,
+            'product2title2' => $fieldData['product2title2'] ?? null,
+            'product3title1' => $fieldData['product3title1'] ?? null,
+            'product3title2' => $fieldData['product3title2'] ?? null,
+            'product1ButtonUrl' => $fieldData['product1ButtonUrl'] ?? null,
+            'product2ButtonUrl' => $fieldData['product2ButtonUrl'] ?? null,
+            'product3ButtonUrl' => $fieldData['product3ButtonUrl'] ?? null,
+            'step1Number' => $fieldData['step1Number'] ?? null,
+            'step1Title' => $fieldData['step1Title'] ?? null,
+            'step1Image' => isset($fieldData['step1Image']) ? $baseUrl . '/' . $fieldData['step1Image'] : null,
+            'step2Number' => $fieldData['step2Number'] ?? null,
+            'step2Title' => $fieldData['step2Title'] ?? null,
+            'step2Image' => isset($fieldData['step2Image']) ? $baseUrl . '/' . $fieldData['step2Image'] : null,
+            'step3Number' => $fieldData['step3Number'] ?? null,
+            'step3Title' => $fieldData['step3Title'] ?? null,
+            'step3Image' => isset($fieldData['step3Image']) ? $baseUrl . '/' . $fieldData['step3Image'] : null,
+        ];
+
+        return response()->json($structuredData);
+    }
+
+
+    public function getCounts()
+    {
+        $productCount = SalesAdvertisement::where('adv_status', 1)->count();
+        $sellerCount = MasterUser::where('is_active', 1)
+            ->where('wrong_login_attempt', '<=', 3)
+            ->where('user_type_id', 2)
+            ->count();
+        $buyerCount = MasterUser::where('is_active', 1)
+            ->where('wrong_login_attempt', '<=', 3)
+            ->where('user_type_id', 1)
+            ->count();
+        $offerCount = RequestPart::leftJoin('request_accessories', 'request_accessories.request_id', '=', 'request_parts.request_id')
+            ->where('request_accessories.status', 1)
+            ->where('request_parts.status', 1)
+            ->count();
+        return response()->json([
+            'Products' => $productCount,
+            'SellingLeads' => $sellerCount,
+            'BuyingLeads' => $buyerCount,
+            'OfferParts' => $offerCount,
+        ]);
     }
 }

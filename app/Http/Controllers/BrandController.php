@@ -13,9 +13,10 @@ class BrandController extends Controller
      */
     public function index()
     {
-        //
         $data = SalesBrand::orderBy('ordering', 'ASC')->get();
-        return view("brands.list", compact("data"));
+        $parent = SalesBrand::where('flag', 0)->pluck('brand_name', 'brand_id')->toArray();
+        $parent[0] = "Parent";
+        return view("brands.list", compact("data", 'parent'));
     }
 
     public function getBrands(Request $request)
@@ -42,6 +43,10 @@ class BrandController extends Controller
             $brandRecords = $brandRecords->where('brand_name', 'like', '%' . $searchValue . '%');
         }
 
+        if (isset($request->brand)) {
+            $brandRecords = $brandRecords->where('flag', $request->brand);
+        }
+
         // Fetch records\
         $totalRecordswithFilter = $brandRecords->count();
         $brandRecords = $brandRecords->skip($row)->take($rowperpage)->get();
@@ -50,8 +55,10 @@ class BrandController extends Controller
             $btns = '';
             $delete_btn = url('admin/brands', $record->brand_id);
             $edit_btn = url('admin/brands', $record->brand_id . '/edit');
+            $details_btn = url('admin/brands', $record->brand_id);
 
-            $btns .= '<a class="edit-btn" href="' . $edit_btn . '"><i class="fas fa-edit"></i></a>';
+            $btns .= '<a title="Edit" class="edit-btn" href="' . $edit_btn . '"><i class="fas fa-edit"></i></a>';
+            $btns .= '<a title="View" class="edit-btn" href="' . $details_btn . '"><i class="fas fa-eye"></i></a>';
             $btns .= '<button title="Delete" class="dl-btn trash remove-category" data-id="' . $record->brand_id . ' " data-action="' . $delete_btn . '"><i class="fas fa-trash"></i></button>';
 
             $action = '<div class="d-flex customButtonContainer">' . $btns . '</div>';
@@ -147,7 +154,9 @@ class BrandController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $brands = SalesBrand::find($id);
+
+        return view('brands.show', compact('brands'));
     }
 
     /**

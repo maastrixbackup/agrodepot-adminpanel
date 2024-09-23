@@ -7,14 +7,20 @@
             <div class="row">
                 <div class="col-6">
                     <label for="productitle1" class="col-sm-4 col-form-label form-label">Product Title 1</label>
-                    <input class="form-control" value="{{ optional($fieldData)->product1title1 }}" type="text" name="product1title1" id="productitle1">
+                    <input class="form-control" value="{{ optional($fieldData)->product1title1 }}" type="text"
+                        name="product1title1" id="productitle1">
                     <label for="productitle2" class="col-sm-4 col-form-label form-label">Product Title 2</label>
-                    <input class="form-control" value="{{ optional($fieldData)->product1title2 }}" type="text" name="product1title2" id="productitle2">
+                    <input class="form-control" value="{{ optional($fieldData)->product1title2 }}" type="text"
+                        name="product1title2" id="productitle2">
+                    <label for="product1ButtonUrl" class="col-sm-4 col-form-label form-label">Product 1 Button
+                        Url</label>
+                    <input class="form-control" value="{{ optional($fieldData)->product1ButtonUrl }}" type="text"
+                        name="product1ButtonUrl" id="product1ButtonUrl">
                 </div>
                 <div class="col-6">
                     <label for="input40" class="col-sm-4 col-form-label">Product 1 Image</label>
-                    <img src="{{ asset('images/' . optional($fieldData)->product1image ) }}" alt="image" id="pImage"
-                        style="width:20%">
+                    <img src="{{ asset('images/' . optional($fieldData)->product1image) }}" alt="image"
+                        id="pImage" style="width:20%">
                     <input type="file" class="form-control" name="product1image" id="banner_img" accept="image/*">
                 </div>
             </div>
@@ -24,14 +30,20 @@
             <div class="row">
                 <div class="col-6">
                     <label for="productitle1" class="col-sm-4 col-form-label form-label">Product Title 1</label>
-                    <input class="form-control" value="{{ optional($fieldData)->product2title1 }}"  type="text" name="product2title1" id="productitle1">
+                    <input class="form-control" value="{{ optional($fieldData)->product2title1 }}" type="text"
+                        name="product2title1" id="productitle1">
                     <label for="productitle2" class="col-sm-4 col-form-label form-label">Product Title 2</label>
-                    <input class="form-control" value="{{ optional($fieldData)->product2title2 }}"  type="text" name="product2title2" id="productitle2">
+                    <input class="form-control" value="{{ optional($fieldData)->product2title2 }}" type="text"
+                        name="product2title2" id="productitle2">
+                    <label for="product2ButtonUrl" class="col-sm-4 col-form-label form-label">Product 2 Button
+                        Url</label>
+                    <input class="form-control" value="{{ optional($fieldData)->product2ButtonUrl }}" type="text"
+                        name="product2ButtonUrl" id="product2ButtonUrl">
                 </div>
                 <div class="col-6">
                     <label for="input40" class="col-sm-4 col-form-label">Product 2 Image</label>
-                    <img src="{{ asset('images/' . optional($fieldData)->product2image ) }}" alt="image" id="pImage"
-                        style="width:20%">
+                    <img src="{{ asset('images/' . optional($fieldData)->product2image) }}" alt="image"
+                        id="pImage" style="width:20%">
                     <input type="file" class="form-control" name="product2image" id="banner_img" accept="image/*">
                 </div>
             </div>
@@ -41,19 +53,24 @@
             <div class="row">
                 <div class="col-6">
                     <label for="productitle1" class="col-sm-4 col-form-label form-label">Product Title 1</label>
-                    <input class="form-control" value="{{ optional($fieldData)->product3title1 }}" type="text" name="product3title1" id="productitle1">
+                    <input class="form-control" value="{{ optional($fieldData)->product3title1 }}" type="text"
+                        name="product3title1" id="productitle1">
                     <label for="productitle2" class="col-sm-4 col-form-label form-label">Product Title 2</label>
-                    <input class="form-control" value="{{ optional($fieldData)->product3title2 }}" type="text" name="product3title2" id="productitle2">
+                    <input class="form-control" value="{{ optional($fieldData)->product3title2 }}" type="text"
+                        name="product3title2" id="productitle2">
+                    <label for="product3ButtonUrl" class="col-sm-4 col-form-label form-label">Product 3 Button
+                        Url</label>
+                    <input class="form-control" value="{{ optional($fieldData)->product3ButtonUrl }}" type="text"
+                        name="product3ButtonUrl" id="product3ButtonUrl">
                 </div>
                 <div class="col-6">
                     <label for="input40" class="col-sm-4 col-form-label">Product 3 Image</label>
-                    <img src="{{ asset('images/' . optional($fieldData)->product3image) }}" alt="image" id="pImage"
-                        style="width:20%">
-                    <input type="file" class="form-control" name="product3image" id="banner_img" accept="image/*">
+                    <img src="{{ asset('images/' . optional($fieldData)->product3image) }}" alt="image"
+                        id="pImage" style="width:20%">
+                    <input type="file" class="form-control" name="product3image" id="banner_img"
+                        accept="image/*">
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>

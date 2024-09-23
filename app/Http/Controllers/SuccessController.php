@@ -58,7 +58,10 @@ class SuccessController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $successstory_data = SuccessStory::find($id);
+        $users = MasterUser::where('user_id', $successstory_data->user_id)->first();
+
+        return view('successstories.show', compact('successstory_data', 'users'));
     }
 
     /**

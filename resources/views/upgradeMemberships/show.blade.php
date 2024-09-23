@@ -10,76 +10,81 @@
             <tr>
                 <td>Transaction ID</td>
                 <td>{{ $randomKey }}</td>
-                  
+
             </tr>
             <tr>
                 <td>Member Type</td>
-                <td>{{$membership->memb_type}}</td>
+                <td>{{ $membership->memb_type }}</td>
             </tr>
             <tr>
                 <td>Payment Method</td>
-                <td>{{$membership->payment_method}}</td>
+                <td>{{ $membership->payment_method }}</td>
             </tr>
             <tr>
                 <td>Name</td>
-                <td>{{$membership->name}}</td>
+                <td>{{ $membership->name }}</td>
             </tr>
             <tr>
                 <td>Email Address</td>
-                <td>{{$membership->email}}</td>
+                <td>{{ $membership->email }}</td>
             </tr>
             <tr>
                 <td>Phone</td>
-                <td>{{$membership->phone}}</td>
+                <td>{{ $membership->phone }}</td>
             </tr>
             <tr>
                 <td>Address</td>
-                <td>{{$membership->address}}</td>
+                <td>{{ $membership->address }}</td>
             </tr>
             <tr>
-                <td>County</td>
-                <td>{{$membership->county}}</td>
+                <td>Country</td>
+                <td>{{ $membership->country_name }}</td>
             </tr>
             <tr>
                 <td>City</td>
-                <td>{{$membership->city}}</td>
+                <td>{{ $membership->location_name }}</td>
             </tr>
+
             <tr>
                 <td>Zip</td>
-                <td>{{$membership->zip}}</td>
+                <td>{{ $membership->zip }}</td>
             </tr>
 
             <tr>
                 <td>Payment Status</td>
-                <td>@if($membership->payment_status == 1)
-                    Paid
-                 @else
-                    Pending
-                 @endif</td>
+                <td>
+                    @if ($membership->payment_status == 1)
+                        Paid
+                    @else
+                        Pending
+                    @endif
+                </td>
             </tr>
             <tr>
                 <td>Amount</td>
-                <td>{{$membership->price}}</td>
+                <td>{{ $membership->price }}</td>
             </tr>
             <tr>
                 <td>Credits</td>
-                <td>{{$membership->credit}}</td>
+                <td>{{ $membership->credit }}</td>
             </tr>
             <tr>
                 <td>Status</td>
-                <td>@if($membership->plan_status == 1)
-                    Approved
-                 @else
-                    Pending
-                 @endif</td>
+                <td>
+                    @if ($membership->plan_status == 1)
+                        Approved
+                    @else
+                        Pending
+                    @endif
+                </td>
             </tr>
             <tr>
                 <td>Date</td>
-                <td>{{$membership->created}}</td>
+                <td>{{ $membership->created }}</td>
             </tr>
         </thead>
-       
+
     </table>
-    
+
 
 </x-app-layout>

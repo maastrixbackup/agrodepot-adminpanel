@@ -103,6 +103,16 @@ class RequestPart extends Model
         return $this->hasOne(RequestAccessory::class);
     }
 
+	public function brand()
+    {
+        return $this->belongsTo(SalesBrand::class, 'brand_id');
+    }
+
+    public function model()
+    {
+        return $this->belongsTo(SalesBrand::class, 'model_id');
+    }
+
 
 
 }
