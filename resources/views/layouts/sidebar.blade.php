@@ -99,6 +99,16 @@
                             <span>Manage CMS</span>
                         </a>
                     </li>
+                    <li class="sidebar-list">
+                        <i class="fa fa-thumb-tack"></i>
+                        <a class="sidebar-link sidebar-title" href="{{ url('admin/feature-section') }}">
+                            <i class="fa fa-file"></i>
+                            <svg class="fill-icon">
+                                <use href="images/icon-sprite.svg#fill-home"></use>
+                            </svg>
+                            <span>Featured Section</span>
+                        </a>
+                    </li>
 
                     <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title"
                             href="{{ url('admin/admin-langs') }}">

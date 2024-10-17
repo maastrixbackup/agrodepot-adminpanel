@@ -102,7 +102,9 @@ class MasterUser extends Authenticatable implements JWTSubject
         'password',
         'email_verified_at',
         'remember_token',
-        'name'
+        'name',
+        'changePwRequest',
+        'changePwToken'
     ];
     public function getJWTIdentifier()
     {

@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\SalesWarrantyController;
 use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\NewsLetterController;
 use App\Http\Controllers\Api\AdminLangController;
+use App\Http\Controllers\Api\FeaturedSectionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,6 +42,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth.bearer')->group(function () {
+    Route::get('get-featured-content', [FeaturedSectionController::class, 'getFeaturedContent']);
 
     Route::post('register', [UserController::class, 'register']);
     Route::post('login', [UserController::class, 'login']);
@@ -139,6 +141,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('ask-questions/{userid}', [UserController::class, 'askQuestion']);
     Route::get('ask-questions-replies/{questionId}', [UserController::class, 'replies']);
 
+
     // API's created by Santosh Kumar Sahoo
     Route::get('/accounts-credits/{userid}', [UserDashBoardController::class, 'accountCredits'])->name('account.credits');
     Route::get('/accounts-history/{userid}', [UserDashBoardController::class, 'accountHistory'])->name('account.history');
@@ -166,6 +169,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Created by - Amlan Kumar Nayak (Music MG)
     // Date - 05-03-2024
+    Route::post('/change-password-confirm', [UserController::class, 'confirmPwChange']);
     Route::post('/change-password', [UserController::class, 'changePassword']);
     Route::post('/change-email-address', [UserController::class, 'changeEmailAddress']);
     Route::post('/auto-parts-request', [UserController::class, 'auto_parts_request']);

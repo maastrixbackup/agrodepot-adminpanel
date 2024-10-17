@@ -49,6 +49,7 @@ class BannerController extends Controller
         }
         $banner->banner_title = $request->input('banner_title');
         $banner->banner_caption = $request->input('banner_caption');
+        $banner->link = $request->input('link');
         $banner->save();
         return redirect()->route('banners.index')->with('success', 'Banner added successfully');
     }

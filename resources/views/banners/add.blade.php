@@ -34,6 +34,19 @@
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
+                <div>
+                    <label for="" class="form-label">Link 2</label>
+                    @php
+                        $cat = \App\Models\SalesCategory::all();
+                    @endphp
+                    <select name="link" id="link" class="form-control">
+                        <option value="" disabled selected>Select</option>
+                        @foreach ($cat as $c)
+                            <option value="{{ $c->category_id }}">
+                                {{ $c->category_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
             <button class="btn btn-primary customSaveButton" type="submit">Save</button>
         </form>

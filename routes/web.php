@@ -42,6 +42,7 @@ use App\Http\Controllers\NewsLetterController;
 use App\Http\Controllers\ComposeEmailController;
 use App\Http\Controllers\SentMailController;
 use App\Http\Controllers\DashBoardController;
+use App\Http\Controllers\FeaturedSectionController;
 use App\Http\Controllers\ManageLogoController;
 use App\Http\Controllers\PromoCodeController;
 
@@ -63,6 +64,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::get('/', [AuthenticatedSessionController::class, 'create']);
         Route::resource('cms-pages', CMSPagesController::class);
+        Route::resource('feature-section', FeaturedSectionController::class);
         Route::resource('sales', SalesController::class);
         Route::get('get-sub-categories/{catId}', [SalesController::class, 'getSubCategories'])->name('getSubCategories');
         Route::get('get-models/{Id}', [SalesController::class, 'getModels'])->name('getModels');
@@ -120,6 +122,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/notice/status/all', [AdminController::class, 'noticeStatusAll'])->name('notice.status.all');
         Route::get('/export-users', [MasterUserController::class, 'exportUsersToCsv'])->name('export.users');
         Route::post('users/{userId}/update-status', [MasterUserController::class, 'updateStatus'])->name('users.update-status');
+        Route::post('users/{userId}/update-password', [MasterUserController::class, 'updatePassword'])->name('users.update-password');
         Route::post('users/upgrademember/{uid}', [MasterUserController::class, 'upgrademember'])->name('users.upgrademember');
         Route::get('users/rating/{id}', [MasterUserController::class, 'showRatings'])->name('users.rating');
         Route::post('newsletters/resend/{id}', [NewsLetterController::class, 'newsletterResend'])->name('newsletters.resend');
@@ -141,7 +144,8 @@ Route::middleware('auth')->group(function () {
         Route::post('sellers/{sellId}/update-status', [SellerController::class, 'updateStatus'])->name('sellers.update-status');
 
         Route::post('request-parts/{partId}/update-status', [RequestPartsController::class, 'updateStatus'])->name('request-parts.update-status');
-
+        Route::get('/delete-all-slug', [CategoriesController::class, 'deleteAllSlugs'])->name('categories.delete-all-slug');
+        Route::get('/generate-all-slug', [CategoriesController::class, 'generateSlugsForAll'])->name('categories.generate-all-slug');
         Route::post('categories/{catId}/update-status', [CategoriesController::class, 'updateStatus'])->name('categories.update-status');
 
         Route::post('brands/{catId}/update-status', [BrandController::class, 'updateStatus'])->name('brands.update-status');

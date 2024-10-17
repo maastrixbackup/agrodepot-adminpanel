@@ -33,7 +33,7 @@ class ForgotPwController extends Controller
             // $check = Hash::check($currentpassword, $chk_user->password);
             if ($chk_user) {
                 $emailTemplate = EmailTemplate::where('email_of', 2)->first()->mail_body;
-                $AccountLink = "http://localhost:3000/reset-password/" . $token;
+                $AccountLink = "https://agrodepot-frontend.vercel.app/reset-password/" . $token;
                 $emailTemplate = str_replace("{Name}", $chk_user->first_name . ' ' . $request->last_name, $emailTemplate);
                 $emailTemplate = str_replace("{link}", $AccountLink, $emailTemplate);
                 $body =  $emailTemplate;

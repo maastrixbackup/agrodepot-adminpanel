@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ChangePasswordMail;
 use App\Models\MasterUser;
 use App\Models\SalesBrand;
 use App\Models\UserRating;
@@ -667,9 +668,20 @@ class UserController extends Controller
             if ($check) {
                 if ($newpassword == $confirmpassword) {
                     // MasterUser::where('id', $request->user_id)->update(['password' => Hash::make($newpassword)]);
-                    MasterUser::where('user_id', $request->user_id)->update(['pass' => md5($newpassword)]);
+                    $otp = rand(1000, 9999);
+                    $body = "Your OTP for password change is: $otp";
+                    MasterUser::where('user_id', $request->user_id)->update(['changePwRequest' => md5($newpassword), 'changePwToken' => $otp]);
+                    try {
+                        $user = MasterUser::where('user_id', $request->user_id)->first();
+                        Mail::to($user->email)->send(new ChangePasswordMail($body, $user));
+                    } catch (\Throwable $th) {
+                        return response()->json([
+                            'status' => 'Error.',
+                            'message' => $th->getMessage()
+                        ], 400);
+                    }
                     return response()->json([
-                        'message' => 'Password Changed Successfully.',
+                        'message' => 'An OTP has been sent to your email. Please use it to confirm password change.',
                     ], 200);
                 } else {
                     return response()->json([
@@ -684,6 +696,32 @@ class UserController extends Controller
                 'message' => 'Sorry !! We could not found this user in our system.',
             ], 400);
         }
+    }
+    public function confirmPwChange(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required',
+            'changePwToken' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        $user = MasterUser::where('user_id', $request->user_id)->first();
+        if ($request->changePwToken != $user->changePwToken) {
+            $user->changePwRequest = "";
+            $user->changePwToken = "";
+            $user->save();
+            return response()->json([
+                'message' => 'Sorry !! The otp is wrong.',
+            ], 400);
+        }
+        $user->pass = $user->changePwRequest;
+        $user->changePwRequest = "";
+        $user->changePwToken = "";
+        $user->save();
+        return response()->json([
+            'message' => 'Password changed succesfully!.',
+        ], 200);
     }
 
 

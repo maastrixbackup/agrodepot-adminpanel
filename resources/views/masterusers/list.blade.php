@@ -15,20 +15,20 @@
         <div class="row">
             <div class="col-lg-4 col-md-4 ">
                 <div class=" count_class_box">
-                    <img src="{{asset('/images/group.png')}}" alt="">
-                    <h3 >Total User: <span>{{ $totalUser }}</span></h3>
+                    <img src="{{ asset('/images/group.png') }}" alt="">
+                    <h3>Total User: <span>{{ $totalUser }}</span></h3>
                 </div>
             </div>
             <div class="col-lg-4 col-md-4 ">
                 <div class=" count_class_box">
-                    <img src="{{asset('/images/buyer.png')}}" alt="">
-                    <h3 >Total Buyer: <span>{{ $totalBuyer }}</span></h3>
+                    <img src="{{ asset('/images/buyer.png') }}" alt="">
+                    <h3>Total Buyer: <span>{{ $totalBuyer }}</span></h3>
                 </div>
             </div>
             <div class="col-lg-4 col-md-4 ">
                 <div class=" count_class_box">
-                    <img src="{{asset('/images/businessman.png')}}" alt="">
-                    <h3 >Total Seller: <span>{{ $totalUser }}</span></h3>
+                    <img src="{{ asset('/images/businessman.png') }}" alt="">
+                    <h3>Total Seller: <span>{{ $totalUser }}</span></h3>
                 </div>
             </div>
         </div>
@@ -106,12 +106,14 @@
                         <td scope="row">{{ $menu->email }}</td>
                         <td scope="row">{{ $menu->telephone1 }}</td>
                         <td scope="row">{{ optional($menu->userType)->user_type }}</td>
-                        <td scope="row"><select name="is_active" class="form-select-sm usr-act-select"
+                        <td scope="row">
+                            <select name="is_active" class="form-select-sm usr-act-select"
                                 data-user-id="{{ $menu->user_id }}">
                                 <option value="1" {{ $menu->is_active == '1' ? 'selected' : '' }}>Active</option>
                                 <option value="0" {{ $menu->is_active == '0' ? 'selected' : '' }}>Inactive
                                 </option>
-                            </select></td>
+                            </select>
+                        </td>
                         <td scope="row">
                             <select name="is_premium" id="is_premium" class="form-select-sm usr-select"
                                 onchange="changeMembership(this.value, {{ $menu->user_id }});">

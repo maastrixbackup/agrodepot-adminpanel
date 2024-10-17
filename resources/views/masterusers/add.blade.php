@@ -40,13 +40,13 @@
                     @enderror
                 </div>
                 <div>
-                    <label for="email">Phone 1</label>
+                    <label for="email">Phone </label>
                     <input type="text" name="telephone1" class="form-control" id="email">
                     @error('telephone1')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
-                <div>
+                {{-- <div>
                     <label for="email">Phone 2</label>
                     <input type="text" name="telephone2" class="form-control" id="email">
                     @error('telephone2')
@@ -66,7 +66,7 @@
                     @error('telephone4')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
-                </div>
+                </div> --}}
 
 
                 <div>
@@ -108,7 +108,7 @@
                 <div>
                     <label for="status">Status</label>
                     <select name="status" class="form-control" id="status">
-                        <option >Status</option>
+                        <option disabled selected>Status</option>
                         <option value="1">Active</option>
                         <option value="0">Inactive</option>
                     </select>

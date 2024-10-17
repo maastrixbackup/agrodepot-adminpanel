@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Banner
- * 
+ *
  * @property int $banner_id
  * @property string $banner_title
  * @property string $banner_caption
@@ -38,6 +38,7 @@ class Banner extends Model
 		'banner_title',
 		'banner_caption',
 		'banner_img',
+		'link',
 		'status',
 		'orderno',
 		'created'

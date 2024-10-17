@@ -29,6 +29,22 @@
                     <label for="bannerTitle1" class="col-sm-4 col-form-label">Caption</label>
                     <textarea class="ckeditor form-control" name="banner_caption" id="bannerTitle1" placeholder="Description">{{ optional($data)->banner_caption }}</textarea>
                 </div>
+                <div>
+                    <label for="slug">Link 2</label>
+                    @php
+                        $cat = \App\Models\SalesCategory::all();
+                    @endphp
+                    <select name="link" id="link" class="form-control">
+                        <option value="" disabled selected>Select</option>
+                        @foreach ($cat as $c)
+                            <option value="{{ $c->category_id }}" {{ $c->category_id == $data->link ? 'selected' : '' }}>
+                                {{ $c->category_name }}</option>
+                        @endforeach
+                    </select>
+                    @error('link')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
             </div>
             <div class="col-4">
                 <label for="status">Status</label>

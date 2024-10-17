@@ -1,5 +1,3 @@
-
-
 <x-app-layout>
 
     <div class="row">
@@ -15,7 +13,7 @@
             @csrf
             <div class="col-8 form-group">
                 <div>
-                     <label for="category_name">Category Name</label>
+                    <label for="category_name">Category Name</label>
                     <input type="text" name="category_name" class="form-control" id="category_name"
                         value="{{ old('category_name') }}">
                     @error('category_name')
@@ -32,42 +30,40 @@
                 </div>
                 <div>
                     <label for="flag">Parent</label>
-                        <select name="flag" class="form-control" id="flag"
-                        value="{{ old('flag') }}">
+                    <select name="flag" class="form-control" id="flag" value="{{ old('flag') }}">
 
                         @foreach ($categories as $flag => $catName)
-                            <option value="{{ $catName->category_id }}">{{ $catName->category_name}}</option>
+                            <option value="{{ $catName->category_id }}"
+                                {{ $catName->category_id == old('flag') ? 'selected' : '' }}>
+                                {{ $catName->category_name }}</option>
                         @endforeach
                     </select>
                     @error('flag')
-               
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
                     <label for="status">Status</label>
-                        <select class="form-control form-select" name="status" data-id="status" value="{{ old('status') }}">
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
-                        </select>
+                    <select class="form-control form-select" name="status" data-id="status"
+                        value="{{ old('status') }}">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
                     @error('status')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
 
-
-
-               
                 <div>
                     <label for="meta_description">Meta Description</label>
-                        <textarea name="meta_description" class="form-control" id="meta_description">{{ old('meta_description') }}</textarea>
+                    <textarea name="meta_description" class="form-control" id="meta_description">{{ old('meta_description') }}</textarea>
                     @error('meta_description')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
                     <label for="meta_keywords">Meta Keywords</label>
-                        <textarea name="meta_keywords" class="form-control" id="meta_keywords">{{ old('meta_keywords') }}</textarea>
+                    <textarea name="meta_keywords" class="form-control" id="meta_keywords">{{ old('meta_keywords') }}</textarea>
                     @error('meta_keywords')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror

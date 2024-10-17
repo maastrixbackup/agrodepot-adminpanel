@@ -74,7 +74,7 @@ class CmsPagesController extends Controller
             $banner_details[$key]['banner_id'] = $detail->banner_id;
             $banner_details[$key]['banner_title'] = $detail->banner_title;
             $banner_details[$key]['banner_caption'] = $detail->banner_caption;
-            $banner_details[$key]['banner_caption'] = $detail->banner_caption;
+            $banner_details[$key]['link'] = $detail->link;
             $filePath = public_path('uploads/banner/' . $detail->banner_img);
 
             if (file_exists($filePath)) {

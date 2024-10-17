@@ -66,9 +66,9 @@ class MasterUserController extends Controller
             'email' => 'required',
             'password' => 'required',
             'telephone1' => 'required',
-            'telephone2' => 'required',
-            'telephone3' => 'required',
-            'telephone4' => 'required',
+            // 'telephone2' => 'required',
+            // 'telephone3' => 'required',
+            // 'telephone4' => 'required',
             'country' => 'required',
             'city' => 'required',
             'status' => 'required',
@@ -83,9 +83,9 @@ class MasterUserController extends Controller
         $user->email = $request->input('email');
         $user->pass = bcrypt($request->input('password'));
         $user->telephone1 = $request->input('telephone1');
-        $user->telephone2 = $request->input('telephone2');
-        $user->telephone3 = $request->input('telephone3');
-        $user->telephone4 = $request->input('telephone4');
+        // $user->telephone2 = $request->input('telephone2');
+        // $user->telephone3 = $request->input('telephone3');
+        // $user->telephone4 = $request->input('telephone4');
         $user->country_id = $request->input('country');
         $user->locality_id = $request->input('city');
         $user->user_type_id = $request->input('user_type');
@@ -137,9 +137,9 @@ class MasterUserController extends Controller
         $user->email = $request->input('email');
         $user->pass = $request->input('password');
         $user->telephone1 = $request->input('telephone1');
-        $user->telephone2 = $request->input('telephone2');
-        $user->telephone3 = $request->input('telephone3');
-        $user->telephone4 = $request->input('telephone4');
+        // $user->telephone2 = $request->input('telephone2');
+        // $user->telephone3 = $request->input('telephone3');
+        // $user->telephone4 = $request->input('telephone4');
         $user->country_id = $request->input('country');
         $user->locality_id = $request->input('city');
         $user->user_type_id = $request->input('user_type');
@@ -168,6 +168,22 @@ class MasterUserController extends Controller
         $user->save();
 
         return response()->json(['message' => 'Status updated successfully', 'status' => $user->is_active]);
+    }
+
+    public function updatePassword(Request $req, $uId)
+    {
+        try {
+            MasterUser::where('user_id', $uId)->update(['pass' => md5($req->password)]);
+            return response()->json([
+                'status' => true,
+                'message' => 'Password Changed Successfully'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ]);
+        }
     }
 
 
